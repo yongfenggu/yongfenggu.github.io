@@ -2,6 +2,9 @@
 
 ## 基本信息
 - 姓名：古永丰 (Yongfeng Gu)
+- 性别：男
+- 喜欢的游戏英雄联盟
+- 喜欢的歌手陶喆、方大同、周杰伦
 - 身份：天津大学硕士研究生
 - 专业：仪器科学与技术
 - 学院：精密仪器与光电子工程学院
@@ -55,6 +58,6 @@
 - 编程语言：Python, JavaScript/TypeScript, C/C++
 - 深度学习：PyTorch, TensorFlow
 - 前端开发：Vue3, React
-- 后端开发：Node.js, Express
-- 数据库：MySQL
+- 后端开发：Node.js, Express,FastAPI
+- 数据库：MySQL,sqllite
 - 嵌入式：STM32, Arduino

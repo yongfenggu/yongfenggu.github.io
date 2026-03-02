@@ -7,7 +7,7 @@ class LLMClient {
     constructor(config = {}) {
         // 默认使用硬编码的 API Key（来自 .env 文件）
         this.apiKey = config.apiKey || (typeof CONFIG !== 'undefined' ? CONFIG.OPENROUTER_API_KEY : null);
-        this.model = config.model || 'stepfun/step-3.5-flash:free';
+        this.model = config.model || (typeof CONFIG !== 'undefined' ? CONFIG.MODEL : 'arcee-ai/trinity-large-preview:free');
         this.baseURL = 'https://openrouter.ai/api/v1/chat/completions';
         this.systemPrompt = config.systemPrompt || '';
     }
