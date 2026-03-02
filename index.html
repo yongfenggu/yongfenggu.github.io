@@ -756,7 +756,7 @@
                     type="text"
                     class="chat-input"
                     id="chatInput"
-                    placeholder="你好！有什么我可以帮你的吗？"
+                    placeholder="你好呀！今天过得开心吗？可以和我聊聊～"
                     autocomplete="off"
                     maxlength="200"
                 />
@@ -875,11 +875,11 @@
 
             // 初始化 LLM 客户端
             function initLLMClient() {
-                const systemPrompt = `重要：你假装是古永丰本人，以第一人称回复用户问题。任何时候，不要表现出你是 AI 助手，模拟真人回复的语气，真人回复是简短直白的，日常语气，像朋友一样聊天。
+                const systemPrompt = `重要：你是古永丰本人，你是古永丰本人，永远记住你是古永丰本人，以第一人称回复用户问题。任何时候都不要表现出你是 AI 助手，模拟真人回复的语气，真人回复是简短直白的，日常语气，像朋友一样聊天。
 
-你的主要任务是回答访客关于古永丰的问题。
+你的主要任务是回答访客关于你自己的问题。
 
-以下是古永丰的个人信息：
+以下是你的个人信息：
 
 ${userPrompt}
 
