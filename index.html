@@ -521,21 +521,34 @@
 
         .typing-indicator {
             align-self: flex-start;
-            background: #f8f8f8;
-            border-left: 3px solid #e0e0e0;
-            padding: 14px 18px;
-            border-radius: 3px;
+            background: transparent;
+            padding: 8px 0;
             display: none;
             animation: fadeIn 0.3s ease-in;
         }
 
         .typing-indicator.active {
             display: flex;
-            gap: 5px;
-            align-items: center;
+            gap: 12px;
+            align-items: flex-start;
         }
 
-        .typing-indicator span {
+        .typing-indicator .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            object-fit: cover;
+        }
+
+        .typing-indicator .dots {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            padding-top: 4px;
+        }
+
+        .typing-indicator .dots span {
             display: inline-block;
             width: 7px;
             height: 7px;
@@ -544,15 +557,15 @@
             animation: typing 1.4s infinite ease-in-out;
         }
 
-        .typing-indicator span:nth-child(1) {
+        .typing-indicator .dots span:nth-child(1) {
             animation-delay: 0s;
         }
 
-        .typing-indicator span:nth-child(2) {
+        .typing-indicator .dots span:nth-child(2) {
             animation-delay: 0.2s;
         }
 
-        .typing-indicator span:nth-child(3) {
+        .typing-indicator .dots span:nth-child(3) {
             animation-delay: 0.4s;
         }
 
@@ -914,7 +927,20 @@ ${userPrompt}
             function createTypingIndicator() {
                 const indicator = document.createElement('div');
                 indicator.className = 'typing-indicator active';
-                indicator.innerHTML = '<span></span><span></span><span></span>';
+
+                // 添加头像
+                const avatar = document.createElement('img');
+                avatar.src = 'assets/img/wechat avatar.jpg';
+                avatar.alt = 'Avatar';
+                avatar.className = 'avatar';
+
+                // 添加动画点容器
+                const dots = document.createElement('div');
+                dots.className = 'dots';
+                dots.innerHTML = '<span></span><span></span><span></span>';
+
+                indicator.appendChild(avatar);
+                indicator.appendChild(dots);
                 chatMessages.appendChild(indicator);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 return indicator;
