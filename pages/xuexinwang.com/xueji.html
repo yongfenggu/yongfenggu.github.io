@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no,viewport-fit=cover">
+    <title>学信档案</title>
+    <link rel="icon" href='https://t1.chei.com.cn/archive/favicon.ico' type="image/x-icon">
+    <link rel="stylesheet" href='https://t1.chei.com.cn/archive/fonts/chsi-font.css' />
+    <link rel="stylesheet" href='https://t2.chei.com.cn/archive/mobile/css/app.css?v=20240717' />
+    <link rel="stylesheet" href='https://t1.chei.com.cn/common/ch/iconfont.css' />
+    <link rel="stylesheet" href='https://t1.chei.com.cn/common/css/font/RareWords/RareWordsFonts.css' />
+    <script src='https://t1.chei.com.cn/common/js/vue/2.5.6/vue.min.js'></script>
+    <script src='https://t1.chei.com.cn/archive/mobile/js/vant1.47/vant.min.js'></script>
+    <script src='https://t1.chei.com.cn/archive/mobile/js/vendors-1.0.0.js'></script>
+    <script src='https://t2.chei.com.cn/archive/mobile/js/app-1.0.3.js'></script>
+    <script src='https://t3.chei.com.cn/archive/mobile/js/lodash.min.js'></script>
+    <script src='https://t4.chei.com.cn/archive/mobile/js/jweixin-1.6.0.js'></script>
+    <style>
+        .extra-wrap{
+            display: flex;
+            align-items: center;
+        }
+        .extra-wrap .red{
+            margin-right: 5px;
+            color: #e85759;
+        }
+        .vote-order-ul li{
+            align-items: center;
+        }
+        .vote-order-ul .vue-checkbox{
+            display: inline-block;
+            margin-right: 10px;
+            white-space: nowrap;
+            position: relative;
+            line-height: 1;
+            vertical-align: middle;
+            cursor: pointer;
+            outline: 0;
+        }
+        .vote-order-ul .vue-checkbox .vue-checkbox-inner {
+            display: inline-block;
+            position: relative;
+            width: .426rem;
+            height: .426rem;
+            top: 0;
+            left: 0;
+            background-color: #fff;
+            border: 1px solid #969799;
+            border-radius: 2px;
+            transition: all .2s ease-in-out;
+        }
+        .vote-order-ul .vue-checkbox .checked-box-order {
+            display: inline-block;
+            position: relative;
+            width: .426rem;
+            height: .426rem;
+            top: 0;
+            left: 0;
+            color: #fff;
+            border-radius: 2px;
+            text-align: center;
+            background-color: #25b887;
+            border: 1px solid #25b887;
+            transition: all .2s ease-in-out;
+        }
+        .jy-vote .sub_sub_title{
+            font-size: .373rem;
+            margin-top: 0.45rem;
+            font-weight: 700;
+        }
+        .checkbox-trans-list-item {
+        transition: all 1s;
+        display: inline-block;
+        margin-right: 10px;
+        }
+        .checkbox-trans-list-enter, .checkbox-trans-list-leave-to{
+        opacity: 0;
+        transform: translateY(30px);
+        }
+        .checkbox-trans-list-leave-active {
+        position: absolute;
+        }
+        /* 重写字体 */
+        .nameFamily{
+            font-family: inherit;
+        }
+        .top-card .img-div {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            overflow: hidden;
+            background: #e8e8e8;
+            border-radius: 4px;
+        }
+        .top-card .img-div img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .no-photo-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e8e8e8;
+        }
+        .no-photo-placeholder svg {
+            width: 40%;
+            height: 40%;
+            opacity: 0.4;
+        }
+    </style>
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-100524-5"></script>
+<script>
+// 放在ga.jsp 中
+function gaTrackerOutboundLink(ele,eventCategory,eventAction,eventLabel){
+    gtag('event', eventAction, {
+      'event_category': eventCategory,
+      'event_label': eventLabel
+    });
+    return true;
+}
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-100524-5', {'sample_rate': 5});
+</script>
+<script>
+    // 百度统计
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?ed4ddcd4078a486f1f5760a6c426b738";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+</head>
+<body>
+    <div id="app" class="my-container" v-cloak>
+         
+
+
+
+
+
+
+
+
+<script>
+(function(w, d, s, q) { 
+	w[q] =w[q] || []; 
+	var f=d.getElementsByTagName(s)[0],j=d.createElement(s); 
+	j.async=true; 
+	j.id='beacon-aplus'; 
+	j.src='https://o.alicdn.com/QTSDK/quicktracking-sdk/qt_web.umd.js'; 
+	f.parentNode.insertBefore(j, f);
+})(window, document, 'script', 'aplus_queue');
+aplus_queue.push({ action: 'aplus.setMetaInfo', arguments: ['appKey', 'sc5wvrha9o0bde9ugpoqm37u']  }) 
+aplus_queue.push({ action: 'aplus.setMetaInfo', arguments: ['trackDomain', 'qtedu.om.moe.edu.cn']  });
+</script>
+<img src='https://t1.chei.com.cn/common/wap/images/share_xxda.jpg' width='0' height='0' style='position: absolute;top:-100px;left: 0'/>
+<van-nav-bar
+  class="white-header"  
+  :title="whiteTit"
+  border=false
+  left-text=""
+  left-arrow
+  @click-left="onClickLeft"
+>
+</van-nav-bar>
+<div class="vote-part">
+    
+    
+    
+
+
+
+
+
+
+
+
+    <!--移动端-->
+    <div id="vote_wap" style="display:none"></div>
+
+    <script type="text/javascript">
+        var position = 'wap_txjd';
+        function getVoteInfo(){
+            console.log('删除了此getVoteInfo()内容');       
+        }
+        /**
+         * 显示调查问卷banner
+         * url:链接
+         * tit:问卷名称
+         * cName:class类名
+         */
+        function setVote(url,tit,cName,type){
+            var dom = document.getElementById("vote_wap");
+            // 是否有文字，高考推荐类的没有，其他有
+            var aInnerHTML = '';
+            if(tit){
+                // 非高考（专业推荐、满意度）
+                aInnerHTML = '<h4 class="vote-left"><span class="vote-text">'+tit+'</span><span class="go-ahead">立即前往<i class="iconfont" title="立即前往">&#xe601;</i></span></h4><div class="right-img"></div>';
+            }
+            var _html = '<a href="'+url+'" style="display:block" target="_blank" onmousedown="clickVoteGa(this, \''+type+'\')" class="vote-jy-part '+cName+'">'+aInnerHTML+'</a>';
+            dom.innerHTML = _html;
+            dom.style.display="block";
+        }
+        function clickVoteGa(obj,type){
+            gaTrackerOutboundLink(obj,type, 'click', position);
+        }
+        window.onload = function(){
+            getVoteInfo();
+        }
+    </script>
+
+
+</div>
+<template v-if="resultJson.status==0">
+    <div class="padding16 xj-index">
+        <!-- 图像采集码 -->
+        <div class="jd-res-div" :style="{marginBottom:(!resultJson.result.showZpCollated && picZzk.jlFlag!=2 && picZzk.jlFlag!=3)?'0.533rem':'0.267rem'}" v-if="resultJson.result.showTxcjm">
+          <div class="flex-box"  @click="showTxcjm">
+            <div class="flex1">
+              <span class="scan-txewm"></span>查看图像采集码
+            </div>
+            <div class="arrow-right"><i class="iconfont ">&#xe601;</i></div>
+          </div>
+          <div v-if="!resultJson.result.showZpCollated && picZzk.jlFlag!=2 && picZzk.jlFlag!=3" class="sanjiao"><em></em><span></span></div>
+        </div>
+        <!-- 图片校对结论 -->
+        <template v-if="resultJson.result.showZpCollated">
+          <div class="jd-res-div" >
+            <template v-if="resultJson.result.zpCollateVo.hasCollated">
+              <!-- 校对过 -->
+                <div class="flex-box" >
+                  <!-- 左侧 -->
+                  <div class="flex1">
+                    <template v-if="resultJson.result.zpCollateVo.status===1">
+                      <i class="iconfont jd-status-ico colorGreen">&#xe67e;</i>学历照片正确 <span class="colorGreen pjzp-btn" v-if="resultJson.result.showZppj" @click="openPicPj" >评价照片</span>
+                    </template>
+                    <template v-else-if="resultJson.result.zpCollateVo.status===2">
+                      <i class="iconfont jd-status-ico colorGreen">&#xe667;</i>照片已更新，请重新校对！
+                    </template>
+                    <template v-else-if="resultJson.result.zpCollateVo.status===4">
+                      <i class="iconfont jd-status-ico colorRed">&#xe67d;</i>学历照片有误（照片不是我本人）
+                    </template>
+                    <template v-else-if="resultJson.result.zpCollateVo.status===16">
+                      <i class="iconfont jd-status-ico colorRed">&#xe67d;</i>学历照片有误（照片侧卧）
+                    </template>
+                    <template v-else-if="resultJson.result.zpCollateVo.status===32">
+                      <i class="iconfont jd-status-ico colorRed">&#xe67d;</i>学历照片有误（照片倒立）
+                    </template>
+                  </div>
+                  <!-- 右侧 -->
+                  <div class="arrow-right" @click="openPicJd">修改<i class="iconfont ">&#xe601;</i></div>
+                </div>
+            </template>
+            <template v-else>
+              <!-- 未校对过 -->
+              <div class="flex-box" @click="openPicJd">
+                <!-- 左侧 -->
+                <div class="flex1">
+                  <i class="iconfont jd-status-ico colorBlue">&#xe6d8;</i>学历照片还未校对
+                </div>
+                <!-- 右侧 -->
+                <div class="arrow-right"><i class="iconfont ">&#xe601;</i></div>
+              </div>
+            </template>
+            <div class="sanjiao"><em></em><span></span></div>
+          </div>
+        </template>
+        <!-- 找找看结论 -->
+        <div class="jd-res-div" v-if="picZzk.jlFlag==2">
+          <div class="flex-box">
+            <div class="flex1">
+              <i class="iconfont jd-status-ico colorGreen">&#xe67e;</i>已找到学历照片</div>
+            <div class="arrow-right" @click="querychoosedphoto">查看照片<i class="iconfont ">&#xe601;</i></div>
+          </div>
+          <div class="sanjiao"><em></em><span></span></div>
+        </div>
+        <div class="jd-res-div" v-if="picZzk.jlFlag==3">
+          <div class="flex-box">
+            <div class="flex1">
+              <i class="iconfont jd-status-ico colorRed">&#xe67d;</i>未找到学历照片
+            </div>
+            <div class="arrow-right" @click="querychoosedphoto">查看反馈<i class="iconfont ">&#xe601;</i></div>
+          </div>
+          <div class="sanjiao"><em></em><span></span></div>
+        </div>
+        <div class='top-card'>
+          <van-row>
+            <van-col span="9">
+              <div class="flex-box">
+                <div class="flex1">
+                  <div class="img-div">
+                    <img v-if="resultJson.result.hasLqPic" :src="lqPicSrc" class="full-img"/>
+                    <template v-else>
+                      <img src="https://t4.chei.com.cn/archive/images/common/no-photo.png" @click="showTips('xj')" class="full-img"/>
+                      <span class="red-tips-icon" @click="showTips('xj')"></span>
+                    </template>
+                  </div>
+                  <p class="text">录取照片</p>
+                </div>
+                <div class="flex1">
+                  <div class="img-div">
+                    <img v-if="resultJson.result.hasXlPic" :src="xlPicSrc"/>
+                    <div v-else class="no-photo-placeholder">
+                      <svg viewBox="0 0 24 24" fill="#999"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                  </div>
+                  <p class="text" v-if="resultJson.result.xlzms">学历证明书照片</p>
+                  <p class="text" v-else>学历照片</p>
+                </div>
+              </div>
+              </van-col>
+            </van-col>
+            <van-col span="15">
+                    <h5 class="nameFamily">{{resultJson.result.xm}}</h5>
+                    <p>{{resultJson.result.xb}}　{{resultJson.result.csrq}}</p>
+            </van-col>
+          </van-row>
+          <div class="top-bottom-img xj-detail-img">
+            <div class="yxmc-wrap">
+                <div class="yxmc">{{resultJson.result.yxmc}}</div>
+                <div class="cc xj-cc-lable">{{resultJson.result.cc}}</div>
+            </div>                    
+            <div class="des">{{resultJson.result.zymc}}　|　{{resultJson.result.xxxs}}</div>
+          </div>
+        </div>
+        <div class="xj-c">
+          <ul class="gdjy-view-ul">         
+            <li>
+                <div class="left">{{resultJson.result.mzItemName}}</div>
+                <div class="right">{{resultJson.result.mz}}</div>
+            </li>
+            <li>
+                <div class="left">证件号码</div>
+                <div class="right">{{resultJson.result.sfzh}}</div>
+            </li>
+            <li>
+                <div class="left">学制</div>
+                <div class="right">{{resultJson.result.xz}}</div>
+            </li>
+            <li>
+                <div class="left">学历类别</div>
+                <div class="right">{{resultJson.result.xllb}}</div>
+            </li>
+            <li>
+                <div class="left">分院</div>
+                <div class="right">{{resultJson.result.fy}}</div>
+            </li>
+            <li>
+                <div class="left">系所</div>
+                <div class="right">{{resultJson.result.xsh}}</div>
+            </li>
+            <li>
+                <div class="left">班级</div>
+                <div class="right">{{resultJson.result.bh}}</div>
+            </li>
+            <li>
+                <div class="left">学号</div>
+                <div class="right">{{resultJson.result.xh}}</div>
+            </li>
+            <li>
+                <div class="left">入学日期</div>
+                <div class="right">{{resultJson.result.rxrq}}</div>
+            </li>
+            <li>
+                <div class="left">学籍状态</div>
+                <div class="right">{{resultJson.result.xjzt}}</div>
+            </li>
+          </ul>
+        </div>
+        <van-row>
+          <van-col span="24">
+            <a href="/archive/bab/xj/show.action"><van-button class="my-btn" type="primary">申请验证报告</van-button></a>            
+          </van-col>
+        </van-row>
+    </div>
+    
+
+
+
+
+
+
+
+<van-popup v-model="picZzk.tcFlag" class='van-popup-tc' :close-on-click-overlay='flagFalse'>
+  <div class="my-dialog">
+    <span class="close" @click="closePicZzk"><van-icon name="cross"></van-icon></span>
+    <h3>{{picZzk.tcTitle}}</h3>
+    <template v-if="picZzk.tcStatus===1">
+      <div class="dialog-mian xj-img-zzk">
+        <div class="xj-info">
+          <span class='left-tit'>学校名称：</span>
+          <span class='right-val'>{{picZzk.xjInfo.yxmc}}</span>
+        </div>
+        <div class="xj-info">
+          <span class='left-tit'>专业：</span>
+          <span class='right-val'>{{picZzk.xjInfo.zymc}}</span>
+        </div>
+        <div class="xj-info">
+          <span class='left-tit'>层次：</span>
+          <span class='right-val'>{{picZzk.xjInfo.cc}}</span>
+        </div>
+        <div class="xj-info">
+          <span class='left-tit'>入学日期：</span>
+          <span class='right-val'>{{picZzk.xjInfo.rxrq}}</span>
+        </div>
+        <div class="img-div">
+          <ul class="img-container" :style="'width:'+picZzk.ImgsW+'px'">
+            <template v-for="item in picZzk.pvInfoVoList">               
+              <li style="width:90px;height: 120px;margin-right: 10px;">
+                <img :src="'https://my.chsi.com.cn/archive/wap/gdjy/zp/zzk/viewmyphoto.action?id='+item.code" style="width:90px;height: 120px;" />
+                <input type="radio" name="zzkImg" class="img-label-radio" v-model="picZzk.selected" :value="item.id" :id="item.id"/>
+                <label style="width:90px;height: 120px;" :for="item.id" class="img-label" >
+                  <span></span>
+                </label>
+              </li>
+            </template>
+          </ul>
+        </div>
+        <p class='tips'>您选定的照片将用于学历证书电子注册，请确认（确认后24小时生效）！</p>
+      </div>
+      <van-row class="dialog-bottom">
+        <van-col span="11"><van-button class="my-btn" type="default" @click="confirmphoto(false)">未找到</van-button></van-col>
+        <van-col span="11"  offset="2"><van-button class="my-btn" type="primary" @click="confirmphoto(true)">确认</van-button></van-col>
+      </van-row>
+    </template>
+    <template v-if="picZzk.tcStatus===2">
+      <div class="dialog-mian zzk-res xj-img-zzk">
+        <img :src="'https://my.chsi.com.cn/archive/wap/gdjy/zp/zzk/viewmyphoto.action?id='+picZzk.selectedImgCode" class="zzk-img"/>  
+        <template v-if="picZzk.isShowTime">
+          <h5>照片信息已提交</h5>
+          <p class="time-tips">提交时间：{{picZzk.selectedImgTime}}</p> 
+          <p class="des">您选择的照片相关信息已提交至就读院校学籍管理部门，请耐心等候（24小时后生效）。</p> 
+        </template>
+        <template v-else>
+          <h5>操作成功</h5>
+          <p class="des" >您选择的照片相关信息已提交至就读院校学籍管理部门，请耐心等候。</p>
+        </template>      
+        <van-button class="my-btn" type="primary" @click="closePicZzk">关闭</van-button>
+      </div>
+    </template>
+    <template v-if="picZzk.tcStatus===3">
+      <div class="dialog-mian xj-img-zzk zzk-res status-kong">
+          <div class="status-img status-fail"></div>
+          <h5>很遗憾未找到学历照片</h5>
+          <p class="des">请主动联系就读院校学籍管理部门协助处理！</p>
+          <van-button class="my-btn" type="primary" @click="closePicZzk">关闭</van-button>
+      </div>
+    </template>
+    <template v-if="picZzk.tcStatus===4">
+      <div class="dialog-mian xj-img-zzk zzk-res status-kong">
+          <img class="xjxx-loading" src="https://t1.chei.com.cn/common/images/loading-dot.gif" />
+      </div>
+    </template>
+  </div>
+</van-popup>
+
+<van-popup v-model="picJd.tcFlag" class='van-popup-tc picPj-popup' :close-on-click-overlay='flagFalse'>
+  <div class="my-dialog">
+    <template v-if="picJd.txjdFlag">              
+      <span class="close" @click="closePicJd"><van-icon name="cross"></van-icon></span>
+      <h3>学历照片校对</h3>
+      <template v-if="resultJson.result.zpCollateVo!==null && !resultJson.result.zpCollateVo.zpVaild">
+        <div class="dialog-mian xj-img-jd">
+          <div class="flex-box">
+            <img :src="'https://my.chsi.com.cn/archive/wap/gdjy/viewphoto.action?type=xj&dtid='+resultJson.result.id" class="left-img"/>
+            <div class="flex1">
+              <p>{{picJd.xjInfo.yxmc}}</p>
+              <p>{{picJd.xjInfo.zymc}}</p>
+              <p>{{picJd.xjInfo.cc}}</p>
+              <p>{{picJd.xjInfo.rxrq}}</p>
+            </div>
+          </div>
+          <div class="jd-opt-div"> 
+            <p>这张照片将用于您的学历证书电子注册，请确认</p>
+            <div class="jd-opt">
+              <van-row class="jd-opt-select">
+                <label class="select-border van-radio"
+                  :class="{'selected-border':picJd.zpRight== '1'}" 
+                  for="picRadio1"
+                >
+                  <span class="van-radio__input">
+                    <input 
+                        type="radio" 
+                        name="'picRadio'"
+                        id="picRadio1"
+                        class="van-radio__control " 
+                        v-model="picJd.zpRight"  
+                        value="1"
+                    />
+                    <i class="iconfont" title="正确">&#xe67e;</i>
+                  </span>
+                  <span class="van-radio__label">正确</span>
+                </label>
+                <label class="select-border van-radio"
+                    :class="{'selected-border':picJd.zpRight== '2'}" 
+                    for="picRadio2"
+                >
+                  <span class="van-radio__input">
+                    <input 
+                        type="radio" 
+                        name="'picRadio'"
+                        id="picRadio2"
+                        class="van-radio__control "
+                        v-model="picJd.zpRight"  
+                        value="2"
+                    />
+                    <i class="iconfont" title="有误">&#xe67c;</i>
+                  </span>
+                  <span class="van-radio__label">有误</span>
+                </label>
+              </van-row>
+              <van-row class="jd-opt-err" gutter="6" v-if="picJd.zpRight === '2'">
+                <van-col span="8">
+                  <input type="radio" id="jdPicErr1" value="4" v-model="picJd.errorReason" name="jjPicErr">
+                  <label for="jdPicErr1">照片不是本人</label>
+                </van-col>
+                <van-col span="8">
+                  <input type="radio" id="jdPicErr2" value="16" v-model="picJd.errorReason" name="jjPicErr">
+                  <label for="jdPicErr2">照片侧卧</label>
+                </van-col>
+                <van-col span="8">
+                  <input type="radio" id="jdPicErr3" value="32" v-model="picJd.errorReason" name="jjPicErr">
+                  <label for="jdPicErr3">照片倒立</label>
+                </van-col>
+              </van-row>              
+            </div>         
+          </div>
+        </div>
+        <van-row class="dialog-bottom">
+          <van-col span="12"  offset="6"><van-button type="primary" class="my-btn" @click="picJdEnsure">确认</van-button></van-col>
+        </van-row>  
+      </template>
+      <template v-else>
+        <div class="dialog-mian xj-img-jd">
+          <h4>校对结论已生效</h4>
+        </div>
+        <van-row class="dialog-bottom">
+          <van-col span="12"  offset="6"><van-button type="primary" class="my-btn" @click="closePicJd">关闭</van-button></van-col>
+        </van-row>
+      </template>     
+    </template>
+    <template v-else>
+      <span class="close" @click="addAppraisalCookie"><van-icon name="cross"></van-icon></span>
+      <div class="dialog-mian zppj-div">
+        <img :src="'https://my.chsi.com.cn/archive/wap/gdjy/viewphoto.action?type=xj&dtid='+resultJson.result.id"  class="img"/>
+        <ul>
+          <li>
+            拍摄人员服务质量
+            <van-rate
+              v-model="picJd.pj.psfwpj"
+              :size="20"
+              :count="5"
+              color="#26B887"
+              void-color="#D2D2D2"
+            ></van-rate>
+         </li>
+          <li>
+            照片质量
+            <van-rate
+              v-model="picJd.pj.zpzlpj"
+              :size="20"
+              :count="5"
+              color="#26B887"
+              void-color="#D2D2D2"
+            ></van-rate>
+          </li>
+          <li>
+            拍照时间
+            <div class="pzTime">
+              <input type="radio" id="pjT1" value="1" v-model="picJd.pj.pzsj" name="jjPicTime">
+              <label for="pjT1">
+                两三周前
+              </label>
+              <input type="radio" id="pjT2" value="2" v-model="picJd.pj.pzsj" name="jjPicTime"> 
+              <label for="pjT2">
+                一个多月了
+              </label>
+              <input type="radio" id="pjT3" value="3" v-model="picJd.pj.pzsj" name="jjPicTime">
+              <label for="pjT3">
+                快三个月
+              </label> 
+              <input type="radio" id="pjT4" value="4" v-model="picJd.pj.pzsj" name="jjPicTime">
+              <label for="pjT4">
+                差不多半年
+              </label>  
+              <input type="radio" id="pjT5" value="5" v-model="picJd.pj.pzsj" name="jjPicTime">
+              <label for="pjT5">
+                半年以前
+              </label> 
+            </div> 
+          </li>
+        </ul>
+      </div>
+      <van-row class="dialog-bottom">
+        <van-col span="12"  offset="6"><van-button type="primary" class="my-btn" @click="picZlEnsure">提交</van-button></van-col>
+      </van-row>
+    </template>
+  </div>
+</van-popup>
+
+<van-popup v-model="picJd.zytjFlag" class='van-popup-tc picPj-popup' :close-on-click-overlay='flagFalse'>
+  <div class="my-dialog">
+    <span class="close" @click="refresh"><van-icon name="cross"></van-icon></span>
+      <h3>学历照片评价成功</h3>
+      <div class="dialog-mian zzk-res xj-img-zzk zpjd-zppj">
+        <div class="zppj-success"></div>
+        <h5>学历照片评价成功</h5>
+        <p>感谢您的参与，您还可以评价所学专业。 </p>
+      </div>
+      <van-row class="dialog-bottom">
+        <van-col span="12"  offset="6">
+          <a href="https://my.chsi.com.cn/zyzsk/myd/specAppraisalWelcome.action"><van-button class="my-btn" type="primary" >去评价</van-button></a>
+        </van-col>
+      </van-row> 
+  </div>
+</van-popup>  
+<van-popup v-model="txewm.tcFlag" class='van-popup-tc picPj-popup txcjm-popup' :close-on-click-overlay='flagFalse'>
+  <div v-if="txewm.tcFlag" class="my-dialog ewm-diolog">
+    <span class="close" @click="closeEwm"><van-icon name="cross"></van-icon></span>
+    <div v-show="txewm.type==1">
+      <div class='ewm-img-wrap'>
+        <img 
+          :src="'/archive/gdjy/txcjm/show.action?id='+txewm.archiveId"
+          @load="loadImgtxcjm(true)"
+          @error="loadImgtxcjm(false)"
+          @touchstart="txcjmTouchstart()"
+          @touchmove="txcjmTouchmove()"
+          @touchend="txcjmTouchend()"
+        />
+      </div>
+      <div class="ewm-save-tip"><i class="iconfont">&#xe611;</i>长按二维码保存图片</div>
+    </div>
+    <template v-if="txewm.type==2">
+      <div class='ewm-load-wrap'>
+        <van-loading></van-loading>
+        <span class="van-loading-text">图片加载中</span>
+      </div>
+    </template>
+    <template v-if="txewm.type==3">
+      <div class='ewm-load-wrap'>系统繁忙，请稍后重试</div>
+    </template>
+  </div>
+</van-popup>        
+</template>
+<template v-else>
+    <div class="status-kong">
+        <div class="status-img status-fail"></div>
+        <p class="des">{{resultJson.message}}</p>
+    </div>
+</template>
+<script src="./config.js"></script>
+<script src="./build-data.js"></script>
+<script>
+var _profile = getProfile();
+</script>
+<script>
+      var mixin = {
+        data:function(){
+            return {
+                whiteTit:'高等学籍',
+                flagFalse:false,
+                lqPicSrc: localStorage.getItem('xuexin_avatar') || (_profile ? _profile.录取照片 : ''),
+                xlPicSrc: _profile ? _profile.学历照片 : '',
+                resultJson: _profile ? buildResult2(_profile) : {},
+                picZzk:{ //图像找找看相关
+                  zzkFlag:1,//找找看图片显示控制变量，1表示初始化页面，还未请求回来，2表示请求找找看接口回来有找找看功能，3表示请求回来无找找看功能
+                  tcFlag:false,//是否显示找找看弹层
+                  jlFlag:1,//找找看结论，1不显示结论，2显示正确结论，3选择未找见结论
+                  xjInfo:{
+                    yxmc:'', //院校
+                    zymc:'', //专业
+                    cc:'', //层次
+                    rxrq:''//出生年月
+                  },
+                  ImgsW:90,//图片容器的宽度
+                  pvInfoVoList:[], //返回与用户未关联的照片  
+                  selected:'',//存放用户选择的照片id
+                  selectedImgCode:'',//存放用户选择的照片code，回显图片使用
+                  tcStatus:1,//弹层内容状态，1表示出选择 照片，2表示选择确定有的提示内容，3表示未找见照片的提示内容4是loading效果
+                  tcTitle:'查找学历照片',//弹层标题,
+                  selectedImgTime:'', //回显提交图片的时间
+                  isShowTime:false//是否显示提交图片的时间，查看的时候显示，查找的第二步不显示
+                },
+                picJd:{ //图像校对相关
+                  tcFlag:false,
+                  txjdFlag:true,//是显示图像校对，还是显示评价
+                  xjInfo:{
+                    yxmc:'', //院校
+                    zymc:'', //专业
+                    cc:'', //层次
+                    rxrq:''//出生年月
+                  },
+                  zpRight:'', //照片是否正确，可能得值1:正确,2：错误
+                  errorReason:'',//错误原因
+                  pj:{
+                    psfwpj:'', //服务质量评价
+                    zpzlpj:'', //照片质量评价
+                    pzsj:'',//拍照时间
+                  },
+                  zytjFlag:false//是否显示专业推荐
+                },
+                txewm:{//图像二维码
+                  tcFlag:false,
+                  type:1,
+                  archiveId:''
+                },                
+                myVote:null,//离校问卷相关
+                timeOutEvent:null 
+            }
+        },
+        created:function(){            
+            if(this.resultJson.status===0){
+              var _this = this,
+                  _res = this.resultJson.result;
+
+              _this.picZzk.zzkFlag=1; 
+
+              //若满足条件直接显示图片评价弹层
+              if(this.resultJson.result.showZppj){
+                this.appraisalFromCookie();
+              }
+            }
+        },
+        mounted:function(){
+        },
+        methods:{
+          refresh:function(){
+            window.location.reload();
+          },
+          showTips:function(type){ //无照片的提示
+            var text = '';
+            if(type=='xj'){
+              text='没有照片？请联系就读院校招生管理部门协助处理！'
+            }else{
+              text='没有照片？请联系就读院校学籍学历管理部门协助处理！'
+            }
+            this.$dialog.alert({
+              title: '没有照片',
+              message: text,
+              confirmButtonText:'知道了'
+            });
+          },
+          openPicZzk:function(){ //点开找找看弹层
+            var _this =this,
+                postData={
+                  id:this.resultJson.result.id, //学籍档案的ID
+                };
+            this.picZzk.tcFlag = true;
+            this.picZzk.tcTitle ='查找学历照片';
+            this.picZzk.tcStatus =4;//loading 效果
+            api.syncAjax('post', 'https://my.chsi.com.cn/archive/wap/gdjy/zp/zzk/choose.action',{ data:postData}).then(function(res){
+                if(res.status==0){
+                  _this.picZzk.pvInfoVoList = res.result.pvInfoVoList;
+                  _this.picZzk.ImgsW = res.result.pvInfoVoList.length*100;
+                  _this.picZzk.xjInfo={
+                    yxmc:res.result.yxmc, //院校
+                    zymc:res.result.zymc, //专业
+                    cc:res.result.cc, //层次
+                    rxrq:res.result.rxrq//出生年月
+                  };
+                  _this.picZzk.tcStatus=1; //找找看弹层
+                }else{
+                  _this.$toast(res.message);
+                }
+              });
+
+          },
+          closePicZzk:function(){ //关闭找找看弹层
+            this.picZzk.tcFlag = false;
+            //清空选项，以便下次点开是干净的
+            this.picZzk.selected ='';  
+            this.picZzk.tcStatus = 1;
+            this.picZzk.tcTitle ='查找学历照片';
+          },
+          confirmphoto:function(flag){ //找找看弹层的 - 确定，未找到，事件
+            var _this=this;
+            if(flag){
+                if(this.picZzk.selected==''){
+                    this.$toast('请选择照片！');
+                    return false;
+                }
+            }
+            var postData={
+              id:this.resultJson.result.id, //学籍档案的ID
+              findPic:flag,//是否找到图片
+              pvid:this.picZzk.selected,//图片的ID
+              'cprmcsrf':'000041c1b23e2dd5d0bd8ad3d52f5c90'
+            }
+            this.picZzk.tcStatus =4;//loading 效果
+            api.syncAjax('post', 'https://my.chsi.com.cn/archive/wap/gdjy/zp/zzk/save.action',{ data:postData}).then(function(res){
+                if(res.status==0){
+                  if(flag){
+                    _this.picZzk.selectedImgCode = res.result.code;
+                    _this.picZzk.tcStatus=2; //找见了
+                    _this.picZzk.isShowTime=false;//显示时间
+                    _this.picZzk.jlFlag=2;//页面头部的找找看结论更新
+                  }else{
+                    _this.picZzk.tcStatus=3;//没找见
+                    _this.picZzk.jlFlag=3;//页面头部的找找看结论更新
+                  }
+                }else{
+                  _this.$toast(res.message);
+                }
+              }); 
+          },
+          querychoosedphoto:function(type){ //找找看结论详情
+            var _this =this,
+                postData={
+                  id:this.resultJson.result.id
+                };
+
+                this.picZzk.tcFlag = true;
+                this.picZzk.tcStatus =4;  //loading效果
+                this.picZzk.tcTitle ='学历照片查找结果';
+            api.syncAjax('post', 'https://my.chsi.com.cn/archive/wap/gdjy/zp/zzk/query.action',{ data:postData}).then(function(res){
+                if(res.status==0){
+                  if(res.result.findPic){
+                    _this.picZzk.selectedImgCode = res.result.code;
+                    _this.picZzk.selectedImgTime = res.result.tjrq;
+                    _this.picZzk.isShowTime=true;//显示时间
+                    _this.picZzk.tcStatus=2; //找见了
+                  }else{
+                    _this.picZzk.tcStatus=3;//没找见
+                  }
+                }else{
+                  _this.$toast(res.message);
+                }
+              }); 
+          },
+          showTxcjm:function(){
+            this.txewm.tcFlag =true;
+            this.txewm.type =2;
+            this.txewm.archiveId =this.resultJson.result.id;
+          },
+          closeEwm:function(){
+            this.txewm.tcFlag=false;
+          },
+          openPicJd:function(){ //打开图像校对
+            var _this =this;
+            if(this.picJd.xjInfo.yxmc.length===0){ //请求数据，个人院校、专业、层次、出生年月；
+              var postData={
+                id:this.resultJson.result.id
+              };
+              this.picJd.tcFlag = true;
+              api.syncAjax('post', 'https://my.chsi.com.cn/archive/wap/gdjy/zp/jd/show.action',{ data:postData}).then(function(res){
+                if(res.status==0){
+                   _this.picJd.xjInfo={
+                    yxmc:res.result.yxmc, //院校
+                    zymc:res.result.zymc, //专业
+                    cc:res.result.cc, //层次
+                    rxrq:res.result.rxrq//出生年月
+                  };
+                }else{
+                  _this.$toast(res.message);
+                }
+              });
+            }else{//请求过了，赋过值了，不必每次点开弹层都请求
+              this.picJd.tcFlag = true;
+            }
+          },
+          closePicJd:function(){ //关闭校对弹层
+            this.picJd.tcFlag = false;
+            //清空选项，以便下次点开是干净的
+            this.picJd.txjdFlag =true;
+            this.picJd.zpRight = ''; //照片是否正确
+            this.picJd.errorReason =''; //错误原因
+          },
+          picJdEnsure:function(){ //图像校对的确认
+              var _this =this,
+                  postData={};
+
+              if(this.picJd.zpRight===''){
+                this.$toast('请选择校对结果');
+                return false;
+              }
+              if(this.picJd.zpRight==='2' && this.picJd.errorReason===''){
+                this.$toast('请选择错误原因');
+                return false;
+              }
+
+              var isR = false;
+              if(this.picJd.zpRight==='1'){
+                isR = true;
+              }
+              postData={
+                id:this.resultJson.result.id,
+                zpRight:isR, //照片是正确 还是错误 false的情况下errorReason需要有值
+                errorReason:this.picJd.errorReason, //错误原因
+                'cprmcsrf':'3563cecc1b82bad378e382c7da4bbbb3'
+              };
+              api.syncAjax('post', 'https://my.chsi.com.cn/archive/wap/gdjy/zp/jd/collate.action',{ data:postData}).then(function(res){
+                if(res.status==0){ 
+                  // if(_this.resultJson.result.showZppj){ //可以显示评价
+                  //   _this.
+                  // }else{
+
+                  // }   
+                  if(_this.picJd.zpRight==='1' && res.result.showZppj){
+                    //正确,且没评价过，显示评价层
+                    _this.picJd.txjdFlag = false;
+                    _this.resultJson.result.zpCollateVo.status=1;
+                  }else{
+                    // 图片错误或者正确评价过照片的,保存后刷新页面即可
+                    _this.refresh();
+                  }             
+                }else{
+                  _this.$toast(res.message);
+                }
+              });
+              
+          },
+          openPicPj:function(){ //显示图像校对评价层
+            this.picJd.tcFlag = true;
+            this.picJd.txjdFlag = false;
+          },
+          picZlEnsure:function(){ //图像评价的确认
+            var _this =this,
+                postData={};
+            if(this.picJd.pj.psfwpj===''){
+              this.$toast('请评价服务质量');
+              return false;
+            }  
+            if(this.picJd.pj.zpzlpj===''){
+              this.$toast('请评价照片质量');
+              return false;
+            } 
+            if(this.picJd.pj.pzsj===''){
+              this.$toast('请选择拍照时间');
+              return false;
+            }
+            postData={
+              id:this.resultJson.result.id,
+              psfwpj:this.picJd.pj.psfwpj,
+              zpzlpj:this.picJd.pj.zpzlpj,
+              pzsj:this.picJd.pj.pzsj,
+              'cprmcsrf':'13aca8ae0e5987c3a1cb7354f0e5bae4'
+            }
+            api.syncAjax('post', 'https://my.chsi.com.cn/archive/wap/gdjy/zp/pj/appraisal.action',{ data:postData}).then(function(res){
+              if(res.status==0){  
+                _this.closePicJd();
+                _this.picJd.zytjFlag = true;
+              }else{
+                _this.$toast(res.message);
+              }
+            });  
+          },
+          appraisalFromCookie:function(){//判断是否照片评价弹层
+              var cookieValue =  this.getCookie("appraisal_"+this.resultJson.result.id);
+              if( cookieValue != "noAppraisal" ){
+                this.openPicPj();
+              }
+          },
+          addAppraisalCookie:function(){//照片评价层的关闭，设置cookie
+             var cookieName = "appraisal_"+this.resultJson.result.id;
+              this.addCookie(cookieName,"noAppraisal");
+              this.refresh();
+          },
+          //图像采集码长按事件（起始）
+          txcjmTouchstart() {
+            var _this = this;
+            this.timeOutEvent = setTimeout(function () {
+              _this.txcjmDownNum();
+            }, 1000); //这里设置定时器，定义长按1000毫秒触发长按事件
+            return false;
+          },
+          //手释放，如果在1000毫秒内就释放，则取消长按事件，此时可以执行onclick应该执行的事件
+          txcjmTouchend() {
+            clearTimeout(this.timeOutEvent); //清除定时器
+            if (this.timeOutEvent != 0) {
+              //这里写要执行的内容（如onclick事件）-----点击但未长按
+            }
+            return false;
+          },
+          //如果手指有移动，则取消所有事件，此时说明用户只是要移动而不是长按
+          txcjmTouchmove() {
+            clearTimeout(this.timeOutEvent); //清除定时器
+            this.timeOutEvent = 0;
+          },
+          //真正长按后应该执行的内容,请求接口记录图片下载量
+          txcjmDownNum() {
+            this.timeOutEvent = 0;
+            //执行长按要执行的内容，如弹出菜单-------长按
+            api.syncAjax('get', 'https://my.chsi.com.cn/archive/gdjy/txcjm/record.action?id='+this.txewm.archiveId).then(function(res){});
+          },
+          loadImgtxcjm:function(flag){
+            if(flag){
+              this.txewm.type =1;
+            }else{
+              this.txewm.type =3;
+            }
+            
+          }
+        }
+      }
+</script>  
+
+
+    </div>
+    
+    <script>
+    var myVue = new Vue({
+            el: '#app',
+            data:function(){
+               return {
+                activeBottom:0,
+                topText:'学信档案' //标题文字
+               }
+            },
+            mixins: typeof mixin != 'undefined' ? [mixin] : {},
+            created:function(){
+            },
+            methods:{
+                onClickLeft:function(){ //左上的返回按钮
+                    history.back(-1);
+                },
+                goToIndex:function(){
+                    window.location.href='https://my.chsi.com.cn/archive/wap/index.action';
+                },
+                getQueryString:function(name) {//获取地址栏参数
+                    var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+                    var r = window.location.search.substr(1).match(reg);
+                    if (r != null) {
+                    return unescape(r[2]);
+                    }
+                    return null;
+                },
+                VoteGoToIndex:function(){//投票完成返回首页
+                    var _from = this.getQueryString('from');
+                    if(_from=='archive-dctp-wap'){
+                        window.location.href='https://my.chsi.com.cn/archive/survey/index.action';
+                    }else{
+                        window.location.href='https://my.chsi.com.cn/archive/wap/index.action';
+                    }
+                },
+                addCookie:function(name,value){ //设置cookie
+                    var cookieString=name+"="+escape(value);
+                    document.cookie=cookieString;
+                    document.cookie.setSecure=true;//只允许在https环境下使用cookie
+                },
+                getCookie:function(name){
+                    var strCookie=document.cookie;
+                    var arrCookie=strCookie.split("; ");
+                    for(var i=0;i<arrCookie.length;i++){
+                        var arr=arrCookie[i].split("=");
+                        if(arr[0]==name)return arr[1];
+                    }
+                    return "";
+                },
+                trimSpace:function(s){//去掉左右空格
+                    return s.replace(/(^\s*)|(\s*$)/g, "");
+                },
+                showSfhyOrder:function(){
+                    //展示身份核验方式的序号，动态组合显示方式一、二、三
+                    var nodeList = document.getElementsByClassName('verify-list')[0].getElementsByTagName("li");
+                    var liLen = nodeList.length;
+                    for(var i=0;i<liLen;i++){
+                        nodeList[i].getElementsByTagName('div')[0].innerText = '方式 '+(i+1);
+                    }
+                },
+                noticeFace :function(from){
+                    var _this =this;
+                    api.syncAjax('post', 'https://my.chsi.com.cn/archive/gdjy/check/face/notice.action', {data:{from:from}}).then(function(res){
+                        if (res.status==0) {
+                            window.location.href = res.result;
+                        }else{
+                            _this.$toast(res.message);
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+
+<script type="text/javascript">
+    //解决手机浏览器自带返回 没刷新问题
+    (function() {
+        var isPageHide = false;
+        window.addEventListener('pageshow', function() {
+          if (isPageHide) {
+            var curUrl =window.location.href,
+                curIndex=curUrl.substring(curUrl.indexOf('wap/')+4);
+            if(curIndex=='my.jsp'){
+                myVue.$data.activeBottom =4;
+            }else{
+                myVue.$data.activeBottom =0;
+            }
+          }
+        });
+        window.addEventListener('pagehide', function() {
+          isPageHide = true;
+        });
+    })();
+</script>
+</body>
+</html>

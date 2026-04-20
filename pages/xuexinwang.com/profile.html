@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no,viewport-fit=cover">
+    <title>个人信息 - 学信档案</title>
+    <link rel="icon" href='https://t1.chei.com.cn/archive/favicon.ico' type="image/x-icon">
+    <link rel="stylesheet" href='https://t1.chei.com.cn/archive/fonts/chsi-font.css' />
+    <link rel="stylesheet" href='https://t2.chei.com.cn/archive/mobile/css/app.css?v=20240717' />
+    <link rel="stylesheet" href='https://t1.chei.com.cn/common/ch/iconfont.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+    <script src='https://t1.chei.com.cn/common/js/vue/2.5.6/vue.min.js'></script>
+    <script src='https://t1.chei.com.cn/archive/mobile/js/vant1.47/vant.min.js'></script>
+    <script src='https://t1.chei.com.cn/archive/mobile/js/vendors-1.0.0.js'></script>
+    <script src='https://t2.chei.com.cn/archive/mobile/js/app-1.0.3.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <style>
+        .profile-avatar {
+            text-align: center;
+            padding: 0.5rem 0;
+            background: linear-gradient(135deg, #25b887, #1fa97a);
+        }
+        .profile-avatar .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            width: 2.4rem;
+            height: 3.2rem;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.6);
+            border-radius: 6px;
+            background: #e8e8e8;
+        }
+        .profile-avatar .avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-avatar .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            font-size: 0.28rem;
+            text-align: center;
+            padding: 0.08rem 0;
+        }
+        .profile-avatar input[type="file"] { display: none; }
+        .profile-avatar .username {
+            color: #fff;
+            font-size: 0.45rem;
+            margin-top: 0.2rem;
+            font-weight: bold;
+        }
+        .section-title {
+            font-size: 0.373rem;
+            font-weight: 700;
+            color: #333;
+            padding: 0.3rem 0.4rem 0.15rem;
+            background: #f7f8fa;
+        }
+        .save-btn-wrap {
+            padding: 0.5rem 0.4rem 2rem;
+        }
+        .save-btn-wrap .van-button {
+            width: 100%;
+            border-radius: 0.12rem;
+        }
+        .cropper-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 9999;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+        }
+        .cropper-container-wrap {
+            flex: 1;
+            overflow: hidden;
+        }
+        .cropper-container-wrap img {
+            max-width: 100%;
+        }
+        .cropper-actions {
+            display: flex;
+            padding: 12px;
+            background: #111;
+        }
+        .cropper-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            font-size: 16px;
+            border-radius: 6px;
+            margin: 0 6px;
+        }
+        .cropper-actions .btn-cancel {
+            background: #333;
+            color: #fff;
+        }
+        .cropper-actions .btn-confirm {
+            background: #25b887;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <script src="./config.js"></script>
+    <script src="./build-data.js"></script>
+    <script>var _profile = getProfile();</script>
+    <div id="app" class="my-container" v-cloak>
+        <van-nav-bar class="green-header" title="个人信息" left-text="" left-arrow @click-left="goBack"></van-nav-bar>
+
+        <div class="profile-avatar">
+            <div class="avatar-wrap" @click="triggerUpload">
+                <img :src="avatarSrc" />
+                <div class="avatar-edit">修改</div>
+            </div>
+            <div class="username">{{form.姓名}}</div>
+            <input type="file" id="avatarInput" accept="image/*" @change="onFileSelected" />
+        </div>
+
+        <div class="section-title">基本信息</div>
+        <van-cell-group>
+            <van-field v-model="form.姓名" label="姓名" placeholder="请输入姓名"></van-field>
+            <van-field v-model="form.性别" label="性别" placeholder="请选择性别" readonly @click="showGenderPicker = true"></van-field>
+            <van-field v-model="form.出生日期" label="出生日期" placeholder="请输入出生日期"></van-field>
+            <van-field v-model="form.民族" label="民族" placeholder="请输入民族"></van-field>
+            <van-field v-model="form.证件号码" label="证件号码" placeholder="请输入证件号码"></van-field>
+        </van-cell-group>
+
+        <div class="section-title">学籍信息</div>
+        <van-cell-group>
+            <van-field v-model="form.学校名称" label="学校名称" placeholder="请输入学校名称"></van-field>
+            <van-field v-model="form.专业" label="专业" placeholder="请输入专业"></van-field>
+            <van-field v-model="form.层次" label="层次" placeholder="请选择层次" readonly @click="showLevelPicker = true"></van-field>
+            <van-field v-model="form.学习形式" label="学习形式" placeholder="请输入学习形式"></van-field>
+            <van-field v-model="form.学制" label="学制" placeholder="请输入学制"></van-field>
+            <van-field v-model="form.学历类别" label="学历类别" placeholder="请输入学历类别"></van-field>
+            <van-field v-model="form.分院" label="分院" placeholder="请输入分院"></van-field>
+            <van-field v-model="form.系所" label="系所" placeholder="请输入系所"></van-field>
+            <van-field v-model="form.班级" label="班级" placeholder="请输入班级"></van-field>
+            <van-field v-model="form.学号" label="学号" placeholder="请输入学号"></van-field>
+        </van-cell-group>
+
+        <div class="section-title">其他信息</div>
+        <van-cell-group>
+            <van-field v-model="form.入学日期" label="入学日期" placeholder="请输入入学日期"></van-field>
+            <van-field v-model="form.毕业日期" label="毕业日期" placeholder="请输入毕业日期"></van-field>
+            <van-field v-model="form.学籍状态" label="学籍状态" placeholder="请输入学籍状态"></van-field>
+            <van-field v-model="form.毕结业" label="毕结业" placeholder="请输入毕结业"></van-field>
+            <van-field v-model="form.证书编号" label="证书编号" placeholder="请输入证书编号"></van-field>
+            <van-field v-model="form.校长姓名" label="校长姓名" placeholder="请输入校长姓名"></van-field>
+        </van-cell-group>
+
+        <div class="save-btn-wrap">
+            <van-button type="primary" size="large" @click="save">保存修改</van-button>
+            <van-button type="default" size="large" style="margin-top: 0.3rem; width: 100%; border-radius: 0.12rem;" @click="resetDefault">恢复默认</van-button>
+        </div>
+
+        <van-popup v-model="showGenderPicker" position="bottom">
+            <van-picker show-toolbar title="性别" :columns="['男', '女']" @cancel="showGenderPicker = false" @confirm="onGenderConfirm"></van-picker>
+        </van-popup>
+        <van-popup v-model="showLevelPicker" position="bottom">
+            <van-picker show-toolbar title="层次" :columns="['博士研究生', '硕士研究生', '本科', '专科', '第二学士学位']" @cancel="showLevelPicker = false" @confirm="onLevelConfirm"></van-picker>
+        </van-popup>
+
+        <div class="cropper-overlay" v-if="showCropper">
+            <div class="cropper-container-wrap">
+                <img id="cropperImage" :src="cropperSrc" />
+            </div>
+            <div class="cropper-actions">
+                <button class="btn-cancel" @click="cancelCrop">取消</button>
+                <button class="btn-confirm" @click="confirmCrop">确认</button>
+            </div>
+        </div>
+
+        <van-tabbar fixed z-index="1000" v-model="activeBottom">
+            <van-tabbar-item @click="goUrl('./index.html')">
+                <i class="iconfont" slot="icon" title="home">&#xe6d7;</i>
+                <span>首页</span>
+            </van-tabbar-item>
+            <van-tabbar-item @click="goUrl('./jiaoyu_xinxi.html')">
+                <img src="https://t1.chei.com.cn/archive/images/xj/xjxlxw.svg" style="height:.613rem;margin: -0.04rem 0 0.04rem;" slot="icon" />
+                <span>学籍学历学位</span>
+            </van-tabbar-item>
+            <van-tabbar-item>
+                <i class="iconfont" slot="icon" title="cp">&#xe6d6;</i>
+                <span>个人测评</span>
+            </van-tabbar-item>
+            <van-tabbar-item>
+                <i class="iconfont" slot="icon" title="zp">&#xe6da;</i>
+                <span>求职招聘</span>
+            </van-tabbar-item>
+            <van-tabbar-item>
+                <i class="iconfont" slot="icon" title="my">&#xe6d8;</i>
+                <span>我的</span>
+            </van-tabbar-item>
+        </van-tabbar>
+    </div>
+
+    <script>
+    var FIELDS = [
+        '姓名','性别','出生日期','民族','证件号码',
+        '学校名称','专业','层次','学习形式','学制','学历类别',
+        '分院','系所','班级','学号',
+        '入学日期','毕业日期','学籍状态','毕结业','证书编号','校长姓名'
+    ];
+
+    var formData = {};
+    FIELDS.forEach(function(k) { formData[k] = _profile ? (_profile[k] || '') : ''; });
+
+    var customAvatar = localStorage.getItem('xuexin_avatar') || '';
+    var defaultAvatar = _profile ? _profile.录取照片 : '';
+
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                activeBottom: 4,
+                form: formData,
+                showGenderPicker: false,
+                showLevelPicker: false,
+                avatarSrc: customAvatar || defaultAvatar || 'https://t4.chei.com.cn/archive/images/common/no-photo.png',
+                showCropper: false,
+                cropperSrc: '',
+                cropper: null
+            };
+        },
+        methods: {
+            goBack: function() { history.back(); },
+            goUrl: function(url) { window.location.href = url; },
+            triggerUpload: function() {
+                document.getElementById('avatarInput').click();
+            },
+            onFileSelected: function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
+                var _this = this;
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                    _this.cropperSrc = ev.target.result;
+                    _this.showCropper = true;
+                    _this.$nextTick(function() { _this.initCropper(); });
+                };
+                reader.readAsDataURL(file);
+                e.target.value = '';
+            },
+            initCropper: function() {
+                if (this.cropper) { this.cropper.destroy(); }
+                var img = document.getElementById('cropperImage');
+                this.cropper = new Cropper(img, {
+                    aspectRatio: 3 / 4,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.9,
+                    responsive: true,
+                    guides: true,
+                    background: false
+                });
+            },
+            cancelCrop: function() {
+                if (this.cropper) { this.cropper.destroy(); this.cropper = null; }
+                this.showCropper = false;
+            },
+            confirmCrop: function() {
+                var canvas = this.cropper.getCroppedCanvas({ width: 480, height: 640 });
+                var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                this.avatarSrc = dataUrl;
+                localStorage.setItem('xuexin_avatar', dataUrl);
+                this.cropper.destroy();
+                this.cropper = null;
+                this.showCropper = false;
+                this.$toast.success('头像已更新');
+            },
+            onGenderConfirm: function(value) {
+                this.form.性别 = value;
+                this.showGenderPicker = false;
+            },
+            onLevelConfirm: function(value) {
+                this.form.层次 = value;
+                this.showLevelPicker = false;
+            },
+            save: function() {
+                var custom = {};
+                var _this = this;
+                FIELDS.forEach(function(k) { custom[k] = _this.form[k]; });
+                localStorage.setItem('xuexin_user_custom', JSON.stringify(custom));
+                this.$toast.success('保存成功');
+            },
+            resetDefault: function() {
+                var _this = this;
+                this.$dialog.confirm({ title: '恢复默认', message: '确定要恢复为默认信息吗？' }).then(function() {
+                    localStorage.removeItem('xuexin_user_custom');
+                    localStorage.removeItem('xuexin_avatar');
+                    var acc = XUEXIN_CONFIG.accounts;
+                    var def = acc[Object.keys(acc)[0]];
+                    FIELDS.forEach(function(k) { _this.form[k] = def[k] || ''; });
+                    _this.avatarSrc = def.录取照片 || 'https://t4.chei.com.cn/archive/images/common/no-photo.png';
+                    _this.$toast.success('已恢复默认');
+                }).catch(function() {});
+            }
+        }
+    });
+    </script>
+</body>
+</html>
