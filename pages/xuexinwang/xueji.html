@@ -667,7 +667,7 @@ var _profile = getProfile();
             return {
                 whiteTit:'高等学籍',
                 flagFalse:false,
-                lqPicSrc: localStorage.getItem('xuexin_avatar') || (_profile ? _profile.录取照片 : ''),
+                lqPicSrc: (_profile ? (_profile._avatar || _profile.录取照片) : ''),
                 xlPicSrc: _profile ? _profile.学历照片 : '',
                 resultJson: _profile ? buildResult2(_profile) : {},
                 picZzk:{ //图像找找看相关

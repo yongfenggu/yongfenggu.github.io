@@ -50,18 +50,32 @@ function buildXueliResult(p) {
   };
 }
 
-function ensureProfile() {
-  if (!localStorage.getItem("xuexin_user")) {
+function ensureProfiles() {
+  if (!localStorage.getItem("xuexin_profiles")) {
     var acc = XUEXIN_CONFIG.accounts;
     var key = Object.keys(acc)[0];
-    localStorage.setItem("xuexin_user", JSON.stringify(acc[key]));
+    var def = acc[key];
+    var profile = { name: def.姓名 || '默认配置', fields: def, avatar: '' };
+    localStorage.setItem("xuexin_profiles", JSON.stringify([profile]));
+    localStorage.setItem("xuexin_active_index", "0");
   }
 }
 
+function getProfiles() {
+  ensureProfiles();
+  return JSON.parse(localStorage.getItem("xuexin_profiles"));
+}
+
+function getActiveIndex() {
+  return parseInt(localStorage.getItem("xuexin_active_index") || "0");
+}
+
 function getProfile() {
-  ensureProfile();
-  var profile = JSON.parse(localStorage.getItem("xuexin_user"));
-  var custom = localStorage.getItem("xuexin_user_custom");
-  if (custom) { Object.assign(profile, JSON.parse(custom)); }
-  return profile;
+  var profiles = getProfiles();
+  var idx = getActiveIndex();
+  if (idx >= profiles.length) idx = 0;
+  var p = profiles[idx];
+  var result = Object.assign({}, p.fields);
+  result._avatar = p.avatar || '';
+  return result;
 }

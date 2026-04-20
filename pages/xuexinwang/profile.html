@@ -16,6 +16,41 @@
     <script src='https://t2.chei.com.cn/archive/mobile/js/app-1.0.3.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
     <style>
+        .profile-switcher {
+            display: flex;
+            align-items: center;
+            padding: 0.3rem 0.4rem;
+            background: #f7f8fa;
+            gap: 0.2rem;
+            overflow-x: auto;
+        }
+        .profile-switcher .tab {
+            flex-shrink: 0;
+            padding: 0.15rem 0.35rem;
+            border-radius: 0.4rem;
+            font-size: 0.34rem;
+            background: #e8e8e8;
+            color: #666;
+            border: none;
+            position: relative;
+        }
+        .profile-switcher .tab.active {
+            background: #25b887;
+            color: #fff;
+        }
+        .profile-switcher .tab-add {
+            flex-shrink: 0;
+            width: 0.7rem;
+            height: 0.7rem;
+            border-radius: 50%;
+            border: 2px dashed #bbb;
+            background: none;
+            font-size: 0.4rem;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .profile-avatar {
             text-align: center;
             padding: 0.5rem 0;
@@ -38,9 +73,7 @@
         }
         .profile-avatar .avatar-edit {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             background: rgba(0,0,0,0.5);
             color: #fff;
             font-size: 0.28rem;
@@ -68,6 +101,7 @@
             width: 100%;
             border-radius: 0.12rem;
         }
+        .btn-gap { margin-top: 0.3rem; }
         .cropper-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -80,9 +114,7 @@
             flex: 1;
             overflow: hidden;
         }
-        .cropper-container-wrap img {
-            max-width: 100%;
-        }
+        .cropper-container-wrap img { max-width: 100%; }
         .cropper-actions {
             display: flex;
             padding: 12px;
@@ -96,22 +128,34 @@
             border-radius: 6px;
             margin: 0 6px;
         }
-        .cropper-actions .btn-cancel {
-            background: #333;
-            color: #fff;
-        }
-        .cropper-actions .btn-confirm {
-            background: #25b887;
-            color: #fff;
-        }
+        .cropper-actions .btn-cancel { background: #333; color: #fff; }
+        .cropper-actions .btn-confirm { background: #25b887; color: #fff; }
     </style>
 </head>
 <body>
     <script src="./config.js"></script>
     <script src="./build-data.js"></script>
-    <script>var _profile = getProfile();</script>
+    <script>
+    var FIELDS = [
+        '姓名','性别','出生日期','民族','证件号码',
+        '学校名称','专业','层次','学习形式','学制','学历类别',
+        '分院','系所','班级','学号',
+        '入学日期','毕业日期','学籍状态','毕结业','证书编号','校长姓名'
+    ];
+    var NO_PHOTO = 'https://t4.chei.com.cn/archive/images/common/no-photo.png';
+    var allProfiles = getProfiles();
+    var activeIdx = getActiveIndex();
+    </script>
+
     <div id="app" class="my-container" v-cloak>
         <van-nav-bar class="green-header" title="个人信息" left-text="" left-arrow @click-left="goBack"></van-nav-bar>
+
+        <div class="profile-switcher">
+            <button v-for="(p, i) in profiles" :key="i" class="tab" :class="{active: i === activeIndex}" @click="switchProfile(i)" @longpress="deleteProfile(i)">
+                {{p.name}}
+            </button>
+            <button class="tab-add" @click="addProfile">+</button>
+        </div>
 
         <div class="profile-avatar">
             <div class="avatar-wrap" @click="triggerUpload">
@@ -157,7 +201,8 @@
 
         <div class="save-btn-wrap">
             <van-button type="primary" size="large" @click="save">保存修改</van-button>
-            <van-button type="default" size="large" style="margin-top: 0.3rem; width: 100%; border-radius: 0.12rem;" @click="resetDefault">恢复默认</van-button>
+            <van-button type="default" size="large" class="btn-gap" @click="resetDefault">恢复默认</van-button>
+            <van-button type="danger" size="large" class="btn-gap" v-if="profiles.length > 1" @click="deleteProfile(activeIndex)">删除此配置</van-button>
         </div>
 
         <van-popup v-model="showGenderPicker" position="bottom">
@@ -202,28 +247,24 @@
     </div>
 
     <script>
-    var FIELDS = [
-        '姓名','性别','出生日期','民族','证件号码',
-        '学校名称','专业','层次','学习形式','学制','学历类别',
-        '分院','系所','班级','学号',
-        '入学日期','毕业日期','学籍状态','毕结业','证书编号','校长姓名'
-    ];
-
-    var formData = {};
-    FIELDS.forEach(function(k) { formData[k] = _profile ? (_profile[k] || '') : ''; });
-
-    var customAvatar = localStorage.getItem('xuexin_avatar') || '';
-    var defaultAvatar = _profile ? _profile.录取照片 : '';
+    function buildFormFromFields(source) {
+        var f = {};
+        FIELDS.forEach(function(k) { f[k] = source[k] || ''; });
+        return f;
+    }
 
     new Vue({
         el: '#app',
         data: function() {
+            var cur = allProfiles[activeIdx] || allProfiles[0];
             return {
                 activeBottom: 4,
-                form: formData,
+                profiles: allProfiles,
+                activeIndex: activeIdx,
+                form: buildFormFromFields(cur.fields),
+                avatarSrc: cur.avatar || cur.fields.录取照片 || NO_PHOTO,
                 showGenderPicker: false,
                 showLevelPicker: false,
-                avatarSrc: customAvatar || defaultAvatar || 'https://t4.chei.com.cn/archive/images/common/no-photo.png',
                 showCropper: false,
                 cropperSrc: '',
                 cropper: null
@@ -232,9 +273,72 @@
         methods: {
             goBack: function() { history.back(); },
             goUrl: function(url) { window.location.href = url; },
-            triggerUpload: function() {
-                document.getElementById('avatarInput').click();
+
+            loadProfile: function(idx) {
+                var p = this.profiles[idx];
+                var _this = this;
+                FIELDS.forEach(function(k) { _this.form[k] = p.fields[k] || ''; });
+                this.avatarSrc = p.avatar || p.fields.录取照片 || NO_PHOTO;
             },
+            switchProfile: function(idx) {
+                if (idx === this.activeIndex) return;
+                this.activeIndex = idx;
+                localStorage.setItem("xuexin_active_index", String(idx));
+                this.loadProfile(idx);
+            },
+            addProfile: function() {
+                var acc = XUEXIN_CONFIG.accounts;
+                var def = acc[Object.keys(acc)[0]];
+                var newP = { name: '配置' + (this.profiles.length + 1), fields: Object.assign({}, def), avatar: '' };
+                this.profiles.push(newP);
+                this.persist();
+                this.switchProfile(this.profiles.length - 1);
+                this.$toast.success('已添加新配置');
+            },
+            deleteProfile: function(idx) {
+                if (this.profiles.length <= 1) {
+                    this.$toast('至少保留一份配置');
+                    return;
+                }
+                var _this = this;
+                this.$dialog.confirm({ title: '删除配置', message: '确定删除「' + this.profiles[idx].name + '」？' }).then(function() {
+                    _this.profiles.splice(idx, 1);
+                    if (_this.activeIndex >= _this.profiles.length) {
+                        _this.activeIndex = _this.profiles.length - 1;
+                    } else if (idx <= _this.activeIndex && _this.activeIndex > 0) {
+                        _this.activeIndex--;
+                    }
+                    localStorage.setItem("xuexin_active_index", String(_this.activeIndex));
+                    _this.persist();
+                    _this.loadProfile(_this.activeIndex);
+                    _this.$toast.success('已删除');
+                }).catch(function() {});
+            },
+
+            save: function() {
+                var _this = this;
+                var p = this.profiles[this.activeIndex];
+                FIELDS.forEach(function(k) { p.fields[k] = _this.form[k]; });
+                p.name = this.form.姓名 || ('配置' + (this.activeIndex + 1));
+                p.avatar = this.avatarSrc.indexOf('data:') === 0 ? this.avatarSrc : '';
+                this.persist();
+                this.$toast.success('保存成功');
+            },
+            resetDefault: function() {
+                var _this = this;
+                this.$dialog.confirm({ title: '恢复默认', message: '确定恢复为默认信息吗？' }).then(function() {
+                    var acc = XUEXIN_CONFIG.accounts;
+                    var def = acc[Object.keys(acc)[0]];
+                    FIELDS.forEach(function(k) { _this.form[k] = def[k] || ''; });
+                    _this.avatarSrc = def.录取照片 || NO_PHOTO;
+                    _this.$toast.success('已恢复默认');
+                }).catch(function() {});
+            },
+            persist: function() {
+                localStorage.setItem("xuexin_profiles", JSON.stringify(this.profiles));
+            },
+
+            triggerUpload: function() { document.getElementById('avatarInput').click(); },
             onFileSelected: function(e) {
                 var file = e.target.files[0];
                 if (!file) return;
@@ -269,39 +373,13 @@
                 var canvas = this.cropper.getCroppedCanvas({ width: 480, height: 640 });
                 var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                 this.avatarSrc = dataUrl;
-                localStorage.setItem('xuexin_avatar', dataUrl);
                 this.cropper.destroy();
                 this.cropper = null;
                 this.showCropper = false;
                 this.$toast.success('头像已更新');
             },
-            onGenderConfirm: function(value) {
-                this.form.性别 = value;
-                this.showGenderPicker = false;
-            },
-            onLevelConfirm: function(value) {
-                this.form.层次 = value;
-                this.showLevelPicker = false;
-            },
-            save: function() {
-                var custom = {};
-                var _this = this;
-                FIELDS.forEach(function(k) { custom[k] = _this.form[k]; });
-                localStorage.setItem('xuexin_user_custom', JSON.stringify(custom));
-                this.$toast.success('保存成功');
-            },
-            resetDefault: function() {
-                var _this = this;
-                this.$dialog.confirm({ title: '恢复默认', message: '确定要恢复为默认信息吗？' }).then(function() {
-                    localStorage.removeItem('xuexin_user_custom');
-                    localStorage.removeItem('xuexin_avatar');
-                    var acc = XUEXIN_CONFIG.accounts;
-                    var def = acc[Object.keys(acc)[0]];
-                    FIELDS.forEach(function(k) { _this.form[k] = def[k] || ''; });
-                    _this.avatarSrc = def.录取照片 || 'https://t4.chei.com.cn/archive/images/common/no-photo.png';
-                    _this.$toast.success('已恢复默认');
-                }).catch(function() {});
-            }
+            onGenderConfirm: function(v) { this.form.性别 = v; this.showGenderPicker = false; },
+            onLevelConfirm: function(v) { this.form.层次 = v; this.showLevelPicker = false; }
         }
     });
     </script>
