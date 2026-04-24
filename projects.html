@@ -14,11 +14,14 @@
             <a href="./index.html" class="nav-brand">
                 <img src="assets/img/favicon-1.png" alt="favicon" style="height: 1.2em; vertical-align: middle; margin-right: 0.5em;">Yongfeng's Homepage
             </a>
-            <div class="nav-links">
+            <button class="nav-toggle" id="navToggle" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links" id="navLinks">
                 <a href="./publications.html" class="nav-link">Publications</a>
                 <a href="./experience.html" class="nav-link">Experience</a>
                 <a href="./projects.html" class="nav-link active">Projects</a>
-                <a href="./pages/index.html" class="nav-link">Apps</a>
+                <a href="./apps.html" class="nav-link">Apps</a>
             </div>
         </div>
     </nav>
@@ -91,5 +94,13 @@
         </div>
     </footer>
     <script>document.querySelector('.year').textContent = new Date().getFullYear();</script>
+    <script>
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            navLinks.classList.toggle('open');
+        });
+    </script>
 </body>
 </html>
