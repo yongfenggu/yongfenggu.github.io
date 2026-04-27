@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>双骰子</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>摇骰子</title>
   <style>
     :root {
       --bg-start: #f6efe5;
@@ -15,66 +15,198 @@
       --shadow: 0 20px 50px rgba(31, 41, 51, 0.14);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; }
 
     body {
-      margin: 0;
-      min-height: 100vh;
+      min-height: 100dvh;
       display: grid;
       place-items: center;
-      padding: 24px;
+      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
       background:
         radial-gradient(circle at top, rgba(255, 255, 255, 0.8), transparent 36%),
         linear-gradient(135deg, var(--bg-start), var(--bg-end));
       color: var(--text);
       font-family: "Avenir Next", "PingFang SC", "Helvetica Neue", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
     }
 
     .game {
-      width: min(100%, 680px);
-      padding: 40px 28px;
-      border-radius: 28px;
+      width: min(100%, 520px);
+      padding: 32px 24px 28px;
+      border-radius: 24px;
       background: var(--panel);
       backdrop-filter: blur(12px);
       box-shadow: var(--shadow);
       text-align: center;
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 8px;
     }
 
     h1 {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
       letter-spacing: 0.06em;
     }
 
-    .subtitle {
-      margin: 0 0 28px;
-      font-size: 1rem;
-      color: rgba(31, 41, 51, 0.72);
+    .settings-btn {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(31, 41, 51, 0.08);
+      color: var(--text);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      box-shadow: none;
+      transition: background 0.2s;
     }
 
-    .dice-board {
+    .settings-btn:hover, .settings-btn:active {
+      background: rgba(31, 41, 51, 0.15);
+      transform: translateY(-50%);
+      box-shadow: none;
+    }
+
+    .subtitle {
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+      color: rgba(31, 41, 51, 0.6);
+    }
+
+    /* Settings - Bottom Sheet on mobile */
+    .settings-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 100;
+    }
+
+    .settings-overlay.open { display: flex; align-items: center; justify-content: center; }
+
+    .settings-panel {
+      width: min(90vw, 360px);
+      padding: 28px 24px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+      animation: fadeScaleIn 0.2s ease;
+    }
+
+    @keyframes fadeScaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .settings-panel h2 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .setting-row:last-of-type { border-bottom: none; }
+
+    .setting-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .setting-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .setting-control button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      padding: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
       display: grid;
-      grid-template-columns: repeat(2, minmax(120px, 180px));
+      place-items: center;
+      box-shadow: none;
+    }
+
+    .setting-value {
+      min-width: 30px;
+      text-align: center;
+      font-size: 1.05rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .settings-close {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 1rem;
+    }
+
+    /* Dice Board */
+    .dice-board {
+      display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 24px;
-      margin-bottom: 28px;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 4px;
     }
 
     .die {
-      aspect-ratio: 1;
+      width: var(--dice-size, 130px);
+      height: var(--dice-size, 130px);
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 10px;
-      padding: 18px;
-      border-radius: 24px;
+      grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+      gap: 8px;
+      padding: 14px;
+      border-radius: 18px;
       background: linear-gradient(145deg, #fffdfa, #f3eadf);
       box-shadow:
         inset 0 2px 6px rgba(255, 255, 255, 0.9),
-        inset 0 -8px 18px rgba(143, 48, 23, 0.08),
-        0 10px 22px rgba(31, 41, 51, 0.12);
+        inset 0 -6px 14px rgba(143, 48, 23, 0.08),
+        0 8px 18px rgba(31, 41, 51, 0.12);
+      transition: transform 0.1s;
+    }
+
+    .die.shaking {
+      animation: shake var(--anim-duration, 0.6s) ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translate(0) rotate(0); }
+      10% { transform: translate(-4px, 2px) rotate(-8deg); }
+      20% { transform: translate(3px, -3px) rotate(6deg); }
+      30% { transform: translate(-3px, 4px) rotate(-4deg); }
+      40% { transform: translate(4px, -2px) rotate(7deg); }
+      50% { transform: translate(-2px, 3px) rotate(-6deg); }
+      60% { transform: translate(3px, -4px) rotate(5deg); }
+      70% { transform: translate(-4px, 2px) rotate(-3deg); }
+      80% { transform: translate(2px, -3px) rotate(4deg); }
+      90% { transform: translate(-3px, 1px) rotate(-2deg); }
     }
 
     .pip {
@@ -84,7 +216,7 @@
       background: transparent;
       transform: scale(0.2);
       opacity: 0;
-      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+      transition: transform 0.18s ease, opacity 0.18s ease;
     }
 
     .pip.active {
@@ -93,67 +225,111 @@
       opacity: 1;
     }
 
-    .controls {
-      display: grid;
-      gap: 16px;
-      justify-items: center;
-    }
+    /* Controls */
+    .controls { display: grid; gap: 12px; justify-items: center; }
 
-    button {
+    .roll-btn {
       border: 0;
-      padding: 14px 28px;
+      padding: 16px 48px;
       border-radius: 999px;
       background: linear-gradient(135deg, var(--accent), var(--accent-deep));
       color: #fff;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 700;
       letter-spacing: 0.04em;
       cursor: pointer;
-      box-shadow: 0 12px 24px rgba(143, 48, 23, 0.26);
+      box-shadow: 0 10px 22px rgba(143, 48, 23, 0.26);
       transition: transform 0.16s ease, box-shadow 0.16s ease;
     }
 
-    button:hover {
+    .roll-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 16px 28px rgba(143, 48, 23, 0.28);
+      box-shadow: 0 14px 26px rgba(143, 48, 23, 0.28);
     }
 
-    button:active {
-      transform: translateY(0);
-    }
+    .roll-btn:active { transform: translateY(1px); box-shadow: 0 6px 14px rgba(143, 48, 23, 0.2); }
+    .roll-btn:disabled { opacity: 0.6; pointer-events: none; }
 
     .result {
-      margin: 0;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 600;
+      font-variant-numeric: tabular-nums;
     }
 
-    @media (max-width: 520px) {
-      .game {
-        padding: 28px 20px;
-      }
+    .counter {
+      font-size: 0.85rem;
+      color: rgba(31, 41, 51, 0.45);
+      font-variant-numeric: tabular-nums;
+    }
 
-      .dice-board {
-        grid-template-columns: 1fr;
+    /* Mobile: < 480px */
+    @media (max-width: 480px) {
+      body { padding: max(12px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }
+      .game { padding: 24px 16px 22px; border-radius: 20px; }
+      .die { gap: 6px; padding: 12px; border-radius: 14px; }
+      .dice-board { gap: 12px; }
+      .roll-btn { padding: 14px 40px; font-size: 1.05rem; }
+
+      .settings-overlay.open { align-items: flex-end; }
+      .settings-panel {
+        width: 100%;
+        border-radius: 20px 20px 0 0;
+        padding: 24px 20px calc(20px + env(safe-area-inset-bottom));
+        animation: slideUp 0.25s ease;
       }
+      @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+    }
+
+    /* Very small screens */
+    @media (max-width: 360px) {
+      .game { padding: 20px 14px 18px; border-radius: 18px; }
+      .die { padding: 10px; gap: 5px; border-radius: 12px; }
+      .roll-btn { padding: 13px 32px; }
     }
   </style>
 </head>
 <body>
   <main class="game">
-    <h1>双骰子</h1>
-    <p class="subtitle">点击按钮，随机掷出两个筛子。</p>
+    <div class="header">
+      <h1>摇骰子</h1>
+      <button class="settings-btn" id="open-settings" type="button" aria-label="设置">⚙</button>
+    </div>
+    <p class="subtitle">点击按钮，摇出骰子</p>
 
-    <section class="dice-board" aria-label="骰子区域">
-      <div class="die" data-die="1" aria-label="第一个骰子"></div>
-      <div class="die" data-die="2" aria-label="第二个骰子"></div>
-    </section>
+    <section class="dice-board" id="dice-board" aria-label="骰子区域"></section>
 
     <section class="controls">
-      <button id="roll-button" type="button">掷骰子</button>
-      <p class="result" id="result">结果：1 + 1 = 2</p>
+      <button class="roll-btn" id="roll-btn" type="button">摇骰子</button>
+      <p class="result" id="result"></p>
+      <p class="counter" id="counter">已摇 0 次</p>
     </section>
   </main>
+
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel">
+      <h2>设置</h2>
+      <div class="setting-row">
+        <span class="setting-label">骰子数量</span>
+        <div class="setting-control">
+          <button type="button" data-action="dice-minus">−</button>
+          <span class="setting-value" id="dice-count-val">2</span>
+          <button type="button" data-action="dice-plus">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">动画时长</span>
+        <div class="setting-control">
+          <button type="button" data-action="anim-minus">−</button>
+          <span class="setting-value" id="anim-val">0.6s</span>
+          <button type="button" data-action="anim-plus">+</button>
+        </div>
+      </div>
+      <button class="settings-close" id="close-settings" type="button">确定</button>
+    </div>
+  </div>
 
   <script>
     class Dice {
@@ -166,59 +342,147 @@
         6: [0, 2, 3, 5, 6, 8]
       };
 
-      constructor(element) {
-        this.element = element;
-        this.pips = this.createPips();
-      }
-
-      createPips() {
-        return Array.from({ length: 9 }, () => {
+      constructor(container) {
+        this.el = document.createElement("div");
+        this.el.className = "die";
+        this.pips = Array.from({ length: 9 }, () => {
           const pip = document.createElement("span");
           pip.className = "pip";
-          this.element.appendChild(pip);
+          this.el.appendChild(pip);
           return pip;
         });
+        container.appendChild(this.el);
       }
 
       render(value) {
-        const activeIndexes = new Set(Dice.FACE_MAP[value]);
-
-        this.pips.forEach((pip, index) => {
-          pip.classList.toggle("active", activeIndexes.has(index));
-        });
+        const active = new Set(Dice.FACE_MAP[value]);
+        this.pips.forEach((pip, i) => pip.classList.toggle("active", active.has(i)));
       }
+
+      shake(duration) {
+        this.el.style.setProperty("--anim-duration", `${duration}s`);
+        this.el.classList.remove("shaking");
+        void this.el.offsetWidth;
+        this.el.classList.add("shaking");
+      }
+
+      remove() { this.el.remove(); }
     }
 
     class DiceGame {
       constructor() {
-        this.result = document.getElementById("result");
-        this.rollButton = document.getElementById("roll-button");
-        this.dice = Array.from(document.querySelectorAll(".die"), (element) => new Dice(element));
+        this.board = document.getElementById("dice-board");
+        this.resultEl = document.getElementById("result");
+        this.counterEl = document.getElementById("counter");
+        this.rollBtn = document.getElementById("roll-btn");
+        this.overlay = document.getElementById("settings-overlay");
+
+        this.diceCount = 2;
+        this.animDuration = 0.6;
+        this.rollCount = 0;
+        this.rolling = false;
+        this.dice = [];
+
+        this.buildDice();
+        this.bindEvents();
+        this.roll(false);
       }
 
-      randomValue() {
-        return Math.floor(Math.random() * 6) + 1;
+      calcDiceSize() {
+        const vw = window.innerWidth;
+        const containerWidth = Math.min(vw - 32, 520) - 48;
+        const perRow = this.diceCount <= 3 ? this.diceCount : Math.ceil(this.diceCount / 2);
+        const gap = 12;
+        const maxByRow = Math.floor((containerWidth - gap * (perRow - 1)) / perRow);
+        return Math.max(72, Math.min(150, maxByRow));
       }
 
-      roll() {
-        const values = this.dice.map(() => this.randomValue());
-        const total = values[0] + values[1];
+      buildDice() {
+        this.dice.forEach(d => d.remove());
+        this.dice = Array.from({ length: this.diceCount }, () => new Dice(this.board));
+        this.updateDiceSize();
+      }
 
-        this.dice.forEach((die, index) => die.render(values[index]));
-        this.result.textContent = `结果：${values[0]} + ${values[1]} = ${total}`;
+      updateDiceSize() {
+        const size = this.calcDiceSize();
+        this.dice.forEach(d => d.el.style.setProperty("--dice-size", `${size}px`));
+      }
+
+      roll(animate = true) {
+        if (this.rolling) return;
+        const values = this.dice.map(() => Math.floor(Math.random() * 6) + 1);
+        const total = values.reduce((a, b) => a + b, 0);
+
+        if (animate) {
+          this.rolling = true;
+          this.rollBtn.disabled = true;
+          this.dice.forEach(d => d.shake(this.animDuration));
+
+          const flickers = Math.max(4, Math.round(this.animDuration / 0.1));
+          let tick = 0;
+          const interval = setInterval(() => {
+            this.dice.forEach(d => d.render(Math.floor(Math.random() * 6) + 1));
+            if (++tick >= flickers) {
+              clearInterval(interval);
+              this.dice.forEach((d, i) => d.render(values[i]));
+              this.rolling = false;
+              this.rollBtn.disabled = false;
+            }
+          }, this.animDuration * 1000 / flickers);
+
+          this.rollCount++;
+          this.counterEl.textContent = `已摇 ${this.rollCount} 次`;
+        } else {
+          this.dice.forEach((d, i) => d.render(values[i]));
+        }
+
+        const parts = values.join(" + ");
+        this.resultEl.textContent = this.diceCount === 1
+          ? `结果：${total}`
+          : `结果：${parts} = ${total}`;
+      }
+
+      setDiceCount(n) {
+        this.diceCount = Math.max(1, Math.min(6, n));
+        document.getElementById("dice-count-val").textContent = this.diceCount;
+        this.buildDice();
+        this.roll(false);
+      }
+
+      setAnimDuration(d) {
+        this.animDuration = Math.max(0.2, Math.min(2.0, Math.round(d * 10) / 10));
+        document.getElementById("anim-val").textContent = `${this.animDuration}s`;
       }
 
       bindEvents() {
-        this.rollButton.addEventListener("click", () => this.roll());
-      }
+        this.rollBtn.addEventListener("click", () => this.roll());
 
-      start() {
-        this.bindEvents();
-        this.roll();
+        document.getElementById("open-settings").addEventListener("click", () => {
+          this.overlay.classList.add("open");
+        });
+
+        document.getElementById("close-settings").addEventListener("click", () => {
+          this.overlay.classList.remove("open");
+        });
+
+        this.overlay.addEventListener("click", (e) => {
+          if (e.target === this.overlay) this.overlay.classList.remove("open");
+        });
+
+        this.overlay.addEventListener("click", (e) => {
+          const action = e.target.dataset?.action;
+          if (!action) return;
+          if (action === "dice-minus") this.setDiceCount(this.diceCount - 1);
+          if (action === "dice-plus") this.setDiceCount(this.diceCount + 1);
+          if (action === "anim-minus") this.setAnimDuration(this.animDuration - 0.2);
+          if (action === "anim-plus") this.setAnimDuration(this.animDuration + 0.2);
+        });
+
+        window.addEventListener("resize", () => this.updateDiceSize());
       }
     }
 
-    new DiceGame().start();
+    new DiceGame();
   </script>
 </body>
 </html>
