@@ -582,7 +582,9 @@ function renderChat() {
   }
 }
 
-function scrollBottom() { chatEl.scrollTo({ top: chatEl.scrollHeight, behavior: 'smooth' }); }
+function scrollBottom(instant) {
+  chatEl.scrollTo({ top: chatEl.scrollHeight, behavior: instant ? 'auto' : 'smooth' });
+}
 
 function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 150) + 'px'; }
 input.addEventListener('input', () => autoResize(input));
@@ -669,6 +671,13 @@ async function send() {
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buf = '';
+    let rafPending = false;
+
+    function flushRender() {
+      botContent.innerHTML = md(raw) + '<span class="cursor-blink"></span>';
+      scrollBottom(true);
+      rafPending = false;
+    }
 
     while (true) {
       const { done, value } = await reader.read();
@@ -683,7 +692,10 @@ async function send() {
         if (d === '[DONE]') continue;
         try {
           const delta = JSON.parse(d).choices?.[0]?.delta?.content;
-          if (delta) { raw += delta; botContent.innerHTML = md(raw) + '<span class="cursor-blink"></span>'; scrollBottom(); }
+          if (delta) {
+            raw += delta;
+            if (!rafPending) { rafPending = true; requestAnimationFrame(flushRender); }
+          }
         } catch {}
       }
     }
