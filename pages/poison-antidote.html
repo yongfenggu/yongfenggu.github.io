@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poison & Antidote</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a1a;
+  --surface: #141428;
+  --card: #1e1e3a;
+  --card-hover: #2a2a50;
+  --poison: #e74c3c;
+  --antidote: #2ecc71;
+  --empty: #7f8c8d;
+  --accent: #9b59b6;
+  --text: #ecf0f1;
+  --text-dim: #636e72;
+  --gold: #f1c40f;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Language Toggle ── */
+.lang-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 300;
+  background: var(--card);
+  border: 1px solid #333366;
+  border-radius: 2rem;
+  padding: .35rem .2rem;
+  display: flex;
+  gap: 0;
+}
+
+.lang-btn {
+  padding: .3rem .7rem;
+  border: none;
+  border-radius: 1.5rem;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.lang-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── Setup Screen ── */
+#setup-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.setup-title {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--poison), var(--accent), var(--antidote));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: .5rem;
+}
+
+.setup-subtitle {
+  color: var(--text-dim);
+  margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+}
+
+.setup-panel {
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  width: min(420px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.field { display: flex; flex-direction: column; gap: .4rem; }
+.field label { font-size: .85rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.field input {
+  background: var(--card);
+  border: 1px solid #2a2a50;
+  border-radius: .5rem;
+  padding: .65rem .9rem;
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .2s;
+}
+.field input:focus { border-color: var(--accent); }
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: .6rem 0;
+  border-top: 1px solid #222244;
+  font-size: .9rem;
+}
+.info-row .label { color: var(--text-dim); }
+.info-row .value { font-weight: 700; }
+.info-row .value.poison { color: var(--poison); }
+.info-row .value.antidote { color: var(--antidote); }
+.info-row .value.empty { color: var(--empty); }
+
+.btn {
+  padding: .75rem 2rem;
+  border: none;
+  border-radius: .6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .2s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #8e44ad);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(155, 89, 182, .35);
+  margin-top: .8rem;
+}
+
+.btn-restart {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid #2a2a50;
+}
+
+/* ── Game Screen ── */
+#game-screen { display: none; flex-direction: column; min-height: 100vh; }
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid #222244;
+}
+
+.game-title { font-size: 1.3rem; font-weight: 700; }
+.game-phase { font-size: .85rem; color: var(--accent); font-weight: 600; }
+
+/* Players Panel */
+.players-bar {
+  display: flex;
+  gap: .6rem;
+  padding: 1rem 1.5rem;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+.player-card {
+  background: var(--card);
+  border: 2px solid transparent;
+  border-radius: .75rem;
+  padding: .6rem 1rem;
+  min-width: 110px;
+  text-align: center;
+  transition: all .3s;
+  position: relative;
+}
+
+.player-card.active {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(241, 196, 15, .25);
+}
+
+.player-card.dead {
+  opacity: .35;
+  filter: grayscale(1);
+}
+
+.player-card.winner {
+  border-color: var(--gold);
+  box-shadow: 0 0 30px rgba(241, 196, 15, .5);
+  animation: winner-glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes winner-glow {
+  to { box-shadow: 0 0 50px rgba(241, 196, 15, .7); }
+}
+
+.player-name { font-weight: 700; font-size: .95rem; margin-bottom: .3rem; }
+.player-status { font-size: .75rem; color: var(--text-dim); }
+.player-antidotes {
+  margin-top: .3rem;
+  font-size: .8rem;
+  color: var(--antidote);
+  font-weight: 600;
+}
+
+/* Card Grid */
+.card-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: .8rem;
+  max-width: 700px;
+  width: 100%;
+}
+
+/* Card */
+.card {
+  aspect-ratio: 3/4;
+  perspective: 600px;
+  cursor: pointer;
+}
+
+.card.used { pointer-events: none; }
+.card.disabled { pointer-events: none; opacity: .7; }
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .6s cubic-bezier(.4, 0, .2, 1);
+  border-radius: .6rem;
+}
+
+.card.flipped .card-inner { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: .6rem;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.card-front {
+  background: linear-gradient(145deg, var(--card), var(--card-hover));
+  border: 1px solid #333366;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.card:not(.used):not(.disabled):hover .card-front {
+  border-color: var(--accent);
+  box-shadow: 0 0 15px rgba(155, 89, 182, .3);
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  font-weight: 700;
+}
+
+.card-back.poison { background: linear-gradient(145deg, #4a1a1a, #2a0a0a); border: 2px solid var(--poison); color: var(--poison); }
+.card-back.antidote { background: linear-gradient(145deg, #1a4a2a, #0a2a1a); border: 2px solid var(--antidote); color: var(--antidote); }
+.card-back.empty { background: linear-gradient(145deg, #2a2a3a, #1a1a2a); border: 2px solid var(--empty); color: var(--empty); }
+
+.card.used .card-inner { opacity: .4; }
+
+/* ── Witch Overlay ── */
+#witch-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  z-index: 100;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.witch-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.witch-sub { color: var(--text-dim); font-size: 1rem; }
+
+.witch-cauldron {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  margin: 2rem 0;
+}
+
+.cauldron-body {
+  width: 100%;
+  height: 80px;
+  background: #2d2d44;
+  border-radius: 0 0 50% 50%;
+  position: absolute;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.cauldron-liquid {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(180deg, var(--accent), #6c3483);
+  border-radius: 0 0 50% 50%;
+  animation: bubble 1.5s ease-in-out infinite;
+}
+
+@keyframes bubble {
+  0%, 100% { height: 58%; }
+  50% { height: 65%; }
+}
+
+.cauldron-rim {
+  width: 110%;
+  height: 14px;
+  background: #3d3d5c;
+  border-radius: 7px;
+  position: absolute;
+  bottom: 72px;
+  left: -5%;
+}
+
+.particle-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: float-up 2s ease-out infinite;
+}
+
+@keyframes float-up {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(0); }
+}
+
+/* ── Result Overlay ── */
+#result-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.result-popup {
+  padding: 1.5rem 3rem;
+  border-radius: 1rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  animation: pop-in .4s cubic-bezier(.34, 1.56, .64, 1);
+  text-align: center;
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.result-popup.poison {
+  background: rgba(231, 76, 60, .15);
+  border: 2px solid var(--poison);
+  color: var(--poison);
+}
+.result-popup.antidote {
+  background: rgba(46, 204, 113, .15);
+  border: 2px solid var(--antidote);
+  color: var(--antidote);
+}
+.result-popup.empty {
+  background: rgba(127, 140, 141, .15);
+  border: 2px solid var(--empty);
+  color: var(--empty);
+}
+
+/* ── Flash Effects ── */
+.flash-poison { animation: flash-red .5s; }
+@keyframes flash-red {
+  0%, 100% { background: var(--bg); }
+  50% { background: rgba(231, 76, 60, .12); }
+}
+
+.flash-antidote { animation: flash-green .5s; }
+@keyframes flash-green {
+  0%, 100% { background: var(--bg); }
+  50% { background: rgba(46, 204, 113, .12); }
+}
+
+/* ── Game Over ── */
+#gameover-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.8);
+  z-index: 200;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.gameover-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.gameover-winner {
+  font-size: 1.3rem;
+  color: var(--text);
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .setup-title { font-size: 2rem; }
+  .card-grid { grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: .5rem; }
+  .players-bar { gap: .4rem; padding: .6rem; }
+  .player-card { min-width: 85px; padding: .4rem .6rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Language Toggle ── -->
+<div class="lang-toggle">
+  <button class="lang-btn active" data-lang="en">EN</button>
+  <button class="lang-btn" data-lang="zh">中文</button>
+</div>
+
+<!-- ── Setup Screen ── -->
+<div id="setup-screen">
+  <h1 class="setup-title" data-i18n="title"></h1>
+  <p class="setup-subtitle" data-i18n="subtitle"></p>
+  <div class="setup-panel">
+    <div class="field">
+      <label data-i18n="players"></label>
+      <input type="number" id="input-players" value="4" min="2" max="8">
+    </div>
+    <div class="field">
+      <label data-i18n="totalItems"></label>
+      <input type="number" id="input-items" value="14" min="6" max="32">
+    </div>
+    <div class="field">
+      <label data-i18n="poisonCount"></label>
+      <input type="number" id="input-poison" value="6" min="3" max="20">
+    </div>
+    <div class="info-row">
+      <span class="label" data-i18n="antidotes"></span>
+      <span class="value antidote" id="info-antidote">3</span>
+    </div>
+    <div class="info-row">
+      <span class="label" data-i18n="emptyLabel"></span>
+      <span class="value empty" id="info-empty">5</span>
+    </div>
+    <button class="btn btn-primary" id="btn-start" data-i18n="startGame"></button>
+  </div>
+</div>
+
+<!-- ── Game Screen ── -->
+<div id="game-screen">
+  <div class="game-header">
+    <span class="game-title" data-i18n="title"></span>
+    <span class="game-phase" id="phase-text"></span>
+    <button class="btn btn-restart" id="btn-restart" data-i18n="restart"></button>
+  </div>
+  <div class="players-bar" id="players-bar"></div>
+  <div class="card-area">
+    <div class="card-grid" id="card-grid"></div>
+  </div>
+</div>
+
+<!-- ── Witch Overlay ── -->
+<div id="witch-overlay">
+  <div class="witch-text" data-i18n="witchBrewing"></div>
+  <div class="witch-cauldron">
+    <div class="cauldron-rim"></div>
+    <div class="cauldron-body">
+      <div class="cauldron-liquid"></div>
+    </div>
+    <div class="particle-container" id="particles"></div>
+  </div>
+  <div class="witch-sub" data-i18n="witchPlacing"></div>
+</div>
+
+<!-- ── Result Overlay ── -->
+<div id="result-overlay">
+  <div class="result-popup" id="result-popup"></div>
+</div>
+
+<!-- ── Game Over Overlay ── -->
+<div id="gameover-overlay">
+  <div class="gameover-title" id="gameover-title"></div>
+  <div class="gameover-winner" id="gameover-winner"></div>
+  <button class="btn btn-primary" id="btn-play-again" data-i18n="playAgain"></button>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// ── i18n ──
+const i18n = {
+  en: {
+    title: 'Poison & Antidote',
+    subtitle: 'A game of luck, strategy, and survival',
+    players: 'Players',
+    totalItems: 'Total Items',
+    poisonCount: 'Poison Count',
+    antidotes: 'Antidotes',
+    emptyLabel: 'Empty',
+    startGame: 'Start Game',
+    restart: 'Restart',
+    playAgain: 'Play Again',
+    witchBrewing: 'The Witch is brewing...',
+    witchPlacing: 'Placing potions into the items...',
+    alive: 'Alive',
+    eliminated: 'Eliminated',
+    playerName: i => `Player ${i + 1}`,
+    turnPhase: (name, n) => `${name}'s Turn · ${n} items left`,
+    resultAntidote: '🧪 Antidote!',
+    resultPoisonSaved: '☠️ Poison! (Saved by antidote)',
+    resultEliminated: name => `☠️ ${name} eliminated!`,
+    resultEmpty: '💨 Empty',
+    victoryTitle: '🏆 Victory!',
+    victoryMsg: name => `${name} is the last one standing!`,
+    wipeoutTitle: '💀 Total Wipeout',
+    wipeoutMsg: 'No survivors...',
+    gameoverTitle: '🎉 Game Over',
+    survivorsMsg: names => `Survivors: ${names}`,
+  },
+  zh: {
+    title: '毒药与解药',
+    subtitle: '一场关于运气、策略与生存的游戏',
+    players: '玩家人数',
+    totalItems: '物品总数',
+    poisonCount: '毒药数量',
+    antidotes: '解药',
+    emptyLabel: '空瓶',
+    startGame: '开始游戏',
+    restart: '重新开始',
+    playAgain: '再来一局',
+    witchBrewing: '女巫正在调配药水...',
+    witchPlacing: '正在将药水注入物品中...',
+    alive: '存活',
+    eliminated: '已淘汰',
+    playerName: i => `玩家 ${i + 1}`,
+    turnPhase: (name, n) => `${name} 的回合 · 剩余 ${n} 件物品`,
+    resultAntidote: '🧪 解药！',
+    resultPoisonSaved: '☠️ 毒药！（解药救了你）',
+    resultEliminated: name => `☠️ ${name} 被淘汰了！`,
+    resultEmpty: '💨 空瓶',
+    victoryTitle: '🏆 胜利！',
+    victoryMsg: name => `${name} 是最后的幸存者！`,
+    wipeoutTitle: '💀 全军覆没',
+    wipeoutMsg: '无人生还...',
+    gameoverTitle: '🎉 游戏结束',
+    survivorsMsg: names => `幸存者：${names}`,
+  },
+};
+
+let lang = 'en';
+
+function t(key) { return i18n[lang][key]; }
+
+function setLang(newLang) {
+  lang = newLang;
+  document.querySelectorAll('.lang-btn').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.lang === lang)
+  );
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const val = i18n[lang][el.dataset.i18n];
+    if (typeof val === 'string') el.textContent = val;
+  });
+  if (state && !state.gameOver) {
+    updatePlayerNames();
+    renderPlayers();
+    updatePhase();
+  }
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn =>
+  btn.addEventListener('click', () => setLang(btn.dataset.lang))
+);
+
+function updatePlayerNames() {
+  state.players.forEach((p, i) => { p.name = t('playerName')(i); });
+}
+
+// ── State ──
+let state = null;
+
+// ── Setup Inputs ──
+const inputPlayers = $('input-players');
+const inputItems   = $('input-items');
+const inputPoison  = $('input-poison');
+
+function calcDistribution() {
+  const n         = clamp(+inputPlayers.value, 2, 8);
+  const total     = clamp(+inputItems.value, 2, 32);
+  const maxPoison = Math.floor((total + n - 1) / 2);
+  const poison    = clamp(+inputPoison.value, n - 1, maxPoison);
+  const antidote  = poison - (n - 1);
+  const empty     = total - poison - antidote;
+  inputPoison.min = n - 1;
+  inputPoison.max = maxPoison;
+  $('info-antidote').textContent = antidote;
+  $('info-empty').textContent    = empty;
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+[inputPlayers, inputItems, inputPoison].forEach(el =>
+  el.addEventListener('input', calcDistribution)
+);
+
+// ── Start Game ──
+$('btn-start').addEventListener('click', startGame);
+
+function goToSetup() {
+  $('game-screen').style.display = 'none';
+  $('gameover-overlay').style.display = 'none';
+  $('setup-screen').style.display = 'flex';
+}
+
+$('btn-restart').addEventListener('click', goToSetup);
+$('btn-play-again').addEventListener('click', goToSetup);
+
+function startGame() {
+  const n         = clamp(+inputPlayers.value, 2, 8);
+  const total     = clamp(+inputItems.value, 2, 32);
+  const maxPoison = Math.floor((total + n - 1) / 2);
+  const poison    = clamp(+inputPoison.value, n - 1, maxPoison);
+  const antidote  = poison - (n - 1);
+  const empty     = total - poison - antidote;
+
+  const items = [
+    ...Array(poison).fill('poison'),
+    ...Array(antidote).fill('antidote'),
+    ...Array(empty).fill('empty'),
+  ];
+  shuffle(items);
+
+  state = {
+    players: Array.from({ length: n }, (_, i) => ({
+      name: t('playerName')(i),
+      alive: true,
+      antidotes: 0,
+    })),
+    items,
+    currentPlayer: 0,
+    usedCount: 0,
+    gameOver: false,
+  };
+
+  $('setup-screen').style.display = 'none';
+  $('game-screen').style.display  = 'flex';
+
+  showWitchAnimation(() => {
+    renderPlayers();
+    renderCards();
+    updatePhase();
+  });
+}
+
+// ── Shuffle ──
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+// ── Witch Animation ──
+function showWitchAnimation(cb) {
+  const overlay = $('witch-overlay');
+  overlay.style.display = 'flex';
+  spawnParticles();
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    cb();
+  }, 2800);
+}
+
+function spawnParticles() {
+  const container = $('particles');
+  container.innerHTML = '';
+  const colors = ['#9b59b6', '#e74c3c', '#2ecc71', '#f1c40f', '#3498db'];
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = `${30 + Math.random() * 60}px`;
+    p.style.bottom = '30px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.animationDelay = `${Math.random() * 2}s`;
+    p.style.animationDuration = `${1.5 + Math.random()}s`;
+    container.appendChild(p);
+  }
+}
+
+// ── Render Players ──
+function renderPlayers() {
+  const bar = $('players-bar');
+  bar.innerHTML = state.players.map((p, i) => {
+    const classes = [
+      'player-card',
+      i === state.currentPlayer && p.alive ? 'active' : '',
+      !p.alive ? 'dead' : '',
+    ].filter(Boolean).join(' ');
+    const status = p.alive ? t('alive') : t('eliminated');
+    return `
+      <div class="${classes}" data-index="${i}">
+        <div class="player-name">${p.name}</div>
+        <div class="player-status">${status}</div>
+        <div class="player-antidotes">${p.alive ? '🧪 '.repeat(p.antidotes) || '—' : '💀'}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── Render Cards ──
+function renderCards() {
+  const grid = $('card-grid');
+  grid.innerHTML = state.items.map((type, i) => `
+    <div class="card${state.gameOver ? ' disabled' : ''}" data-index="${i}" onclick="pickCard(${i})">
+      <div class="card-inner">
+        <div class="card-face card-front">?</div>
+        <div class="card-face card-back ${type}">${typeIcon(type)}</div>
+      </div>
+    </div>`
+  ).join('');
+
+  document.querySelectorAll('.card').forEach(card => {
+    const i = +card.dataset.index;
+    if (state.items[i] === null) card.classList.add('flipped', 'used');
+  });
+}
+
+function typeIcon(type) {
+  return type === 'poison' ? '☠️' : type === 'antidote' ? '🧪' : '💨';
+}
+
+// ── Pick Card ──
+function pickCard(index) {
+  if (!state || state.gameOver || state.items[index] === null) return;
+
+  const type   = state.items[index];
+  const player = state.players[state.currentPlayer];
+  state.items[index] = null;
+  state.usedCount++;
+
+  const card = document.querySelectorAll('.card')[index];
+  card.classList.add('flipped');
+
+  setTimeout(() => {
+    resolveCard(type, player);
+    card.classList.add('used');
+  }, 600);
+}
+
+function resolveCard(type, player) {
+  if (type === 'antidote') {
+    player.antidotes++;
+    showResult(t('resultAntidote'), 'antidote');
+    flashScreen('flash-antidote');
+  } else if (type === 'poison') {
+    if (player.antidotes > 0) {
+      player.antidotes--;
+      showResult(t('resultPoisonSaved'), 'antidote');
+      flashScreen('flash-antidote');
+    } else {
+      player.alive = false;
+      showResult(t('resultEliminated')(player.name), 'poison');
+      flashScreen('flash-poison');
+    }
+  } else {
+    showResult(t('resultEmpty'), 'empty');
+  }
+
+  renderPlayers();
+
+  const alive = state.players.filter(p => p.alive);
+  const remaining = state.items.filter(x => x !== null).length;
+
+  if (alive.length <= 1 || remaining === 0) {
+    state.gameOver = true;
+    setTimeout(() => showGameOver(alive), 1200);
+    return;
+  }
+
+  advanceTurn();
+}
+
+function advanceTurn() {
+  do {
+    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+  } while (!state.players[state.currentPlayer].alive);
+  renderPlayers();
+  updatePhase();
+}
+
+function updatePhase() {
+  const remaining = state.items.filter(x => x !== null).length;
+  $('phase-text').textContent = t('turnPhase')(state.players[state.currentPlayer].name, remaining);
+}
+
+// ── Result Popup ──
+function showResult(text, type) {
+  const overlay = $('result-overlay');
+  const popup   = $('result-popup');
+  popup.textContent = text;
+  popup.className = `result-popup ${type}`;
+  overlay.style.display = 'flex';
+  setTimeout(() => { overlay.style.display = 'none'; }, 1200);
+}
+
+function flashScreen(cls) {
+  document.body.classList.add(cls);
+  setTimeout(() => document.body.classList.remove(cls), 500);
+}
+
+// ── Game Over ──
+function showGameOver(alive) {
+  if (alive.length === 1) {
+    $('gameover-title').textContent = t('victoryTitle');
+    $('gameover-winner').textContent = t('victoryMsg')(alive[0].name);
+    const idx = state.players.indexOf(alive[0]);
+    document.querySelectorAll('.player-card')[idx]?.classList.add('winner');
+  } else if (alive.length === 0) {
+    $('gameover-title').textContent = t('wipeoutTitle');
+    $('gameover-winner').textContent = t('wipeoutMsg');
+  } else {
+    $('gameover-title').textContent = t('gameoverTitle');
+    $('gameover-winner').textContent = t('survivorsMsg')(alive.map(p => p.name).join(', '));
+  }
+  $('gameover-overlay').style.display = 'flex';
+}
+
+// ── Init ──
+setLang('en');
+calcDistribution();
+</script>
+</body>
+</html>
