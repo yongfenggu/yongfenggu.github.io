@@ -36,12 +36,12 @@
 ### Research Intern @ DeepWisdom（2026.03 - 至今）· 深圳
 参与三个核心项目：
 
-#### AEvo: Evolving Agent Learning Procedures from Experience
+#### Harnessing Agentic Evolution
 - 状态：投稿 NeurIPS 2026
 - 作者排位：二作
-- AEvo 是智能体自主进化方向的研究工作，探索如何让 Agent 从历史经验中自动演化学习流程（Learning Procedures）。延续 DeepWisdom 团队在 MetaGPT、AFlow、SPO、AEvolve 等一系列 Agentic Evolution 研究的积累，核心思想是让智能体不再依赖人工设计的固定流程，而是能够从自身执行经验中自动提炼、优化和演化出更高效的任务解决策略。
+- AEvo 是智能体自主进化方向的研究工作，探索如何让 Agent 从历史经验中自动演化学习流程（Learning Procedures）。延续 DeepWisdom 团队在 MetaGPT、AFlow、SPO、AEvo 等一系列 Agentic Evolution 研究的积累，核心思想是让智能体不再依赖人工设计的固定流程，而是能够从自身执行经验中自动提炼、优化和演化出更高效的任务解决策略。
 
-#### Foundation Protocol: Enabling Communication and Collaboration for Agentic Intelligence
+#### Foundation Protocol: A Coordination Layer for Agentic Society
 - 状态：白皮书即将发布于 ArXiv
 - 作者排位：共一
 - Foundation Protocol 是面向 AI 社会的最小化、图优先的协议核心层。为异构实体（Agent、工具、资源、人类、机构、组织）提供统一的可寻址模型，支持原生多方组织与事件驱动协作，提供计量与结算等经济原语，将策略、溯源和审计作为一等公民。
@@ -64,8 +64,8 @@
 
 | 工作 | 贡献 | 年份 | 发表 |
 |------|------|------|------|
-| AEvo: Evolving Agent Learning Procedures from Experience | 二作 | 2026 | NeurIPS 2026（投稿中） |
-| Foundation Protocol: Enabling Communication and Collaboration for Agentic Intelligence | 共一 | 2026 | ArXiv 白皮书 |
+| Harnessing Agentic Evolution | 二作 | 2026 | NeurIPS 2026（投稿中） |
+| Foundation Protocol: A Coordination Layer for Agentic Society | 二作 | 2026 | ArXiv 白皮书 |
 | Organic Neuromorphic Vision Devices with Multilevel Memory for Palmprint Identification | 二作 | 2026 | Chemical Science, Royal Society of Chemistry |
 
 ## 项目经历
