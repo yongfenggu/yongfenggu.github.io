@@ -53,7 +53,7 @@
 - AutoWork 是一种 First-Person Agent 框架，使智能体能够直接进入用户的设备、账号与工作流，以用户身份处理消息、撰写文档、组织协作、生成代码并交付结果。核心差异在于从"建议型助手"范式转向"第一方执行系统"。
 - 个人负责：记忆系统（SOUL.md/YOU.md/USER.md 三件套 + Memory Folds 跨 Session 长期记忆）、TUI/GUI/CLI 交互层、核心架构设计
 
-### LLM Agent 算法实习生 @ Karis / Sophiapro（2025.07 - 2026.02）· 北京
+### LLM Agent 算法实习生 @ Karis / invoko（2025.07 - 2026.02）· 北京
 - ContextCompact - 上下文压缩策略：针对 ReAct 架构 Agent 在长步骤任务中的 Context 窗口限制问题，设计多层级上下文压缩策略（动态摘要 + 关键信息保留 + 滑动窗口），将平均 token 使用量降低 60%，使 Agent 能够持续执行超过 100 步的复杂任务
 - memoryspace - Agent 记忆机制设计：设计自由迭代演化、通用可复制的 Agent Memory 架构，支持短期/长期/情景记忆分层存储与检索，采用向量数据库 + 关键词索引的混合检索策略，赋予 Agent 跨会话、超长程任务执行能力
 - sophia-eval - Agent 评测框架：基于 pydantic-ai 从零搭建 Agent 评测框架（Dataset/Case/Runner 三层架构），支持多维度评测指标（准确率、推理步数、成本、延迟等）
@@ -65,7 +65,7 @@
 | 工作 | 贡献 | 年份 | 发表 |
 |------|------|------|------|
 | Harnessing Agentic Evolution | 二作 | 2026 | NeurIPS 2026（投稿中） |
-| Foundation Protocol: A Coordination Layer for Agentic Society | 二作 | 2026 | ArXiv 白皮书 |
+| Foundation Protocol: A Coordination Layer for Agentic Society | 二作 | 2026 | Hugging Face Papers：https://huggingface.co/papers/2605.23218 |
 | Organic Neuromorphic Vision Devices with Multilevel Memory for Palmprint Identification | 二作 | 2026 | Chemical Science, Royal Society of Chemistry |
 
 ## 项目经历
