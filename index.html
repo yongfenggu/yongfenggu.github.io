@@ -678,6 +678,63 @@
             cursor: not-allowed;
         }
 
+        .chat-bubble {
+            position: fixed;
+            top: 78px;
+            right: 24px;
+            z-index: 1001;
+            width: min(360px, calc(100vw - 32px));
+            max-height: 48vh;
+            padding: 14px 16px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .chat-bubble.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .chat-bubble .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            object-fit: cover;
+        }
+
+        .chat-bubble-content {
+            flex: 1;
+            min-width: 0;
+            max-height: calc(48vh - 28px);
+            overflow: auto;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+            scrollbar-width: none;
+        }
+
+        .chat-bubble-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chat-bubble-message + .chat-bubble-message {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
         .typing-indicator {
             align-self: flex-start;
             background: transparent;
@@ -775,6 +832,11 @@
                 padding: 10px 14px;
             }
 
+            .chat-bubble {
+                top: 68px;
+                right: 16px;
+            }
+
             .typing-indicator .avatar {
                 width: 28px;
                 height: 28px;
@@ -798,6 +860,11 @@
             </div>
         </div>
     </nav>
+
+    <div class="chat-bubble" id="chatBubble" role="button" tabindex="0" aria-label="查看聊天消息">
+        <img src="assets/img/wechat avatar.jpg" alt="Avatar" class="avatar">
+        <div class="chat-bubble-content" id="chatBubbleContent"></div>
+    </div>
 
     <!-- About Section -->
     <section id="about">
@@ -1018,38 +1085,47 @@
             const chatInput = document.getElementById('chatInput');
             const chatSend = document.getElementById('chatSend');
             const clearChatBtn = document.getElementById('clearChatBtn');
+            const chatSection = document.getElementById('chat');
+            const chatBubble = document.getElementById('chatBubble');
+            const chatBubbleContent = document.getElementById('chatBubbleContent');
 
             let llmClient = null;
             let conversationHistory = [];
             let userPrompt = '';
+            let isChatVisible = false;
+            let bubbleMessages = [];
 
             const CHAT_STORAGE_KEY = 'chat_history';
+            const FIRST_VISIT_GREETING = '你好';
 
             // 从 localStorage 加载聊天记录
             function loadChatHistory() {
                 try {
                     const saved = localStorage.getItem(CHAT_STORAGE_KEY);
-                    if (saved) {
-                        const data = JSON.parse(saved);
-                        conversationHistory = data.conversationHistory || [];
+                    if (!saved) return false;
 
-                        // 恢复聊天界面
-                        data.messages?.forEach(msg => {
-                            // 跳过 system 和 error 消息中的头像元素
-                            if (msg.role === 'user' || msg.role === 'assistant') {
-                                addMessage(msg.role, msg.content, false);
-                            } else {
-                                const messageDiv = document.createElement('div');
-                                messageDiv.className = `message ${msg.role}`;
-                                messageDiv.textContent = msg.content;
-                                chatMessages.appendChild(messageDiv);
-                            }
-                        });
+                    const data = JSON.parse(saved);
+                    const messages = data.messages || [];
+                    conversationHistory = data.conversationHistory || [];
 
-                        console.log('聊天记录已加载');
-                    }
+                    // 恢复聊天界面
+                    messages.forEach(msg => {
+                        // 跳过 system 和 error 消息中的头像元素
+                        if (msg.role === 'user' || msg.role === 'assistant') {
+                            addMessage(msg.role, msg.content, false);
+                        } else {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = `message ${msg.role}`;
+                            messageDiv.textContent = msg.content;
+                            chatMessages.appendChild(messageDiv);
+                        }
+                    });
+
+                    console.log('聊天记录已加载');
+                    return messages.length > 0 || conversationHistory.length > 0;
                 } catch (error) {
                     console.error('加载聊天记录失败:', error);
+                    return false;
                 }
             }
 
@@ -1106,6 +1182,76 @@
                 });
 
                 return true;
+            }
+
+            function renderChatBubble() {
+                chatBubbleContent.innerHTML = '';
+
+                bubbleMessages
+                    .filter(message => message.trim())
+                    .forEach(message => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'chat-bubble-message';
+                        messageDiv.textContent = message;
+                        chatBubbleContent.appendChild(messageDiv);
+                    });
+
+                const shouldShow = !isChatVisible && chatBubbleContent.childElementCount > 0;
+                chatBubble.classList.toggle('visible', shouldShow);
+            }
+
+            function appendBubbleMessage(content = '') {
+                bubbleMessages.push(content);
+                renderChatBubble();
+                return bubbleMessages.length - 1;
+            }
+
+            function updateBubbleMessage(index, content) {
+                if (index < 0) return;
+                bubbleMessages[index] = content;
+                renderChatBubble();
+            }
+
+            function clearChatBubble() {
+                bubbleMessages = [];
+                renderChatBubble();
+            }
+
+            function scrollToChat() {
+                clearChatBubble();
+                chatSection.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => chatInput.focus(), 450);
+            }
+
+            function setupChatVisibility() {
+                if ('IntersectionObserver' in window) {
+                    const observer = new IntersectionObserver(entries => {
+                        isChatVisible = entries.some(entry => entry.isIntersecting);
+                        if (isChatVisible) {
+                            clearChatBubble();
+                        } else {
+                            renderChatBubble();
+                        }
+                    }, {
+                        threshold: 0.2
+                    });
+
+                    observer.observe(chatSection);
+                } else {
+                    const updateVisibility = () => {
+                        const rect = chatSection.getBoundingClientRect();
+                        isChatVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                        if (isChatVisible) {
+                            clearChatBubble();
+                        } else {
+                            renderChatBubble();
+                        }
+                    };
+
+                    window.addEventListener('scroll', updateVisibility, { passive: true });
+                    window.addEventListener('resize', updateVisibility);
+                    updateVisibility();
+                }
             }
 
             // 添加消息到聊天窗口
@@ -1165,8 +1311,8 @@
             }
 
             // 发送消息
-            async function sendMessage() {
-                const message = chatInput.value.trim() || chatInput.placeholder;
+            async function sendMessage(messageOverride = null, options = {}) {
+                const message = messageOverride || chatInput.value.trim() || chatInput.placeholder;
                 if (!message) return;
 
                 // 检查并初始化客户端
@@ -1193,11 +1339,18 @@
                     typingIndicator.remove();
                     const assistantMessage = addMessage('assistant', '', false);
                     const assistantContent = assistantMessage.querySelector('.content');
+                    let bubbleIndex = !isChatVisible ? appendBubbleMessage('') : -1;
 
                     // 流式调用 LLM
                     const response = await llmClient.chatStream(messages, chunk => {
                         assistantContent.textContent += chunk;
                         chatMessages.scrollTop = chatMessages.scrollHeight;
+                        if (!isChatVisible) {
+                            if (bubbleIndex === -1) {
+                                bubbleIndex = appendBubbleMessage('');
+                            }
+                            updateBubbleMessage(bubbleIndex, assistantContent.textContent);
+                        }
                     });
 
                     // 更新对话历史
@@ -1217,7 +1370,9 @@
                 } finally {
                     chatSend.disabled = false;
                     chatInput.disabled = false;
-                    chatInput.focus();
+                    if (options.focusOnDone !== false) {
+                        chatInput.focus();
+                    }
                 }
             }
 
@@ -1249,14 +1404,28 @@
 
                     // 清空 localStorage
                     localStorage.removeItem(CHAT_STORAGE_KEY);
+                    clearChatBubble();
 
                     console.log('对话记录已清空');
                 }
             });
 
+            chatBubble.addEventListener('click', scrollToChat);
+            chatBubble.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    scrollToChat();
+                }
+            });
+
             // 初始化
-            loadUserPrompt();
-            loadChatHistory();
+            setupChatVisibility();
+            const hasChatHistory = loadChatHistory();
+            loadUserPrompt().then(() => {
+                if (!hasChatHistory) {
+                    sendMessage(FIRST_VISIT_GREETING, { focusOnDone: false });
+                }
+            });
 
             // 轮换 placeholder
             fetch('assets/prompts/placeholders.json')
