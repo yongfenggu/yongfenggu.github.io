@@ -42,8 +42,8 @@
 - AEvo 是智能体自主进化方向的研究工作，探索如何让 Agent 从历史经验中自动演化学习流程（Learning Procedures）。延续 DeepWisdom 团队在 MetaGPT、AFlow、SPO、AEvo 等一系列 Agentic Evolution 研究的积累，核心思想是让智能体不再依赖人工设计的固定流程，而是能够从自身执行经验中自动提炼、优化和演化出更高效的任务解决策略。
 
 #### Foundation Protocol: A Coordination Layer for Agentic Society
-- 状态：白皮书即将发布于 ArXiv
-- 作者排位：共一
+- 状态：Hugging Face Papers / ArXiv 白皮书
+- 作者排位：二作
 - Foundation Protocol 是面向 AI 社会的最小化、图优先的协议核心层。为异构实体（Agent、工具、资源、人类、机构、组织）提供统一的可寻址模型，支持原生多方组织与事件驱动协作，提供计量与结算等经济原语，将策略、溯源和审计作为一等公民。
 - 核心架构——四平面设计：Entity & Trust Plane、Transport & Routing Plane、Interaction & Organization Plane、Regulation & Oversight Plane
 - 核心词汇表：Entity / Session / Activity / Envelope / Event / Receipt-Settlement / Provenance

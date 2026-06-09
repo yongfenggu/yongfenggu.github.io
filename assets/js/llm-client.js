@@ -8,6 +8,7 @@ class LLMClient {
         // 默认使用硬编码的 API Key（来自 .env 文件）
         this.apiKey = config.apiKey || (typeof CONFIG !== 'undefined' ? CONFIG.OPENROUTER_API_KEY : null);
         this.model = config.model || (typeof CONFIG !== 'undefined' ? CONFIG.MODEL : 'arcee-ai/trinity-large-preview:free');
+        this.fallbackModels = config.fallbackModels || (typeof CONFIG !== 'undefined' ? CONFIG.FALLBACK_MODELS || [] : []);
         this.baseURL = 'https://openrouter.ai/api/v1/chat/completions';
         this.systemPrompt = config.systemPrompt || '';
     }
@@ -26,6 +27,87 @@ class LLMClient {
      */
     setSystemPrompt(prompt) {
         this.systemPrompt = prompt;
+    }
+
+    /**
+     * 按顺序返回主模型和 fallback 模型。
+     * @returns {Array<string>}
+     */
+    getModelCandidates() {
+        return [this.model, ...this.fallbackModels].filter(Boolean);
+    }
+
+    /**
+     * 判断是否需要切换到 fallback 模型。
+     * @param {number} status - HTTP 状态码
+     * @param {Object} errorData - API 错误数据
+     * @returns {boolean}
+     */
+    shouldFallback(status, errorData) {
+        const message = errorData.error?.message || '';
+        return status === 404 && message.includes('No endpoints found');
+    }
+
+    /**
+     * 调用 OpenRouter API。
+     * @param {Object} requestBody - 请求体
+     * @returns {Promise<Object>}
+     */
+    async postChatCompletion(requestBody) {
+        const response = await fetch(this.baseURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.apiKey}`,
+                'HTTP-Referer': window.location.href,
+                'X-OpenRouter-Title': 'Yongfeng Gu Personal Homepage'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const error = new Error(
+                `API 请求失败: ${response.status} ${response.statusText}` +
+                (errorData.error?.message ? ` - ${errorData.error.message}` : '')
+            );
+            error.status = response.status;
+            error.errorData = errorData;
+            throw error;
+        }
+
+        return response.json();
+    }
+
+    /**
+     * 调用 OpenRouter 流式 API。
+     * @param {Object} requestBody - 请求体
+     * @returns {Promise<ReadableStreamDefaultReader>}
+     */
+    async postChatCompletionStream(requestBody) {
+        const response = await fetch(this.baseURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.apiKey}`,
+                'HTTP-Referer': window.location.href,
+                'X-OpenRouter-Title': 'Yongfeng Gu Personal Homepage'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const error = new Error(
+                `API 请求失败: ${response.status} ${response.statusText}` +
+                (errorData.error?.message ? ` - ${errorData.error.message}` : '')
+            );
+            error.status = response.status;
+            error.errorData = errorData;
+            throw error;
+        }
+
+        return response.body.getReader();
     }
 
     /**
@@ -57,34 +139,27 @@ class LLMClient {
             ? [{ role: 'system', content: this.systemPrompt + timeInfo }, ...messages]
             : messages;
 
-        const requestBody = {
-            model: this.model,
-            messages: messagesWithSystem,
-            ...options
-        };
-
         try {
-            const response = await fetch(this.baseURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.apiKey}`,
-                    'HTTP-Referer': window.location.href,
-                    'X-OpenRouter-Title': 'Yongfeng Gu Personal Homepage'
-                },
-                body: JSON.stringify(requestBody)
-            });
+            let lastError = null;
+            for (const model of this.getModelCandidates()) {
+                const requestBody = {
+                    model,
+                    messages: messagesWithSystem,
+                    ...options
+                };
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(
-                    `API 请求失败: ${response.status} ${response.statusText}` +
-                    (errorData.error?.message ? ` - ${errorData.error.message}` : '')
-                );
+                try {
+                    return await this.postChatCompletion(requestBody);
+                } catch (error) {
+                    lastError = error;
+                    if (!this.shouldFallback(error.status, error.errorData || {})) {
+                        throw error;
+                    }
+                    console.warn(`模型 ${model} 无可用 endpoint，尝试 fallback 模型。`);
+                }
             }
 
-            const data = await response.json();
-            return data;
+            throw lastError;
         } catch (error) {
             console.error('LLM API 调用错误:', error);
             throw error;
@@ -136,34 +211,33 @@ class LLMClient {
             ? [{ role: 'system', content: this.systemPrompt + timeInfo }, ...messages]
             : messages;
 
-        const requestBody = {
-            model: this.model,
-            messages: messagesWithSystem,
-            stream: true,
-            ...options
-        };
-
         try {
-            const response = await fetch(this.baseURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.apiKey}`,
-                    'HTTP-Referer': window.location.href,
-                    'X-OpenRouter-Title': 'Yongfeng Gu Personal Homepage'
-                },
-                body: JSON.stringify(requestBody)
-            });
+            let lastError = null;
+            let reader = null;
+            for (const model of this.getModelCandidates()) {
+                const requestBody = {
+                    model,
+                    messages: messagesWithSystem,
+                    stream: true,
+                    ...options
+                };
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(
-                    `API 请求失败: ${response.status} ${response.statusText}` +
-                    (errorData.error?.message ? ` - ${errorData.error.message}` : '')
-                );
+                try {
+                    reader = await this.postChatCompletionStream(requestBody);
+                    break;
+                } catch (error) {
+                    lastError = error;
+                    if (!this.shouldFallback(error.status, error.errorData || {})) {
+                        throw error;
+                    }
+                    console.warn(`模型 ${model} 无可用 endpoint，尝试 fallback 模型。`);
+                }
             }
 
-            const reader = response.body.getReader();
+            if (!reader) {
+                throw lastError;
+            }
+
             const decoder = new TextDecoder();
             let fullContent = '';
 
