@@ -55,7 +55,7 @@
 
 ### LLM Agent 算法实习生 @ Karis / invoko（2025.07 - 2026.02）· 北京
 - ContextCompact - 上下文压缩策略：针对 ReAct 架构 Agent 在长步骤任务中的 Context 窗口限制问题，设计多层级上下文压缩策略（动态摘要 + 关键信息保留 + 滑动窗口），将平均 token 使用量降低 60%，使 Agent 能够持续执行超过 100 步的复杂任务
-- memoryspace - Agent 记忆机制设计：设计自由迭代演化、通用可复制的 Agent Memory 架构，支持短期/长期/情景记忆分层存储与检索，采用向量数据库 + 关键词索引的混合检索策略，赋予 Agent 跨会话、超长程任务执行能力
+- memoryspace - Agent 记忆机制设计：设计短期/长期/情景多层记忆结构，引入反思、归档、淘汰的迭代更新流程，并采用向量检索与关键词索引融合的检索策略，赋予 Agent 跨会话、超长程任务执行能力
 - sophia-eval - Agent 评测框架：基于 pydantic-ai 从零搭建 Agent 评测框架（Dataset/Case/Runner 三层架构），支持多维度评测指标（准确率、推理步数、成本、延迟等）
 - eval-plat - 内部评测平台全栈开发：前端 Vue + TypeScript + Ant Design，后端 FastAPI + SQLite，实现评测任务管理、结果可视化、历史版本追踪
 - 基础设施建设：核心代码 refactor/debug，构建统一 CLI 工具链（Click/Typer），设计结构化日志系统
