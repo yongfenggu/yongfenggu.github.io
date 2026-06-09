@@ -45,7 +45,40 @@ class LLMClient {
      */
     shouldFallback(status, errorData) {
         const message = errorData.error?.message || '';
-        return status === 404 && message.includes('No endpoints found');
+        return (
+            (status === 404 && message.includes('No endpoints found')) ||
+            status === 429 ||
+            message.includes('Provider returned error')
+        );
+    }
+
+    /**
+     * 为每次请求附带当前时间，避免模型按过期上下文判断时间。
+     * @param {Array} messages - 消息历史数组
+     * @returns {Array}
+     */
+    buildMessagesWithSystem(messages) {
+        const now = new Date();
+        const timeInfo = [
+            '',
+            `当前时间（Asia/Shanghai）: ${now.toLocaleString('zh-CN', {
+                timeZone: 'Asia/Shanghai',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            })}`,
+            '回答时请以这个当前时间为准，判断早晚、工作日和时间相关表达。'
+        ].join('\n');
+
+        const content = this.systemPrompt
+            ? `${this.systemPrompt}\n${timeInfo}`
+            : timeInfo;
+
+        return [{ role: 'system', content }, ...messages];
     }
 
     /**
@@ -121,23 +154,7 @@ class LLMClient {
             throw new Error('API Key 未设置，请先调用 setApiKey() 方法');
         }
 
-        // 生成当前时间信息
-        const now = new Date();
-        const timeInfo = `\n\n当前时间: ${now.toLocaleString('zh-CN', {
-            timeZone: 'Asia/Shanghai',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        })}`;
-
-        // 如果有系统提示词，添加到消息开头并附加当前时间
-        const messagesWithSystem = this.systemPrompt
-            ? [{ role: 'system', content: this.systemPrompt + timeInfo }, ...messages]
-            : messages;
+        const messagesWithSystem = this.buildMessagesWithSystem(messages);
 
         try {
             let lastError = null;
@@ -155,7 +172,7 @@ class LLMClient {
                     if (!this.shouldFallback(error.status, error.errorData || {})) {
                         throw error;
                     }
-                    console.warn(`模型 ${model} 无可用 endpoint，尝试 fallback 模型。`);
+                    console.warn(`模型 ${model} 暂不可用，尝试 fallback 模型。`);
                 }
             }
 
@@ -194,22 +211,7 @@ class LLMClient {
             throw new Error('API Key 未设置，请先调用 setApiKey() 方法');
         }
 
-        // 生成当前时间信息
-        const now = new Date();
-        const timeInfo = `\n\n当前时间: ${now.toLocaleString('zh-CN', {
-            timeZone: 'Asia/Shanghai',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        })}`;
-
-        const messagesWithSystem = this.systemPrompt
-            ? [{ role: 'system', content: this.systemPrompt + timeInfo }, ...messages]
-            : messages;
+        const messagesWithSystem = this.buildMessagesWithSystem(messages);
 
         try {
             let lastError = null;
@@ -230,7 +232,7 @@ class LLMClient {
                     if (!this.shouldFallback(error.status, error.errorData || {})) {
                         throw error;
                     }
-                    console.warn(`模型 ${model} 无可用 endpoint，尝试 fallback 模型。`);
+                    console.warn(`模型 ${model} 暂不可用，尝试 fallback 模型。`);
                 }
             }
 

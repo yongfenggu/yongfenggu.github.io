@@ -269,6 +269,10 @@
             line-height: 1.7;
             margin: 6px 0 10px;
             font-family: Georgia, 'Times New Roman', serif;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .item-authors strong {
@@ -1200,15 +1204,9 @@
                 chatBubble.classList.toggle('visible', shouldShow);
             }
 
-            function appendBubbleMessage(content = '') {
+            function showBubbleMessage(content = '') {
+                if (isChatVisible || !content.trim()) return;
                 bubbleMessages.push(content);
-                renderChatBubble();
-                return bubbleMessages.length - 1;
-            }
-
-            function updateBubbleMessage(index, content) {
-                if (index < 0) return;
-                bubbleMessages[index] = content;
                 renderChatBubble();
             }
 
@@ -1335,23 +1333,28 @@
                         { role: 'user', content: message }
                     ];
 
-                    // 移除打字指示器并创建空助手消息
-                    typingIndicator.remove();
-                    const assistantMessage = addMessage('assistant', '', false);
-                    const assistantContent = assistantMessage.querySelector('.content');
-                    let bubbleIndex = !isChatVisible ? appendBubbleMessage('') : -1;
+                    let assistantMessage = null;
+                    let assistantContent = null;
 
                     // 流式调用 LLM
                     const response = await llmClient.chatStream(messages, chunk => {
+                        if (!assistantMessage) {
+                            typingIndicator.remove();
+                            assistantMessage = addMessage('assistant', '', false);
+                            assistantContent = assistantMessage.querySelector('.content');
+                        }
+
                         assistantContent.textContent += chunk;
                         chatMessages.scrollTop = chatMessages.scrollHeight;
-                        if (!isChatVisible) {
-                            if (bubbleIndex === -1) {
-                                bubbleIndex = appendBubbleMessage('');
-                            }
-                            updateBubbleMessage(bubbleIndex, assistantContent.textContent);
-                        }
                     });
+
+                    if (typingIndicator.isConnected) {
+                        typingIndicator.remove();
+                    }
+
+                    if (!assistantMessage && response) {
+                        assistantMessage = addMessage('assistant', response, false);
+                    }
 
                     // 更新对话历史
                     conversationHistory.push(
@@ -1361,6 +1364,9 @@
 
                     // 保存聊天记录
                     saveChatHistory();
+
+                    // 如果用户不在 Chat with Me 区域，收完整条回复后用气泡提示。
+                    showBubbleMessage(response);
                 } catch (error) {
                     console.error('发送消息失败:', error);
                     if (typingIndicator.isConnected) {
@@ -1370,8 +1376,8 @@
                 } finally {
                     chatSend.disabled = false;
                     chatInput.disabled = false;
-                    if (options.focusOnDone !== false) {
-                        chatInput.focus();
+                    if (options.focusOnDone !== false && isChatVisible) {
+                        chatInput.focus({ preventScroll: true });
                     }
                 }
             }
