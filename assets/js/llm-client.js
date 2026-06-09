@@ -70,8 +70,7 @@ class LLMClient {
                 minute: '2-digit',
                 second: '2-digit',
                 hour12: false
-            })}`,
-            '回答时请以这个当前时间为准，判断早晚、工作日和时间相关表达。'
+            })}`
         ].join('\n');
 
         const content = this.systemPrompt
