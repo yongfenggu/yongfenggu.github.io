@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Claude JSONL Viewer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Claude JSONL Viewer</h1>
+      <div class="path-row">
+        <input id="folderInput" type="file" webkitdirectory directory multiple hidden />
+        <button id="pickFolderBtn" type="button">選擇資料夾</button>
+        <button id="importBtn" type="button">載入對話</button>
+      </div>
+      <div class="file-note">只在本機讀取資料夾內容，不會上傳到網路。</div>
+      <div class="default-path-hint">
+        Claude Code JSONL 預設路徑：<code>~/.claude/projects/</code>
+      </div>
+      <div id="importStatus" class="import-status">
+        <span class="spinner"></span>
+        <span>Loading conversations...</span>
+      </div>
+      <div id="pickedPath" class="meta">尚未匯入資料夾</div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-title">Projects</div>
+        <div id="subagentFilter" class="segmented-filter" role="group" aria-label="Subagent Filter">
+          <button type="button" data-filter-mode="main" class="is-active">主對話</button>
+          <button type="button" data-filter-mode="all">全部</button>
+          <button type="button" data-filter-mode="subagent">Subagent</button>
+        </div>
+        <div class="search-input-row">
+          <input id="filterInput" type="text" placeholder="搜尋標題、專案或內容" />
+          <button id="clearSearchBtn" type="button" aria-label="清除搜尋">清除</button>
+        </div>
+        <div id="conversationList" class="conversation-list"></div>
+      </aside>
+
+      <section class="chat-area">
+        <div class="chat-toolbar">
+          <div id="chatTitle" class="chat-title">先選擇資料夾</div>
+        </div>
+        <div id="messages" class="messages"></div>
+      </section>
+    </main>
+    <div class="floating-jump-controls">
+      <button id="jumpFirstBtn" type="button" aria-label="跳到第一則訊息" title="第一則" disabled>&uarr;</button>
+      <button id="jumpLastBtn" type="button" aria-label="跳到最後一則訊息" title="最後一則" disabled>&darr;</button>
+    </div>
+    <div id="codeModal" class="code-modal" aria-hidden="true">
+      <div class="code-modal-backdrop" data-close-modal="1"></div>
+      <section class="code-modal-panel" role="dialog" aria-modal="true">
+        <header class="code-modal-header">
+          <div id="codeModalTitle">Code Preview</div>
+          <button id="closeCodeModalBtn" type="button">Close</button>
+        </header>
+        <pre id="codeModalBody" class="code-modal-body"></pre>
+      </section>
+    </div>
+
+    <script src="./viewer-core.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
