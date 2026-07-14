@@ -137,7 +137,7 @@ function findConversationById(conversationId) {
 function setImportLoading(isLoading) {
   importBtn.disabled = isLoading;
   pickFolderBtn.disabled = isLoading;
-  importBtn.textContent = isLoading ? '載入中...' : '載入對話';
+  importBtn.textContent = isLoading ? '加载中...' : '加载对话';
   importStatus.classList.toggle('is-visible', isLoading);
 }
 
@@ -237,7 +237,7 @@ function clearConversationCustomTitle(item) {
 
 function renameConversation(item) {
   const currentTitle = getConversationDisplayTitle(item);
-  const input = window.prompt('輸入自訂對話名稱（留空可還原預設）', currentTitle);
+  const input = window.prompt('输入自定义对话名称（留空可还原默认）', currentTitle);
   if (input === null) {
     return;
   }
@@ -303,7 +303,7 @@ async function loadFilesFromDirectoryHandle(dirHandle) {
     return [];
   }
   if (dirHandle.kind !== 'directory') {
-    throw new Error('選取目標不是資料夾，請重新選擇。');
+    throw new Error('选取目标不是文件夹，请重新选择。');
   }
   return walkDirectoryHandle(dirHandle, `${dirHandle.name}/`);
 }
@@ -382,7 +382,7 @@ function renderMessages(messages, options = {}) {
   if (!messages.length) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.textContent = '此對話沒有可顯示訊息';
+    empty.textContent = '此对话没有可显示消息';
     messagesEl.appendChild(empty);
     setJumpButtonsEnabled(false);
     return;
@@ -462,7 +462,7 @@ function renderConversations(items) {
   if (!items.length) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.textContent = '沒有找到 JSONL 對話';
+    empty.textContent = '没有找到 JSONL 对话';
     conversationList.appendChild(empty);
     return;
   }
@@ -523,7 +523,7 @@ function renderConversations(items) {
       renameBtn.type = 'button';
       renameBtn.className = 'rename-conversation-btn';
       renameBtn.textContent = '改名';
-      renameBtn.title = '手動改名';
+      renameBtn.title = '手动改名';
       renameBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         renameConversation(item);
@@ -574,7 +574,7 @@ async function importFolder() {
   const hasPickerHandle = Boolean(selectedDirectoryHandle);
   const hasInputFiles = folderInput.files && folderInput.files.length > 0;
   if (!hasInputFiles && !hasPickerHandle) {
-    alert('請先選擇資料夾，再載入對話。');
+    alert('请先选择文件夹，再加载对话。');
     return;
   }
 
@@ -595,7 +595,7 @@ async function importFolder() {
     }
 
     if (files.length === 0) {
-      alert('選到的資料夾沒有可讀取檔案。');
+      alert('选到的文件夹没有可读取文件。');
       return;
     }
 
@@ -609,7 +609,7 @@ async function importFolder() {
     renderFilteredList();
 
     activeConversationId = null;
-    chatTitle.textContent = '選擇左側對話';
+    chatTitle.textContent = '选择左侧对话';
     messagesEl.innerHTML = '';
     setJumpButtonsEnabled(false);
   } finally {
@@ -640,7 +640,7 @@ pickFolderBtn.addEventListener('click', () => {
       clearDirectoryPickerSelection();
       selectedDirectoryHandle = handle;
       folderInput.value = '';
-      pickedPath.textContent = `已選擇資料夾：${handle.name}（點「載入對話」開始解析）`;
+      pickedPath.textContent = `已选择文件夹：${handle.name}（点「加载对话」开始解析）`;
     })
     .catch((error) => {
       if (error?.name === 'AbortError') {
@@ -657,12 +657,12 @@ folderInput.addEventListener('change', () => {
   clearDirectoryPickerSelection();
   const firstPath = folderInput.files[0]?.webkitRelativePath || '';
   const rootHint = firstPath.includes('/') ? firstPath.split('/')[0] : 'selected folder';
-  pickedPath.textContent = `已選擇資料夾：${rootHint}（點「載入對話」開始解析）`;
+  pickedPath.textContent = `已选择文件夹：${rootHint}（点「加载对话」开始解析）`;
 });
 
 importBtn.addEventListener('click', () => {
   importFolder().catch((err) => {
-    alert(err.message || 'Import 失敗');
+    alert(err.message || 'Import 失败');
   });
 });
 

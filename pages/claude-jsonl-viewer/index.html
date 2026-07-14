@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -11,45 +11,45 @@
       <h1>Claude JSONL Viewer</h1>
       <div class="path-row">
         <input id="folderInput" type="file" webkitdirectory directory multiple hidden />
-        <button id="pickFolderBtn" type="button">選擇資料夾</button>
-        <button id="importBtn" type="button">載入對話</button>
+        <button id="pickFolderBtn" type="button">选择文件夹</button>
+        <button id="importBtn" type="button">加载对话</button>
       </div>
-      <div class="file-note">只在本機讀取資料夾內容，不會上傳到網路。</div>
+      <div class="file-note">只在本机读取文件夹内容，不会上传到网络。</div>
       <div class="default-path-hint">
-        Claude Code JSONL 預設路徑：<code>~/.claude/projects/</code>
+        Claude Code JSONL 默认路径：<code>~/.claude/projects/</code>
       </div>
       <div id="importStatus" class="import-status">
         <span class="spinner"></span>
         <span>Loading conversations...</span>
       </div>
-      <div id="pickedPath" class="meta">尚未匯入資料夾</div>
+      <div id="pickedPath" class="meta">尚未导入文件夹</div>
     </header>
 
     <main class="layout">
       <aside class="sidebar">
         <div class="sidebar-title">Projects</div>
         <div id="subagentFilter" class="segmented-filter" role="group" aria-label="Subagent Filter">
-          <button type="button" data-filter-mode="main" class="is-active">主對話</button>
+          <button type="button" data-filter-mode="main" class="is-active">主对话</button>
           <button type="button" data-filter-mode="all">全部</button>
           <button type="button" data-filter-mode="subagent">Subagent</button>
         </div>
         <div class="search-input-row">
-          <input id="filterInput" type="text" placeholder="搜尋標題、專案或內容" />
-          <button id="clearSearchBtn" type="button" aria-label="清除搜尋">清除</button>
+          <input id="filterInput" type="text" placeholder="搜索标题、项目或内容" />
+          <button id="clearSearchBtn" type="button" aria-label="清除搜索">清除</button>
         </div>
         <div id="conversationList" class="conversation-list"></div>
       </aside>
 
       <section class="chat-area">
         <div class="chat-toolbar">
-          <div id="chatTitle" class="chat-title">先選擇資料夾</div>
+          <div id="chatTitle" class="chat-title">先选择文件夹</div>
         </div>
         <div id="messages" class="messages"></div>
       </section>
     </main>
     <div class="floating-jump-controls">
-      <button id="jumpFirstBtn" type="button" aria-label="跳到第一則訊息" title="第一則" disabled>&uarr;</button>
-      <button id="jumpLastBtn" type="button" aria-label="跳到最後一則訊息" title="最後一則" disabled>&darr;</button>
+      <button id="jumpFirstBtn" type="button" aria-label="跳到第一条消息" title="第一条" disabled>&uarr;</button>
+      <button id="jumpLastBtn" type="button" aria-label="跳到最后一条消息" title="最后一条" disabled>&darr;</button>
     </div>
     <div id="codeModal" class="code-modal" aria-hidden="true">
       <div class="code-modal-backdrop" data-close-modal="1"></div>
