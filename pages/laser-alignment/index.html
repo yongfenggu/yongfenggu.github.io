@@ -1192,12 +1192,6 @@
                 <div class="panel">
                     <div class="panel-title">测量控制</div>
 
-                    <!-- 视图切换: 3D 为主, 2D 圆形盘可切换 -->
-                    <div class="view-switch">
-                        <button class="view-switch-btn active" id="view3dBtn">3D 视图</button>
-                        <button class="view-switch-btn" id="view2dBtn">2D 测量盘</button>
-                    </div>
-
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                     </div>
@@ -1244,58 +1238,6 @@
                         </div>
                     </div>
 
-                    <!-- 圆形测量图 (2D) -->
-                    <div class="measurement-circle" id="measurementCircle2d" style="display:none;">
-                        <div class="circle-center"></div>
-
-                        <!-- 4个方位测量按钮，每个同时测量3个传感器 -->
-                        <button class="measure-btn pos-top" data-position="top">
-                            <span class="btn-label">上</span>
-                            <span class="btn-values">
-                                <span class="btn-sub-value">轴1: <span id="top-axial1-avg">--</span></span>
-                                <span class="btn-sub-value">轴2: <span id="top-axial2-avg">--</span></span>
-                                <span class="btn-sub-value">径: <span id="top-radial-avg">--</span></span>
-                            </span>
-                        </button>
-                        <button class="reset-pos-btn reset-top" data-position="top" title="清除上测数据">清零</button>
-
-                        <button class="measure-btn pos-bottom" data-position="bottom">
-                            <span class="btn-label">下</span>
-                            <span class="btn-values">
-                                <span class="btn-sub-value">轴1: <span id="bottom-axial1-avg">--</span></span>
-                                <span class="btn-sub-value">轴2: <span id="bottom-axial2-avg">--</span></span>
-                                <span class="btn-sub-value">径: <span id="bottom-radial-avg">--</span></span>
-                            </span>
-                        </button>
-                        <button class="reset-pos-btn reset-bottom" data-position="bottom" title="清除下测数据">清零</button>
-
-                        <button class="measure-btn pos-left" data-position="left">
-                            <span class="btn-label">左</span>
-                            <span class="btn-values">
-                                <span class="btn-sub-value">轴1: <span id="left-axial1-avg">--</span></span>
-                                <span class="btn-sub-value">轴2: <span id="left-axial2-avg">--</span></span>
-                                <span class="btn-sub-value">径: <span id="left-radial-avg">--</span></span>
-                            </span>
-                        </button>
-                        <button class="reset-pos-btn reset-left" data-position="left" title="清除左测数据">清零</button>
-
-                        <button class="measure-btn pos-right" data-position="right">
-                            <span class="btn-label">右</span>
-                            <span class="btn-values">
-                                <span class="btn-sub-value">轴1: <span id="right-axial1-avg">--</span></span>
-                                <span class="btn-sub-value">轴2: <span id="right-axial2-avg">--</span></span>
-                                <span class="btn-sub-value">径: <span id="right-radial-avg">--</span></span>
-                            </span>
-                        </button>
-                        <button class="reset-pos-btn reset-right" data-position="right" title="清除右测数据">清零</button>
-                    </div>
-
-                    <!-- 传感器示数说明: 每个按钮内三行数字的物理含义 -->
-                    <div class="sensor-legend" id="sensorLegend">
-                        <div class="lg-item"><span class="lg-swatch" style="background:#2a6496;"></span>轴1 = 轴向传感器1读数 (mm)</div>
-                        <div class="lg-item"><span class="lg-swatch" style="background:#4a7c59;"></span>轴2 = 轴向传感器2读数 (mm)</div>
-                        <div class="lg-item"><span class="lg-swatch" style="background:#a0522d;"></span>径 = 径向传感器读数 (mm)</div>
-                    </div>
                     <div style="text-align:center;font-size:11px;color:#a3a3a3;margin-bottom:6px;">
                         原始读数为该方位停车时激光探头到端面的距离; 轴1/轴2 之差反映轴向张口, 同一探头相隔180°读数之差反映径向圆周偏差。
                     </div>
@@ -1666,13 +1608,12 @@
                     this.init3DView();
                     return;
                 }
-                // 前 ~5 秒仍等待时, 临时切到 2D 让界面可用, 但不禁用 3D 按钮;
-                // THREE 一旦就绪会自动初始化并可切回 3D。持续轮询最多 ~30 秒。
+                // THREE 一旦就绪会自动初始化。持续轮询最多 ~30 秒。
                 if (attempt === 30 && this.view3D.enabled) {
-                    console.warn('Three.js 尚未就绪, 暂显示 2D, 加载完成后可切回 3D');
+                    console.warn('Three.js 尚未就绪, 正在等待加载完成');
                 }
                 if (attempt > 300) {
-                    console.warn('Three.js 加载超时, 请检查是否能访问 /three.min.js 或网络');
+                    console.warn('Three.js 加载超时, 请检查网络能否访问 CDN');
                     return;
                 }
                 setTimeout(() => this.initThreeWhenReady(attempt + 1), 100);
@@ -1718,9 +1659,7 @@
                 bindTap(document.getElementById('settingsBtn'), () => this.showSettings());
                 bindTap(document.getElementById('historyToggleBtn'), () => this.showHistoryModal());
 
-                // 视图切换
-                bindTap(document.getElementById('view3dBtn'), () => this.switchView('3d'));
-                bindTap(document.getElementById('view2dBtn'), () => this.switchView('2d'));
+                // 视图控制 (仅 3D)
                 bindTap(document.getElementById('view3dFrontBtn'), () => this.setFrontView());
                 bindTap(document.getElementById('view3dResetBtn'), () => this.resetCameraView());
 
@@ -1762,8 +1701,8 @@
                 document.querySelectorAll('.measure-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                const btn = document.querySelector(`[data-position="${position}"]`);
-                btn.classList.add('active');
+                const btn = document.querySelector(`.measure-btn[data-position="${position}"]`);
+                if (btn) btn.classList.add('active');
                 this.currentSession.activePosition = position;
             }
 
@@ -1771,7 +1710,7 @@
              * 点击一个方位按钮 → 同时向 3 台 ESP32 发请求 → 存储 3 个值
              */
             async measure(position, btn) {
-                btn.disabled = true;
+                if (btn) btn.disabled = true;
                 try {
                     const [axial1Resp, axial2Resp, radialResp] = await Promise.all([
                         this.fetchMeasurement(this.axial1Host),
@@ -1801,8 +1740,10 @@
                     };
 
                     this.currentSession.measurements[position].push(record);
-                    btn.classList.add('measured');
-                    btn.classList.remove('active');
+                    if (btn) {
+                        btn.classList.add('measured');
+                        btn.classList.remove('active');
+                    }
 
                     this.saveSession();
                     this.updateUI();
@@ -1812,7 +1753,7 @@
                     console.error('测量错误:', error);
                     alert('测量失败: ' + error.message);
                 } finally {
-                    btn.disabled = false;
+                    if (btn) btn.disabled = false;
                 }
             }
 
@@ -1869,18 +1810,17 @@
                     const meas = this.currentSession.measurements[position];
                     const d = display[position];
 
-                    document.getElementById(`${position}-axial1-avg`).textContent =
-                        d.axial1 !== null ? d.axial1.toFixed(4) : '--';
-                    document.getElementById(`${position}-axial2-avg`).textContent =
-                        d.axial2 !== null ? d.axial2.toFixed(4) : '--';
-                    document.getElementById(`${position}-radial-avg`).textContent =
-                        d.radial !== null ? d.radial.toFixed(4) : '--';
+                    // 2D 测量盘已移除, 这些元素可能不存在, 存在时才写入
+                    const a1El = document.getElementById(`${position}-axial1-avg`);
+                    const a2El = document.getElementById(`${position}-axial2-avg`);
+                    const rdEl = document.getElementById(`${position}-radial-avg`);
+                    if (a1El) a1El.textContent = d.axial1 !== null ? d.axial1.toFixed(4) : '--';
+                    if (a2El) a2El.textContent = d.axial2 !== null ? d.axial2.toFixed(4) : '--';
+                    if (rdEl) rdEl.textContent = d.radial !== null ? d.radial.toFixed(4) : '--';
 
-                    const btn = document.querySelector(`[data-position="${position}"]`);
-                    if (meas.length > 0) {
-                        btn.classList.add('measured');
-                    } else {
-                        btn.classList.remove('measured');
+                    const btn = document.querySelector(`.measure-btn[data-position="${position}"]`);
+                    if (btn) {
+                        btn.classList.toggle('measured', meas.length > 0);
                     }
                 });
 
@@ -2705,33 +2645,24 @@ ${htmlContent}
             wizardNext() { this.gotoWizardStep((this._wizardStep || 0) + 1); }
             wizardPrev() { this.gotoWizardStep((this._wizardStep || 0) - 1); }
 
-            // ============ 视图切换 ============
+            // ============ 视图 (仅 3D) ============
             switchView(mode, silent) {
-                const is3d = mode === '3d';
-                this.view3D.enabled = is3d;
+                // 2D 测量盘已移除, 始终为 3D 视图
+                this.view3D.enabled = true;
                 const wrap3d = document.getElementById('view3dWrap');
-                const circle2d = document.getElementById('measurementCircle2d');
-                const legend = document.getElementById('sensorLegend');
-                if (wrap3d) wrap3d.style.display = is3d ? 'block' : 'none';
-                if (circle2d) circle2d.style.display = is3d ? 'none' : 'block';
-                // 2D 图例仅在 2D 视图下显示原始读数说明
-                if (legend) legend.style.display = is3d ? 'none' : 'flex';
-                document.getElementById('view3dBtn').classList.toggle('active', is3d);
-                document.getElementById('view2dBtn').classList.toggle('active', !is3d);
-                if (is3d) {
-                    // 若切到 3D 时尚未初始化但 THREE 已就绪, 立即初始化
-                    if (!this.view3D.initialized && typeof THREE !== 'undefined') {
-                        this.init3DView();
-                    }
-                    if (this.view3D.initialized) {
-                        // 等待布局生效后再调整尺寸, 避免容器刚显示时尺寸为 0 导致空白
-                        requestAnimationFrame(() => {
-                            this.onResize3D();
-                            this.update3DReadout();
-                        });
-                    } else if (typeof THREE === 'undefined') {
-                        console.warn('Three.js 仍在加载, 稍后自动进入 3D');
-                    }
+                if (wrap3d) wrap3d.style.display = 'block';
+                // 若尚未初始化但 THREE 已就绪, 立即初始化
+                if (!this.view3D.initialized && typeof THREE !== 'undefined') {
+                    this.init3DView();
+                }
+                if (this.view3D.initialized) {
+                    // 等待布局生效后再调整尺寸, 避免容器刚显示时尺寸为 0 导致空白
+                    requestAnimationFrame(() => {
+                        this.onResize3D();
+                        this.update3DReadout();
+                    });
+                } else if (typeof THREE === 'undefined') {
+                    console.warn('Three.js 仍在加载, 稍后自动进入 3D');
                 }
             }
             // ============ Three.js 3D 场景 ============
@@ -2929,8 +2860,8 @@ ${htmlContent}
                         const pos = hits[0].object.userData.position;
                         if (pos) {
                             this.setActivePosition(pos);
-                            const btn = document.querySelector(`.measure-btn[data-position="${pos}"]`);
-                            this.measure(pos, btn);
+                            // 2D 按钮已移除, 3D 点击方位标签直接测量(无需按钮引用)
+                            this.measure(pos, null);
                         }
                         return true;
                     }
@@ -2967,7 +2898,8 @@ ${htmlContent}
                 window.addEventListener('pointerup', () => { state.dragging = false; });
                 window.addEventListener('pointermove', (e) => {
                     if (!state.dragging) return;
-                    state.theta -= (e.clientX - state.lx) * 0.008;
+                    // 水平拖动方向修正: 之前左右旋转与鼠标方向相反, 此处改为同向
+                    state.theta += (e.clientX - state.lx) * 0.008;
                     state.phi -= (e.clientY - state.ly) * 0.008;
                     state.phi = Math.max(0.15, Math.min(Math.PI - 0.15, state.phi));
                     state.lx = e.clientX; state.ly = e.clientY;
