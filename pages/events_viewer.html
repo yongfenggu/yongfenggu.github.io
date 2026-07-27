@@ -849,5 +849,15 @@
             parseEvents();
         }
     </script>
+    <script>
+        // 离线缓存：注册 pages/ 共享 Service Worker，使断网后仍可访问本页
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('[pages-cache] SW 已注册，作用域:', reg.scope))
+                    .catch(err => console.warn('[pages-cache] SW 注册失败:', err));
+            });
+        }
+    </script>
 </body>
 </html>

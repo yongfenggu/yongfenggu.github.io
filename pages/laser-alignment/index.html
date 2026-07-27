@@ -1,0 +1,3661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>激光对中测量系统</title>
+    <style>
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a1a;
+            --card-bg: #ffffff;
+            --border-color: #e5e5e5;
+            --primary-color: #1a1a1a;
+            --secondary-color: #404040;
+            --accent-color: #2a2a2a;
+            --success-color: #2a2a2a;
+            --warning-color: #525252;
+            --danger-color: #737373;
+            --text-primary: #1a1a1a;
+            --text-secondary: #737373;
+            --text-muted: #a3a3a3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+            background: var(--primary-bg);
+            color: var(--card-bg);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #525252;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: blink 1s ease-in-out infinite;
+            box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: white;
+            color: #525252;
+            border: 1px solid #d4d4d4;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:hover {
+            background: #fafafa;
+            border-color: #a3a3a3;
+            color: #1a1a1a;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #1a1a1a;
+            color: white;
+            border: 1px solid #1a1a1a;
+        }
+
+        .btn-primary:hover {
+            background: #2a2a2a;
+            border-color: #2a2a2a;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* 圆形测量区域 */
+        .measurement-circle {
+            position: relative;
+            width: 550px;
+            height: 550px;
+            margin: 30px auto;
+        }
+
+        .circle-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            border: 2px solid #e5e5e5;
+            border-radius: 50%;
+            background: #fafafa;
+        }
+
+        /* 测量按钮 */
+        .measure-btn {
+            position: absolute;
+            width: 164px;
+            height: 146px;
+            background: white;
+            border: 2px solid #d4d4d4;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 19px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 4px 6px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .measure-btn:hover {
+            background: #f5f5f5;
+            border-color: #a3a3a3;
+        }
+
+        .measure-btn.measured {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .measure-btn.active {
+            border-color: #1a1a1a;
+            background: #fafafa;
+            box-shadow: 0 0 0 2px #1a1a1a;
+        }
+
+        .btn-label {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 1px;
+            line-height: 1.1;
+        }
+
+        .btn-values {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-sub-value {
+            font-size: 19px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.35;
+            text-align: center;
+            opacity: 0.85;
+        }
+
+        .btn-sub-value span {
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .reset-pos-btn {
+            position: absolute;
+            min-width: 56px;
+            height: 26px;
+            padding: 0 8px;
+            background: #ffffff;
+            border: 1px solid #d4d4d4;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .reset-pos-btn:hover {
+            background: #f5f5f5;
+            border-color: #a3a3a3;
+        }
+
+        /* 位置定位 - 4个方位按钮 */
+        .pos-top {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .pos-bottom {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .pos-left {
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .pos-right {
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .reset-top {
+            top: 20px;
+            left: 50%;
+            transform: translate(110px, 0);
+        }
+
+        .reset-bottom {
+            bottom: 20px;
+            left: 50%;
+            transform: translate(110px, 0);
+        }
+
+        .reset-left {
+            left: 10px;
+            top: 50%;
+            transform: translate(0, -120px);
+        }
+
+        .reset-right {
+            right: 10px;
+            top: 50%;
+            transform: translate(0, -120px);
+        }
+
+        /* 历史记录面板 */
+        .history-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .history-section.show {
+            display: block;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .history-title {
+            font-size: 14px;
+            color: var(--dusty-denim);
+            font-weight: 600;
+        }
+
+        .history-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--secondary-bg);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .history-value {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .history-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 11px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-small:hover {
+            opacity: 0.8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .history-toggle-btn {
+            background: var(--dusty-denim);
+            color: var(--ink-black);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .history-toggle-btn:hover {
+            background: var(--blue-slate);
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e5e5e5;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1a1a1a;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* 结果面板 */
+        .result-item {
+            padding: 12px;
+            background: #fafafa;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            margin: 3% auto;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: #fafafa;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-btn {
+            font-size: 28px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            line-height: 1;
+            font-weight: 300;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px 25px;
+            overflow-y: auto;
+            max-height: calc(85vh - 80px);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            color: #737373;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            color: #1a1a1a;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #737373;
+            box-shadow: 0 0 0 3px rgba(115, 115, 115, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .modal-buttons .btn {
+            color: #1a1a1a;
+        }
+
+        /* 报告样式 */
+        .report-section {
+            margin-bottom: 20px;
+        }
+
+        .report-section-title {
+            font-size: 14px;
+            color: var(--dusty-denim);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .data-item {
+            padding: 10px;
+            background: var(--secondary-bg);
+            border-radius: 4px;
+        }
+
+        .data-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .data-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        .suggestion-box {
+            padding: 12px;
+            background: var(--secondary-bg);
+            border-left: 3px solid var(--warning-color);
+            border-radius: 4px;
+        }
+
+        .suggestion-title {
+            font-size: 12px;
+            color: var(--warning-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-text {
+            font-size: 12px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* 视图切换 */
+        .view-switch {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .view-switch-btn {
+            padding: 8px 20px;
+            background: white;
+            border: 1px solid #d4d4d4;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #525252;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-switch-btn:hover {
+            background: #fafafa;
+            border-color: #a3a3a3;
+        }
+
+        .view-switch-btn.active {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+
+        /* 3D 视图容器 */
+        .view-3d-wrap {
+            position: relative;
+        }
+
+        #view3dContainer {
+            width: 100%;
+            height: 520px;
+            background: linear-gradient(180deg, #f0f2f5 0%, #dfe3e8 100%);
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #view3dContainer canvas {
+            display: block;
+        }
+
+        .view3d-toolbar {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            display: flex;
+            gap: 6px;
+            z-index: 5;
+        }
+
+        .view3d-toolbar .btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .view3d-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            font-size: 11px;
+            color: #737373;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 4px 10px;
+            border-radius: 4px;
+            z-index: 5;
+        }
+
+        .view3d-readout {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #1a1a1a;
+            z-index: 5;
+        }
+
+        .view3d-readout .r-title {
+            font-weight: 600;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #525252;
+        }
+
+        .view3d-readout .r-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .view3d-readout .r-line span:last-child {
+            font-weight: 600;
+        }
+
+        .view3d-clear {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 8px 10px;
+            z-index: 5;
+        }
+
+        .view3d-clear .c-title {
+            font-size: 11px;
+            color: #737373;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .view3d-clear .c-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .view3d-clear .c-btn {
+            width: 34px;
+            height: 30px;
+            border: 1px solid #d4d4d4;
+            border-radius: 5px;
+            background: white;
+            color: #525252;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view3d-clear .c-btn:hover {
+            background: #f5f5f5;
+            border-color: #a3a3a3;
+            color: #1a1a1a;
+        }
+
+        .view3d-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 22px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #525252;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 6px;
+        }
+
+        .view3d-legend .lg-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .view3d-legend .lg-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .view3d-legend .lg-swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        /* 配置向导 */
+        .wizard-steps {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+
+        .wizard-step-dot {
+            flex: 1;
+            height: 4px;
+            background: #e5e5e5;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+
+        .wizard-step-dot.active {
+            background: #1a1a1a;
+        }
+
+        .wizard-page {
+            display: none;
+        }
+
+        .wizard-page.active {
+            display: block;
+        }
+
+        .wizard-option-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .wizard-option {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .wizard-option:hover {
+            border-color: #a3a3a3;
+        }
+
+        .wizard-option.selected {
+            border-color: #1a1a1a;
+            background: #fafafa;
+            box-shadow: 0 0 0 1px #1a1a1a;
+        }
+
+        .wizard-option .wo-icon {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .wizard-option .wo-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .wizard-option .wo-desc {
+            font-size: 11px;
+            color: #737373;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .wizard-q-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .wizard-q-hint {
+            font-size: 12px;
+            color: #737373;
+            margin-bottom: 6px;
+        }
+
+        .wizard-q-block {
+            margin-bottom: 20px;
+        }
+
+        /* 示数说明 tooltip */
+        .value-help {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #d4d4d4;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: help;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .sensor-legend {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 10px 0 4px;
+            font-size: 12px;
+            color: #525252;
+        }
+
+        .sensor-legend .lg-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sensor-legend .lg-swatch {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            #view3dContainer {
+                height: 380px;
+            }
+
+            .view3d-readout {
+                width: 150px;
+                font-size: 11px;
+            }
+
+            .measurement-circle {
+                width: 400px;
+                height: 400px;
+            }
+
+            .circle-center {
+                width: 240px;
+                height: 240px;
+            }
+
+            .measure-btn {
+                width: 136px;
+                height: 116px;
+                font-size: 17px;
+                gap: 7px;
+            }
+
+            .btn-label {
+                font-size: 19px;
+            }
+
+            .btn-sub-value {
+                font-size: 18px;
+            }
+
+            .pos-top {
+                top: 10px;
+            }
+
+            .pos-bottom {
+                bottom: 10px;
+            }
+
+            .pos-left {
+                left: 5px;
+            }
+
+            .pos-right {
+                right: 5px;
+            }
+
+            .reset-pos-btn {
+                min-width: 50px;
+                height: 24px;
+                font-size: 11px;
+            }
+
+            .reset-top {
+                top: 10px;
+                transform: translate(95px, 0);
+            }
+
+            .reset-bottom {
+                bottom: 10px;
+                transform: translate(95px, 0);
+            }
+
+            .reset-left {
+                left: 5px;
+                transform: translate(0, -100px);
+            }
+
+            .reset-right {
+                right: 5px;
+                transform: translate(0, -100px);
+            }
+
+            .history-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #525252;
+        }
+
+        /* 历史记录列表样式 */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            padding: 16px;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-rename {
+            margin-top: 10px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .history-rename-input {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #d4d4d4;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+
+        .btn-mini {
+            padding: 4px 8px;
+            font-size: 11px;
+            background: #ffffff;
+            color: #525252;
+            border: 1px solid #d4d4d4;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-mini:hover {
+            background: #f5f5f5;
+            border-color: #a3a3a3;
+        }
+
+        .history-item:hover {
+            background: #f5f5f5;
+            border-color: #d4d4d4;
+            transform: translateX(4px);
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .history-item-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 1em;
+        }
+
+        .history-item-time {
+            color: #737373;
+            font-size: 0.85em;
+        }
+
+        .history-item-data {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .history-data-item {
+            padding: 8px 12px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .history-data-label {
+            font-size: 0.75em;
+            color: #737373;
+            margin-bottom: 4px;
+        }
+
+        .history-data-value {
+            font-size: 0.9em;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a3a3a3;
+        }
+
+        /* 详情数据网格 */
+        .detail-data-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .detail-data-item {
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .detail-data-label {
+            font-size: 0.85em;
+            color: #737373;
+            margin-bottom: 8px;
+        }
+
+        .detail-data-value {
+            font-size: 1.1em;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="logo">激光对中测量系统</div>
+            <div class="header-right">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>轴向传感器1</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>轴向传感器2</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>径向传感器</span>
+                </div>
+                <div class="status-item">
+                    <span id="currentTime">--:--:--</span>
+                </div>
+                <button class="btn" id="historyToggleBtn">测量历史</button>
+                <button class="btn" id="settingsBtn">设置</button>
+            </div>
+        </div>
+
+
+        <div class="main-content">
+            <!-- 测量区域 -->
+            <div>
+                <div class="panel">
+                    <div class="panel-title">测量控制</div>
+
+                    <!-- 视图切换: 3D 为主, 2D 圆形盘可切换 -->
+                    <div class="view-switch">
+                        <button class="view-switch-btn active" id="view3dBtn">3D 视图</button>
+                        <button class="view-switch-btn" id="view2dBtn">2D 测量盘</button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">已完成 0/4</div>
+
+                    <!-- 3D 联轴器视图 -->
+                    <div class="view-3d-wrap" id="view3dWrap">
+                        <div id="view3dContainer">
+                            <div class="view3d-toolbar">
+                                <button class="btn" id="view3dFrontBtn">正面视图</button>
+                                <button class="btn" id="view3dResetBtn">复位视角</button>
+                            </div>
+                            <div class="view3d-readout" id="view3dReadout">
+                                <div class="r-title">当前对中结果</div>
+                                <div class="r-line"><span>上下张口</span><span id="r3d-openTB">--</span></div>
+                                <div class="r-line"><span>左右张口</span><span id="r3d-openLR">--</span></div>
+                                <div class="r-line"><span>上下圆周偏差</span><span id="r3d-devTB">--</span></div>
+                                <div class="r-line"><span>左右圆周偏差</span><span id="r3d-devLR">--</span></div>
+                            </div>
+                            <div class="view3d-clear" id="view3dClear">
+                                <div class="c-title">单方位清零</div>
+                                <div class="c-btns">
+                                    <button class="c-btn" data-position="top">上</button>
+                                    <button class="c-btn" data-position="bottom">下</button>
+                                    <button class="c-btn" data-position="left">左</button>
+                                    <button class="c-btn" data-position="right">右</button>
+                                </div>
+                            </div>
+                            <div class="view3d-hint">拖动旋转 · 滚轮缩放 · 点击方位标签测量</div>
+                        </div>
+                        <!-- 3D 图例: 缸体颜色 + 三路传感器颜色 -->
+                        <div class="view3d-legend" id="view3dLegend">
+                            <div class="lg-group">
+                                <span style="color:#737373;">缸体:</span>
+                                <span class="lg-item"><span class="lg-swatch" style="background:#2a6496;"></span><span id="lg-hp-side">高压缸(基准/左)</span></span>
+                                <span class="lg-item"><span class="lg-swatch" style="background:#8a8f96;"></span><span id="lg-lp-side">低压缸(调整/右)</span></span>
+                            </div>
+                            <div class="lg-group">
+                                <span style="color:#737373;">读数:</span>
+                                <span class="lg-item"><span class="lg-swatch" style="background:#2a6496;"></span>轴1</span>
+                                <span class="lg-item"><span class="lg-swatch" style="background:#4a7c59;"></span>轴2</span>
+                                <span class="lg-item"><span class="lg-swatch" style="background:#a0522d;"></span>径</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 圆形测量图 (2D) -->
+                    <div class="measurement-circle" id="measurementCircle2d" style="display:none;">
+                        <div class="circle-center"></div>
+
+                        <!-- 4个方位测量按钮，每个同时测量3个传感器 -->
+                        <button class="measure-btn pos-top" data-position="top">
+                            <span class="btn-label">上</span>
+                            <span class="btn-values">
+                                <span class="btn-sub-value">轴1: <span id="top-axial1-avg">--</span></span>
+                                <span class="btn-sub-value">轴2: <span id="top-axial2-avg">--</span></span>
+                                <span class="btn-sub-value">径: <span id="top-radial-avg">--</span></span>
+                            </span>
+                        </button>
+                        <button class="reset-pos-btn reset-top" data-position="top" title="清除上测数据">清零</button>
+
+                        <button class="measure-btn pos-bottom" data-position="bottom">
+                            <span class="btn-label">下</span>
+                            <span class="btn-values">
+                                <span class="btn-sub-value">轴1: <span id="bottom-axial1-avg">--</span></span>
+                                <span class="btn-sub-value">轴2: <span id="bottom-axial2-avg">--</span></span>
+                                <span class="btn-sub-value">径: <span id="bottom-radial-avg">--</span></span>
+                            </span>
+                        </button>
+                        <button class="reset-pos-btn reset-bottom" data-position="bottom" title="清除下测数据">清零</button>
+
+                        <button class="measure-btn pos-left" data-position="left">
+                            <span class="btn-label">左</span>
+                            <span class="btn-values">
+                                <span class="btn-sub-value">轴1: <span id="left-axial1-avg">--</span></span>
+                                <span class="btn-sub-value">轴2: <span id="left-axial2-avg">--</span></span>
+                                <span class="btn-sub-value">径: <span id="left-radial-avg">--</span></span>
+                            </span>
+                        </button>
+                        <button class="reset-pos-btn reset-left" data-position="left" title="清除左测数据">清零</button>
+
+                        <button class="measure-btn pos-right" data-position="right">
+                            <span class="btn-label">右</span>
+                            <span class="btn-values">
+                                <span class="btn-sub-value">轴1: <span id="right-axial1-avg">--</span></span>
+                                <span class="btn-sub-value">轴2: <span id="right-axial2-avg">--</span></span>
+                                <span class="btn-sub-value">径: <span id="right-radial-avg">--</span></span>
+                            </span>
+                        </button>
+                        <button class="reset-pos-btn reset-right" data-position="right" title="清除右测数据">清零</button>
+                    </div>
+
+                    <!-- 传感器示数说明: 每个按钮内三行数字的物理含义 -->
+                    <div class="sensor-legend" id="sensorLegend">
+                        <div class="lg-item"><span class="lg-swatch" style="background:#2a6496;"></span>轴1 = 轴向传感器1读数 (mm)</div>
+                        <div class="lg-item"><span class="lg-swatch" style="background:#4a7c59;"></span>轴2 = 轴向传感器2读数 (mm)</div>
+                        <div class="lg-item"><span class="lg-swatch" style="background:#a0522d;"></span>径 = 径向传感器读数 (mm)</div>
+                    </div>
+                    <div style="text-align:center;font-size:11px;color:#a3a3a3;margin-bottom:6px;">
+                        原始读数为该方位停车时激光探头到端面的距离; 轴1/轴2 之差反映轴向张口, 同一探头相隔180°读数之差反映径向圆周偏差。
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" id="showReportBtn" disabled>测量结束/查看报告</button>
+                        <button class="btn btn-primary" id="resetBtn">重置测量</button>
+                    </div>
+                </div>
+
+                <!-- 结果预览 -->
+                <div class="panel" style="margin-top: 20px;">
+                    <div class="panel-title">计算结果预览</div>
+                    <div class="result-item">
+                        <div class="result-label">上下张口</div>
+                        <div class="result-value" id="openingTBPreview">--</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">左右张口</div>
+                        <div class="result-value" id="openingLRPreview">--</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">圆周偏差1（上/下对点）</div>
+                        <div class="result-value" id="circularDeviationTBPreview">--</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">圆周偏差2（左/右对点）</div>
+                        <div class="result-value" id="circularDeviationLRPreview">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">系统设置</div>
+                <span class="close-btn" onclick="system.hideSettings()">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">轴向传感器1 IP地址</label>
+                    <input type="text" id="axial1IP" class="form-input" placeholder="192.168.10.10">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">轴向传感器2 IP地址</label>
+                    <input type="text" id="axial2IP" class="form-input" placeholder="192.168.10.11">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">径向传感器 IP地址</label>
+                    <input type="text" id="radialIP" class="form-input" placeholder="192.168.10.12">
+                </div>
+
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="useMockData">
+                    <span style="color: #1a1a1a; font-size: 13px;">使用模拟数据</span>
+                </label>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;">
+            <div style="font-size: 14px; color: #1a1a1a; margin-bottom: 6px; font-weight: 600;">现场安装配置向导</div>
+            <div style="font-size: 12px; color: #737373; margin-bottom: 14px;">依次设置高压缸侧、测量端、各部位探头与盘车旋向, 系统据此确定 3D 模型朝向与方位映射。</div>
+
+            <!-- 步骤指示 -->
+            <div class="wizard-steps">
+                <div class="wizard-step-dot active" data-step="0"></div>
+                <div class="wizard-step-dot" data-step="1"></div>
+                <div class="wizard-step-dot" data-step="2"></div>
+                <div class="wizard-step-dot" data-step="3"></div>
+            </div>
+
+            <!-- 第1步: 高压缸在哪一侧 -->
+            <div class="wizard-page active" data-page="0">
+                <div class="wizard-q-block">
+                    <div class="wizard-q-label">① 高压缸在哪一侧?</div>
+                    <div class="wizard-q-hint">高压缸侧作为固定/基准端, 另一侧为待调整端。</div>
+                    <div class="wizard-option-group" data-field="highPressureSide">
+                        <div class="wizard-option" data-value="left">
+                            <div class="wo-icon">◀</div>
+                            <div class="wo-title">左侧</div>
+                            <div class="wo-desc">高压缸在画面左端</div>
+                        </div>
+                        <div class="wizard-option" data-value="right">
+                            <div class="wo-icon">▶</div>
+                            <div class="wo-title">右侧</div>
+                            <div class="wo-desc">高压缸在画面右端</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第2步: 测量装置安装在哪一端 -->
+            <div class="wizard-page" data-page="1">
+                <div class="wizard-q-block">
+                    <div class="wizard-q-label">② 联轴器测量装置安装在哪一端?</div>
+                    <div class="wizard-q-hint">探头工装磁吸固定的那一侧半联轴器。</div>
+                    <div class="wizard-option-group" data-field="measureEnd">
+                        <div class="wizard-option" data-value="highPressure">
+                            <div class="wo-icon">🔧</div>
+                            <div class="wo-title">高压缸侧</div>
+                            <div class="wo-desc">装在基准端</div>
+                        </div>
+                        <div class="wizard-option" data-value="lowPressure">
+                            <div class="wo-icon">🔧</div>
+                            <div class="wo-title">对侧</div>
+                            <div class="wo-desc">装在待调整端</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第3步: 各部位探头类型 (仅轴向/径向两大类) -->
+            <div class="wizard-page" data-page="2">
+                <div class="wizard-q-block">
+                    <div class="wizard-q-label">③ 各部位安装的探头类型</div>
+                    <div class="wizard-q-hint">仅区分轴向探头(测张口)与径向探头(测圆周偏差)。</div>
+
+                    <div style="font-size:12px;color:#525252;margin:10px 0 4px;">上 / 下 方位:</div>
+                    <div class="wizard-option-group" data-field="probeTopBottom">
+                        <div class="wizard-option" data-value="axial">
+                            <div class="wo-title">轴向探头</div>
+                            <div class="wo-desc">上下测轴向张口</div>
+                        </div>
+                        <div class="wizard-option" data-value="radial">
+                            <div class="wo-title">径向探头</div>
+                            <div class="wo-desc">上下测圆周偏差</div>
+                        </div>
+                    </div>
+
+                    <div style="font-size:12px;color:#525252;margin:14px 0 4px;">左 / 右 方位:</div>
+                    <div class="wizard-option-group" data-field="probeLeftRight">
+                        <div class="wizard-option" data-value="axial">
+                            <div class="wo-title">轴向探头</div>
+                            <div class="wo-desc">左右测轴向张口</div>
+                        </div>
+                        <div class="wizard-option" data-value="radial">
+                            <div class="wo-title">径向探头</div>
+                            <div class="wo-desc">左右测圆周偏差</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第4步: 盘车旋向 -->
+            <div class="wizard-page" data-page="3">
+                <div class="wizard-q-block">
+                    <div class="wizard-q-label">④ 盘车旋向</div>
+                    <div class="wizard-q-hint">从测量端正面看联轴器的旋转方向。</div>
+                    <div class="wizard-option-group" data-field="rotationDir">
+                        <div class="wizard-option" data-value="cw">
+                            <div class="wo-icon">↻</div>
+                            <div class="wo-title">顺时针</div>
+                            <div class="wo-desc">上→右→下→左</div>
+                        </div>
+                        <div class="wizard-option" data-value="ccw">
+                            <div class="wo-icon">↺</div>
+                            <div class="wo-title">逆时针</div>
+                            <div class="wo-desc">上→左→下→右</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 传感器与页面方位映射 (原有逻辑, 保留) -->
+                <hr style="border: none; border-top: 1px dashed #e5e5e5; margin: 16px 0;">
+                <div style="font-size:13px;color:#525252;margin-bottom:10px;">传感器初始方位映射</div>
+                <div class="form-group">
+                    <label class="form-label">轴向传感器初始位置</label>
+                    <select id="axialTopSensor" class="form-input">
+                        <option value="axial1">轴向传感器1在上</option>
+                        <option value="axial2">轴向传感器2在上</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">径向传感器初始位置</label>
+                    <select id="radialInitialSide" class="form-input">
+                        <option value="right">在右侧</option>
+                        <option value="left">在左侧</option>
+                    </select>
+                </div>
+            </div>
+
+                <div class="modal-buttons" style="margin-top: 20px;">
+                    <button class="btn" id="wizardPrevBtn" onclick="system.wizardPrev()" style="color:#525252;">上一步</button>
+                    <button class="btn btn-primary" id="wizardNextBtn" onclick="system.wizardNext()" style="color:white;">下一步</button>
+                    <button class="btn" onclick="system.hideSettings()" style="color: #525252;">取消</button>
+                    <button class="btn btn-primary" onclick="system.saveSettings()" style="color: white;">保存设置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 测量历史弹窗 -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">测量历史</div>
+                <span class="close-btn" id="closeHistoryModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="historyExportBar" style="display:none; margin-bottom:15px; padding:12px; background:#f5f5f5; border-radius:6px; border:1px solid #e5e5e5;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div style="font-size:13px; color:#525252;">
+                            <span>已选 <strong id="historySelectedCount">0</strong> 项</span>
+                            <button class="btn" onclick="system.historySelectAll()" style="margin-left:8px; padding:4px 10px; font-size:12px; color:#525252;">全选</button>
+                            <button class="btn" onclick="system.historyDeselectAll()" style="padding:4px 10px; font-size:12px; color:#525252;">取消全选</button>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn btn-primary" onclick="system.exportHistoryPDF()" style="padding:6px 14px; font-size:12px; color:white;">导出PDF</button>
+                            <button class="btn btn-primary" onclick="system.exportHistoryCSV()" style="padding:6px 14px; font-size:12px; color:white;">导出CSV</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="historyList" class="history-list">
+                    <div class="history-empty">暂无历史记录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="detailTitle">测量详情</div>
+                <span class="close-btn" id="closeDetailModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="detailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报告模态框 -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">测量报告</div>
+                <span class="close-btn" onclick="system.hideReport()">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">测量名称</label>
+                    <input type="text" id="reportName" class="form-input">
+                </div>
+
+                <div id="reportContent"></div>
+
+                <div class="modal-buttons" style="margin-top: 20px;">
+                    <button class="btn" onclick="system.hideReport()" style="color: #525252;">关闭</button>
+                    <button class="btn" onclick="system.exportPDF()" style="background:#4a7c59;color:white;border-color:#4a7c59;">导出PDF</button>
+                    <button class="btn" onclick="system.exportCSV()" style="background:#2a6496;color:white;border-color:#2a6496;">导出CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js 3D库: 从 CDN 加载(Service Worker 会缓存, 联网一次后离线也可用) -->
+    <script>
+        (function loadThree() {
+            // 依次尝试的 CDN 来源
+            var sources = [
+                'https://unpkg.com/three@0.128.0/build/three.min.js',
+                'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
+            ];
+            var i = 0;
+            function tryNext() {
+                if (typeof THREE !== 'undefined') return;          // 已加载成功
+                if (i >= sources.length) {
+                    console.warn('Three.js 所有来源均加载失败');
+                    return;
+                }
+                var url = sources[i++];
+                var s = document.createElement('script');
+                s.src = url;
+                s.onload = function () {
+                    if (typeof THREE !== 'undefined') {
+                        console.log('Three.js 已从以下来源加载:', url);
+                    } else {
+                        tryNext();   // 加载了但没暴露 THREE, 继续下一个
+                    }
+                };
+                s.onerror = function () { tryNext(); };
+                document.head.appendChild(s);
+            }
+            tryNext();
+        })();
+    </script>
+
+    <!-- html2canvas + jsPDF 库改由 ensurePdfLibraries() 在导出时动态加载(含 CDN 回退),
+         Service Worker 会缓存这些 CDN 库, 联网一次后离线也可用。此处不再静态引入,
+         以免请求不存在的本地文件返回 404 HTML 被当作脚本执行而破坏后续解析。 -->
+
+    <script>
+        class AlignmentMeasurementSystem {
+            constructor() {
+                this.currentSession = {
+                    measurements: {
+                        top: [], bottom: [], left: [], right: []
+                    },
+                    activePosition: null
+                };
+
+                this.completedReports = [];
+                // 3台ESP32: 2台轴向 + 1台径向
+                this.axial1Host = '192.168.10.10';
+                this.axial2Host = '192.168.10.11';
+                this.radialHost = '192.168.10.12';
+                this.useMockData = false;
+
+                this.sensorLayout = {
+                    axialTopSensor: 'axial1',
+                    radialInitialSide: 'right',
+                    // 3D 配置向导新增字段
+                    highPressureSide: 'left',   // 高压缸在哪一侧: left / right (基准/固定端)
+                    measureEnd: 'highPressure', // 测量装置安装端: highPressure(高压缸侧) / lowPressure(对侧)
+                    probeTop: 'axial',          // 上部位探头类型: axial / radial
+                    probeBottom: 'axial',       // 下部位探头类型
+                    probeLeftRight: 'radial',   // 左右部位探头类型
+                    rotationDir: 'cw'           // 盘车旋向: cw(顺时针) / ccw(逆时针)
+                };
+
+                // 3D 视图状态
+                this.view3D = {
+                    enabled: true,     // 当前主视图是否为 3D
+                    scene: null,
+                    camera: null,
+                    renderer: null,
+                    controls: null,
+                    coupling: null,    // 联轴器模型组
+                    labelSprites: {},  // 四方位标注 sprite
+                    initialized: false,
+                    animationId: null
+                };
+
+                // 使用 v3 键名避免与旧数据冲突
+                this.storageKey = 'alignment_settings_v3';
+                this.sessionKey = 'alignment_current_session_v3';
+                this.reportsKey = 'alignment_reports_v3';
+
+                this.init();
+            }
+
+            init() {
+                this.loadSettings();
+                this.loadSession();
+                this.loadReports();
+                this.bindEvents();
+                this.updateClock();
+                this.updateUI();
+                // 初始化缸体图例文字 (不依赖 3D 是否加载)
+                this.updateCylinderLegend(this.sensorLayout.highPressureSide === 'left');
+                setInterval(() => this.updateClock(), 1000);
+                // 延迟初始化 3D, 等待 Three.js 脚本加载完成
+                this.initThreeWhenReady();
+            }
+
+            initThreeWhenReady(attempt = 0) {
+                if (this.view3D.initialized) return;
+                if (typeof THREE !== 'undefined') {
+                    this.init3DView();
+                    return;
+                }
+                // 前 ~5 秒仍等待时, 临时切到 2D 让界面可用, 但不禁用 3D 按钮;
+                // THREE 一旦就绪会自动初始化并可切回 3D。持续轮询最多 ~30 秒。
+                if (attempt === 30 && this.view3D.enabled) {
+                    console.warn('Three.js 尚未就绪, 暂显示 2D, 加载完成后可切回 3D');
+                }
+                if (attempt > 300) {
+                    console.warn('Three.js 加载超时, 请检查是否能访问 /three.min.js 或网络');
+                    return;
+                }
+                setTimeout(() => this.initThreeWhenReady(attempt + 1), 100);
+            }
+
+            bindEvents() {
+                const bindTap = (el, handler) => {
+                    if (!el) return;
+                    let touchTriggered = false;
+                    el.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        touchTriggered = true;
+                        handler(e);
+                        setTimeout(() => {
+                            touchTriggered = false;
+                        }, 350);
+                    }, { passive: false });
+
+                    el.addEventListener('click', (e) => {
+                        if (touchTriggered) return;
+                        handler(e);
+                    });
+                };
+
+                document.querySelectorAll('.measure-btn').forEach(btn => {
+                    bindTap(btn, () => {
+                        const position = btn.dataset.position;
+                        this.setActivePosition(position);
+                        this.measure(position, btn);
+                    });
+                });
+
+                document.querySelectorAll('.reset-pos-btn').forEach(btn => {
+                    bindTap(btn, (e) => {
+                        e.stopPropagation();
+                        const position = btn.dataset.position;
+                        this.resetSinglePosition(position);
+                    });
+                });
+
+                bindTap(document.getElementById('showReportBtn'), () => this.handleShowReport());
+                bindTap(document.getElementById('resetBtn'), () => this.resetMeasurements());
+                bindTap(document.getElementById('settingsBtn'), () => this.showSettings());
+                bindTap(document.getElementById('historyToggleBtn'), () => this.showHistoryModal());
+
+                // 视图切换
+                bindTap(document.getElementById('view3dBtn'), () => this.switchView('3d'));
+                bindTap(document.getElementById('view2dBtn'), () => this.switchView('2d'));
+                bindTap(document.getElementById('view3dFrontBtn'), () => this.setFrontView());
+                bindTap(document.getElementById('view3dResetBtn'), () => this.resetCameraView());
+
+                // 3D 视图单方位清零
+                document.querySelectorAll('#view3dClear .c-btn').forEach(btn => {
+                    bindTap(btn, (e) => {
+                        e.stopPropagation();
+                        this.resetSinglePosition(btn.dataset.position);
+                    });
+                });
+
+                // 配置向导选项点击
+                document.querySelectorAll('.wizard-option').forEach(opt => {
+                    bindTap(opt, () => this.selectWizardOption(opt));
+                });
+
+                bindTap(document.getElementById('closeHistoryModal'), () => this.hideHistoryModal());
+                document.getElementById('historyModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'historyModal') this.hideHistoryModal();
+                });
+
+                bindTap(document.getElementById('closeDetailModal'), () => this.hideDetailModal());
+                document.getElementById('detailModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'detailModal') this.hideDetailModal();
+                });
+
+                document.getElementById('reportModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'reportModal') this.hideReport();
+                });
+            }
+
+            updateClock() {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+                document.getElementById('currentTime').textContent = timeStr;
+            }
+
+            setActivePosition(position) {
+                document.querySelectorAll('.measure-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                const btn = document.querySelector(`[data-position="${position}"]`);
+                btn.classList.add('active');
+                this.currentSession.activePosition = position;
+            }
+
+            /**
+             * 点击一个方位按钮 → 同时向 3 台 ESP32 发请求 → 存储 3 个值
+             */
+            async measure(position, btn) {
+                btn.disabled = true;
+                try {
+                    const [axial1Resp, axial2Resp, radialResp] = await Promise.all([
+                        this.fetchMeasurement(this.axial1Host),
+                        this.fetchMeasurement(this.axial2Host),
+                        this.fetchMeasurement(this.radialHost)
+                    ]);
+
+                    const a1 = axial1Resp.sensor;
+                    const a2 = axial2Resp.sensor;
+                    const rd = radialResp.sensor;
+
+                    // 至少一个传感器连接成功才继续
+                    if (!a1.success && !a2.success && !rd.success) {
+                        throw new Error('所有传感器均无法连接');
+                    }
+
+                    const axial1Val = (a1.success && a1.value !== 0.0000) ? a1.value : 0;
+                    const axial2Val = (a2.success && a2.value !== 0.0000) ? a2.value : 0;
+                    const radialVal = (rd.success && rd.value !== 0.0000) ? rd.value : 0;
+
+                    const record = {
+                        axial1: axial1Val,
+                        axial2: axial2Val,
+                        radial: radialVal,
+                        time: new Date().toLocaleString('zh-CN'),
+                        timestamp: Date.now()
+                    };
+
+                    this.currentSession.measurements[position].push(record);
+                    btn.classList.add('measured');
+                    btn.classList.remove('active');
+
+                    this.saveSession();
+                    this.updateUI();
+                    this.checkCompletion();
+
+                } catch (error) {
+                    console.error('测量错误:', error);
+                    alert('测量失败: ' + error.message);
+                } finally {
+                    btn.disabled = false;
+                }
+            }
+
+            async fetchMeasurement(host) {
+                if (this.useMockData) {
+                    return this.generateMockData();
+                }
+
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000);
+
+                try {
+                    const response = await fetch(`http://${host}/getdistance`, {
+                        method: 'GET',
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeout);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    clearTimeout(timeout);
+                    console.warn(`${host} 连接失败:`, error.message);
+                    return { sensor: { success: false, value: 0 } };
+                }
+            }
+
+            generateMockData() {
+                return {
+                    sensor: {
+                        success: true,
+                        value: parseFloat((Math.random() * 20 + 30).toFixed(4))
+                    }
+                };
+            }
+
+            /**
+             * 从测量记录数组中提取指定字段的平均值
+             */
+            calculateAverage(measurements, field) {
+                const valid = measurements.filter(m => m[field] !== null && m[field] !== undefined);
+                if (valid.length === 0) return null;
+                const sum = valid.reduce((acc, m) => acc + m[field], 0);
+                return sum / valid.length;
+            }
+
+            buildPhysicalDisplayValues() {
+                return this.buildPhysicalDisplayValuesFrom(this.currentSession.measurements);
+            }
+
+            updateUI() {
+                const display = this.buildPhysicalDisplayValues();
+
+                ['top', 'bottom', 'left', 'right'].forEach(position => {
+                    const meas = this.currentSession.measurements[position];
+                    const d = display[position];
+
+                    document.getElementById(`${position}-axial1-avg`).textContent =
+                        d.axial1 !== null ? d.axial1.toFixed(4) : '--';
+                    document.getElementById(`${position}-axial2-avg`).textContent =
+                        d.axial2 !== null ? d.axial2.toFixed(4) : '--';
+                    document.getElementById(`${position}-radial-avg`).textContent =
+                        d.radial !== null ? d.radial.toFixed(4) : '--';
+
+                    const btn = document.querySelector(`[data-position="${position}"]`);
+                    if (meas.length > 0) {
+                        btn.classList.add('measured');
+                    } else {
+                        btn.classList.remove('measured');
+                    }
+                });
+
+                this.updateProgress();
+                this.updateResultPreview();
+                this.updateReportButtonState();
+                // 同步刷新 3D 视图示数与标注
+                if (this.view3D && this.view3D.initialized) {
+                    this.update3DReadout();
+                }
+            }
+
+            updateProgress() {
+                let completed = 0;
+                ['top', 'bottom', 'left', 'right'].forEach(pos => {
+                    if (this.currentSession.measurements[pos].length > 0) completed++;
+                });
+                document.getElementById('progressFill').style.width = `${(completed / 4) * 100}%`;
+                document.getElementById('progressText').textContent = `已完成 ${completed}/4`;
+            }
+
+            updateReportButtonState() {
+                const btn = document.getElementById('showReportBtn');
+                if (!btn) return;
+                const allComplete = ['top', 'bottom', 'left', 'right'].every(pos =>
+                    this.currentSession.measurements[pos].length > 0
+                );
+                btn.disabled = !allComplete;
+            }
+
+            deleteRecord(position, index) {
+                if (!confirm('确定删除这条记录？')) return;
+                this.currentSession.measurements[position].splice(index, 1);
+                this.saveSession();
+                this.updateUI();
+            }
+
+            getRotationOrder() {
+                return ['top', 'right', 'bottom', 'left'];
+            }
+
+            getOppositeSide(side) {
+                const map = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' };
+                return map[side];
+            }
+
+            sideName(side) {
+                const map = { top: '上', bottom: '下', left: '左', right: '右' };
+                return map[side] || '--';
+            }
+
+            stableRound2(value) {
+                return Math.round((value + 1e-9) * 100) / 100;
+            }
+
+            getAxialSideMap(position) {
+                const order = this.getRotationOrder();
+                const rotateSteps = order.indexOf(position);
+                const sideOrder = ['top', 'right', 'bottom', 'left'];
+
+                const axial1Start = this.sensorLayout.axialTopSensor === 'axial1' ? 'top' : 'bottom';
+                const axial2Start = this.getOppositeSide(axial1Start);
+
+                const axial1Idx = sideOrder.indexOf(axial1Start);
+                const axial2Idx = sideOrder.indexOf(axial2Start);
+
+                return {
+                    axial1: sideOrder[(axial1Idx + rotateSteps + 4) % 4],
+                    axial2: sideOrder[(axial2Idx + rotateSteps + 4) % 4]
+                };
+            }
+
+            getRadialSide(position) {
+                const order = this.getRotationOrder();
+                const rotateSteps = order.indexOf(position);
+                const sideOrder = ['top', 'right', 'bottom', 'left'];
+                const startIdx = sideOrder.indexOf(this.sensorLayout.radialInitialSide);
+                return sideOrder[(startIdx + rotateSteps + 4) % 4];
+            }
+
+            formatOpeningResult(sideA, valueA, sideB, valueB) {
+                if (valueA === null || valueB === null) {
+                    return '--';
+                }
+
+                if (valueA === valueB) {
+                    return '无张口 0.00 丝';
+                }
+
+                const largerSide = valueA > valueB ? sideA : sideB;
+                const openingValue = Math.abs(valueA - valueB) * 100;
+                const roundedValue = this.stableRound2(openingValue);
+                return `${this.sideName(largerSide)}张口 ${roundedValue.toFixed(2)} 丝`;
+            }
+
+            buildOpeningMeasure(sideA, valueA, sideB, valueB) {
+                if (valueA === null || valueB === null) {
+                    return null;
+                }
+
+                if (valueA === valueB) {
+                    return { side: sideA, value: 0 };
+                }
+
+                return {
+                    side: valueA > valueB ? sideA : sideB,
+                    value: Math.abs(valueA - valueB) * 100
+                };
+            }
+
+            formatCombinedOpeningResult(openingA, openingB) {
+                if (!openingA || !openingB) {
+                    return '--';
+                }
+
+                const isSameSide = openingA.side === openingB.side;
+                
+                let combinedValue;
+                if (isSameSide) {
+                    combinedValue = (openingA.value + openingB.value) / 2;
+                } else {
+                    combinedValue = Math.abs(openingA.value - openingB.value) / 2;
+                }
+
+                if (combinedValue === 0) {
+                    return '无张口 0.00 丝';
+                }
+
+                const largerOpening = openingA.value > openingB.value ? openingA : openingB;
+                const roundedValue = this.stableRound2(combinedValue);
+                return `${this.sideName(largerOpening.side)}张口 ${roundedValue.toFixed(2)} 丝`;
+            }
+
+            formatCircularDeviationResult(sideA, valueA, sideB, valueB) {
+                if (valueA === null || valueB === null) {
+                    return '--';
+                }
+
+                if (valueA === valueB) {
+                    return '无偏差 0.00 丝';
+                }
+
+                const smallerSide = valueA < valueB ? sideA : sideB;
+                const deviationValue = Math.abs(valueA - valueB) * 100 / 2;
+                const roundedValue = this.stableRound2(deviationValue);
+                return `${this.sideName(smallerSide)}偏 ${roundedValue.toFixed(2)} 丝`;
+            }
+
+            buildPhysicalStatsFrom(measurements) {
+                const sides = ['top', 'right', 'bottom', 'left'];
+                const fields = ['axial1', 'axial2', 'radial'];
+                const stats = {
+                    top: { axial1: { avg: null, count: 0 }, axial2: { avg: null, count: 0 }, radial: { avg: null, count: 0 } },
+                    right: { axial1: { avg: null, count: 0 }, axial2: { avg: null, count: 0 }, radial: { avg: null, count: 0 } },
+                    bottom: { axial1: { avg: null, count: 0 }, axial2: { avg: null, count: 0 }, radial: { avg: null, count: 0 } },
+                    left: { axial1: { avg: null, count: 0 }, axial2: { avg: null, count: 0 }, radial: { avg: null, count: 0 } }
+                };
+
+                sides.forEach(position => {
+                    const meas = measurements[position] || [];
+                    const avgA1 = this.calculateAverage(meas, 'axial1');
+                    const avgA2 = this.calculateAverage(meas, 'axial2');
+                    const avgRd = this.calculateAverage(meas, 'radial');
+                    const countA1 = meas.filter(r => r.axial1 !== null && r.axial1 !== undefined).length;
+                    const countA2 = meas.filter(r => r.axial2 !== null && r.axial2 !== undefined).length;
+                    const countRd = meas.filter(r => r.radial !== null && r.radial !== undefined).length;
+
+                    const axialSideMap = this.getAxialSideMap(position);
+                    const radialSide = this.getRadialSide(position);
+
+                    stats[axialSideMap.axial1].axial1 = { avg: avgA1, count: countA1 };
+                    stats[axialSideMap.axial2].axial2 = { avg: avgA2, count: countA2 };
+                    stats[radialSide].radial = { avg: avgRd, count: countRd };
+                });
+
+                return stats;
+            }
+
+            buildComputedTexts(measurements) {
+                const avg = {
+                    top: {
+                        axial1: this.calculateAverage(measurements.top || [], 'axial1'),
+                        axial2: this.calculateAverage(measurements.top || [], 'axial2'),
+                        radial: this.calculateAverage(measurements.top || [], 'radial')
+                    },
+                    right: {
+                        axial1: this.calculateAverage(measurements.right || [], 'axial1'),
+                        axial2: this.calculateAverage(measurements.right || [], 'axial2'),
+                        radial: this.calculateAverage(measurements.right || [], 'radial')
+                    },
+                    bottom: {
+                        axial1: this.calculateAverage(measurements.bottom || [], 'axial1'),
+                        axial2: this.calculateAverage(measurements.bottom || [], 'axial2'),
+                        radial: this.calculateAverage(measurements.bottom || [], 'radial')
+                    },
+                    left: {
+                        axial1: this.calculateAverage(measurements.left || [], 'axial1'),
+                        axial2: this.calculateAverage(measurements.left || [], 'axial2'),
+                        radial: this.calculateAverage(measurements.left || [], 'radial')
+                    }
+                };
+
+                const topAxialMap = this.getAxialSideMap('top');
+                const rightAxialMap = this.getAxialSideMap('right');
+                const bottomAxialMap = this.getAxialSideMap('bottom');
+                const leftAxialMap = this.getAxialSideMap('left');
+                const physical = this.buildPhysicalDisplayValuesFrom(measurements);
+
+                const openingTopRaw = this.buildOpeningMeasure(topAxialMap.axial1, avg.top.axial1, topAxialMap.axial2, avg.top.axial2);
+                const openingRightRaw = this.buildOpeningMeasure(rightAxialMap.axial1, avg.right.axial1, rightAxialMap.axial2, avg.right.axial2);
+                const openingBottomRaw = this.buildOpeningMeasure(bottomAxialMap.axial1, avg.bottom.axial1, bottomAxialMap.axial2, avg.bottom.axial2);
+                const openingLeftRaw = this.buildOpeningMeasure(leftAxialMap.axial1, avg.left.axial1, leftAxialMap.axial2, avg.left.axial2);
+
+                const openingTB = this.formatCombinedOpeningResult(openingTopRaw, openingBottomRaw);
+                const openingLR = this.formatCombinedOpeningResult(openingRightRaw, openingLeftRaw);
+
+                return {
+                    openingTB,
+                    openingLR,
+                    circularDeviationTB: this.formatCircularDeviationResult('top', physical.top.radial, 'bottom', physical.bottom.radial),
+                    circularDeviationLR: this.formatCircularDeviationResult('left', physical.left.radial, 'right', physical.right.radial)
+                };
+            }
+
+            buildPhysicalDisplayValuesFrom(measurements) {
+                const display = {
+                    top: { axial1: null, axial2: null, radial: null },
+                    right: { axial1: null, axial2: null, radial: null },
+                    bottom: { axial1: null, axial2: null, radial: null },
+                    left: { axial1: null, axial2: null, radial: null }
+                };
+
+                ['top', 'right', 'bottom', 'left'].forEach(position => {
+                    const meas = measurements[position] || [];
+                    const avgA1 = this.calculateAverage(meas, 'axial1');
+                    const avgA2 = this.calculateAverage(meas, 'axial2');
+                    const avgRd = this.calculateAverage(meas, 'radial');
+
+                    const axialSideMap = this.getAxialSideMap(position);
+                    const radialSide = this.getRadialSide(position);
+
+                    display[axialSideMap.axial1].axial1 = avgA1;
+                    display[axialSideMap.axial2].axial2 = avgA2;
+                    display[radialSide].radial = avgRd;
+                });
+
+                return display;
+            }
+
+            buildResultEntries(measurements) {
+                const computed = this.buildComputedTexts(measurements);
+                return [
+                    { label: '上下张口', value: computed.openingTB },
+                    { label: '左右张口', value: computed.openingLR },
+                    { label: '圆周偏差1（上/下对点）', value: computed.circularDeviationTB },
+                    { label: '圆周偏差2（左/右对点）', value: computed.circularDeviationLR }
+                ];
+            }
+
+            formatMeasurementValue(value) {
+                return (typeof value === 'number' && Number.isFinite(value))
+                    ? value.toFixed(4)
+                    : '--';
+            }
+
+            buildMeasurementRows(measurements) {
+                const posLabels = { top: '上', bottom: '下', left: '左', right: '右' };
+                const rows = [];
+
+                ['top', 'bottom', 'left', 'right'].forEach(position => {
+                    (measurements[position] || []).forEach((record, index) => {
+                        const axial1 = Number(record.axial1);
+                        const axial2 = Number(record.axial2);
+                        const radial = Number(record.radial);
+                        rows.push({
+                            position: posLabels[position],
+                            index: index + 1,
+                            axial1: Number.isFinite(axial1) ? axial1 : null,
+                            axial2: Number.isFinite(axial2) ? axial2 : null,
+                            radial: Number.isFinite(radial) ? radial : null,
+                            time: record.time || '--'
+                        });
+                    });
+                });
+
+                return rows;
+            }
+
+            buildMeasurementLogHtml(measurements) {
+                const rows = this.buildMeasurementRows(measurements);
+                if (rows.length === 0) {
+                    return '<div style="font-size:12px;color:#737373;">暂无原始测量记录</div>';
+                }
+
+                const htmlRows = rows.map(row => `
+                    <tr>
+                        <td style="padding:6px 10px;border:1px solid #ddd;color:#222;background:#fff;">${row.position}</td>
+                        <td style="padding:6px 10px;border:1px solid #ddd;color:#222;background:#fff;">${row.index}</td>
+                        <td style="padding:6px 10px;border:1px solid #ddd;color:#222;background:#fff;">${this.formatMeasurementValue(row.axial1)} mm</td>
+                        <td style="padding:6px 10px;border:1px solid #ddd;color:#222;background:#fff;">${this.formatMeasurementValue(row.axial2)} mm</td>
+                        <td style="padding:6px 10px;border:1px solid #ddd;color:#222;background:#fff;">${this.formatMeasurementValue(row.radial)} mm</td>
+                        <td style="padding:6px 10px;border:1px solid #ddd;color:#222;background:#fff;">${row.time}</td>
+                    </tr>
+                `).join('');
+
+                return `
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:12px;">
+                        <tr style="background:#f0f0f0;">
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;color:#444;">方位</th>
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;color:#444;">序号</th>
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;color:#444;">轴向1</th>
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;color:#444;">轴向2</th>
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;color:#444;">径向</th>
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;color:#444;">时间</th>
+                        </tr>
+                        ${htmlRows}
+                    </table>
+                `;
+            }
+
+            updateResultPreview() {
+                const r = this.buildComputedTexts(this.currentSession.measurements);
+                document.getElementById('openingTBPreview').textContent = r.openingTB;
+                document.getElementById('openingLRPreview').textContent = r.openingLR;
+                document.getElementById('circularDeviationTBPreview').textContent = r.circularDeviationTB;
+                document.getElementById('circularDeviationLRPreview').textContent = r.circularDeviationLR;
+            }
+
+            checkCompletion() {
+                this.updateReportButtonState();
+            }
+
+            handleShowReport() {
+                const allComplete = ['top', 'bottom', 'left', 'right'].every(pos =>
+                    this.currentSession.measurements[pos].length > 0
+                );
+                if (!allComplete) {
+                    alert('请先完成四个方位测量');
+                    return;
+                }
+                this.showReport();
+            }
+
+            showReport() {
+                const now = new Date();
+                const defaultName = `对中测量_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}`;
+
+                document.getElementById('reportName').value = defaultName;
+
+                const report = this.generateReportContent();
+                document.getElementById('reportContent').innerHTML = report;
+                document.getElementById('reportModal').style.display = 'block';
+
+                this.saveCompletedMeasurement(defaultName);
+                this.clearWorkingData();
+            }
+
+            hideReport() {
+                this.syncLatestReportName();
+                document.getElementById('reportModal').style.display = 'none';
+            }
+
+            syncLatestReportName() {
+                if (this.completedReports.length === 0) return;
+
+                const inputEl = document.getElementById('reportName');
+                if (!inputEl) return;
+
+                const reportName = inputEl.value.trim();
+                if (!reportName) return;
+
+                this.completedReports[this.completedReports.length - 1].name = reportName;
+                localStorage.setItem(this.reportsKey, JSON.stringify(this.completedReports));
+            }
+
+            saveCompletedMeasurement(name) {
+                const completedMeasurement = {
+                    name: name,
+                    timestamp: Date.now(),
+                    date: new Date().toLocaleString('zh-CN'),
+                    measurements: JSON.parse(JSON.stringify(this.currentSession.measurements))
+                };
+                this.completedReports.push(completedMeasurement);
+                localStorage.setItem(this.reportsKey, JSON.stringify(this.completedReports));
+            }
+
+            clearWorkingData() {
+                this.currentSession = {
+                    measurements: { top: [], bottom: [], left: [], right: [] },
+                    activePosition: null
+                };
+                this.saveSession();
+                document.querySelectorAll('.measure-btn').forEach(btn => {
+                    btn.classList.remove('measured', 'active');
+                });
+                this.updateUI();
+            }
+
+            generateReportContent() {
+                const m = this.currentSession.measurements;
+                const positions = ['top', 'bottom', 'left', 'right'];
+                const posNames = ['上', '下', '左', '右'];
+                const fields = ['axial1', 'axial2', 'radial'];
+                const fieldNames = ['轴向1', '轴向2', '径向'];
+                const physicalStats = this.buildPhysicalStatsFrom(m);
+
+                const computed = this.buildComputedTexts(m);
+
+                const pressCounts = positions.map((pos, i) => {
+                    const count = (m[pos] || []).length;
+                    return `<div class="detail-data-item">
+                            <div class="detail-data-label">${posNames[i]} 按下次数</div>
+                            <div class="detail-data-value">${count} 次</div>
+                        </div>`;
+                }).join('');
+
+                const fmt = (pos, field) => {
+                    const cell = physicalStats[pos][field];
+                    return `${cell.avg !== null ? cell.avg.toFixed(4) : '--'} mm (${cell.count}次)`;
+                };
+
+                let gridItems = '';
+                positions.forEach((pos, pi) => {
+                    fields.forEach((f, fi) => {
+                        gridItems += `
+                        <div class="detail-data-item">
+                            <div class="detail-data-label">${posNames[pi]} ${fieldNames[fi]}</div>
+                            <div class="detail-data-value">${fmt(pos, f)}</div>
+                        </div>`;
+                    });
+                });
+
+                let resultItems = `
+                        <div class="result-item">
+                            <div class="result-label">上下张口</div>
+                            <div class="result-value">${computed.openingTB}</div>
+                        </div>`;
+                resultItems += `
+                        <div class="result-item">
+                            <div class="result-label">左右张口</div>
+                            <div class="result-value">${computed.openingLR}</div>
+                        </div>`;
+                resultItems += `
+                        <div class="result-item">
+                            <div class="result-label">圆周偏差1（上/下对点）</div>
+                            <div class="result-value">${computed.circularDeviationTB}</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">圆周偏差2（左/右对点）</div>
+                            <div class="result-value">${computed.circularDeviationLR}</div>
+                        </div>`;
+
+                return `
+                    <div class="detail-data-grid">${pressCounts}
+                    </div>
+
+                    <div class="detail-data-grid" style="margin-top: 18px;">${gridItems}
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <h4 style="color: #737373; font-size: 0.9em; margin-bottom: 15px; text-transform: uppercase;">原始测量记录</h4>
+                        ${this.buildMeasurementLogHtml(m)}
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <h4 style="color: #737373; font-size: 0.9em; margin-bottom: 15px; text-transform: uppercase;">计算结果</h4>
+                        ${resultItems}
+                    </div>
+                `;
+            }
+
+            async exportPDF() {
+                const reportName = document.getElementById('reportName').value || '对中测量报告';
+
+                this.syncLatestReportName();
+
+                const lastReport = this.completedReports[this.completedReports.length - 1];
+                const m = lastReport.measurements;
+
+                // 构建测量数据表格行
+                const posLabels = ['上', '下', '左', '右'];
+                const posKeys = ['top', 'bottom', 'left', 'right'];
+                const sensors = ['axial1', 'axial2', 'radial'];
+                const sensorLabels = ['轴向1', '轴向2', '径向'];
+                const physicalStats = this.buildPhysicalStatsFrom(m);
+
+                let pressRows = '';
+                posKeys.forEach((pos, pi) => {
+                    const count = (m[pos] || []).length;
+                    pressRows += `<tr><td style="padding:6px 10px;border:1px solid #ddd;">${posLabels[pi]}</td><td style="padding:6px 10px;border:1px solid #ddd;">${count} 次</td></tr>`;
+                });
+
+                let dataRows = '';
+                posKeys.forEach((pos, pi) => {
+                    sensors.forEach((s, si) => {
+                        const cell = physicalStats[pos][s];
+                        dataRows += `<tr><td style="padding:6px 10px;border:1px solid #ddd;">${posLabels[pi]}</td><td style="padding:6px 10px;border:1px solid #ddd;">${sensorLabels[si]}</td><td style="padding:6px 10px;border:1px solid #ddd;">${cell.avg !== null ? cell.avg.toFixed(4) : '--'} mm</td></tr>`;
+                    });
+                });
+
+                const resultsHtml = this.buildResultEntries(m)
+                    .map(item => `<p style="margin:4px 0;">${item.label}: ${item.value}</p>`)
+                    .join('');
+
+                const htmlContent = `
+                <div style="font-family:'Microsoft YaHei','SimHei','PingFang SC',sans-serif;padding:25px;width:700px;background:white;color:#333;font-size:13px;">
+                    <h2 style="text-align:center;margin:0 0 5px 0;font-size:18px;">${reportName}</h2>
+                    <p style="text-align:center;color:#666;font-size:12px;margin:0 0 18px 0;">测量时间: ${lastReport.date}</p>
+                    <h3 style="font-size:14px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">按下次数</h3>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:12px;">
+                        <tr style="background:#f0f0f0;">
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;">方位</th>
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;">次数</th>
+                        </tr>
+                        ${pressRows}
+                    </table>
+                    <h3 style="font-size:14px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">测量数据</h3>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:12px;">
+                        <tr style="background:#f0f0f0;">
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;">方位</th>
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;">传感器</th>
+                            <th style="padding:6px 10px;border:1px solid #ddd;text-align:left;">平均值</th>
+                        </tr>
+                        ${dataRows}
+                    </table>
+                    <h3 style="font-size:14px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">原始测量记录</h3>
+                    ${this.buildMeasurementLogHtml(m)}
+                    <h3 style="font-size:14px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">计算结果</h3>
+                    <div style="margin-bottom:18px;font-size:12px;">${resultsHtml}</div>
+                </div>`;
+
+                // 优先尝试使用html2canvas+jsPDF，如果CDN不可用则降级为浏览器打印保存PDF
+                const libsReady = await this.ensurePdfLibraries();
+                if (!libsReady) {
+                    this.exportPDFByPrint(reportName, htmlContent);
+                    this.hideReport();
+                    return;
+                }
+
+                const container = document.createElement('div');
+                container.style.position = 'fixed';
+                container.style.left = '-9999px';
+                container.style.top = '0';
+                container.innerHTML = htmlContent;
+                document.body.appendChild(container);
+
+                try {
+                    const canvas = await html2canvas(container.firstElementChild, { scale: 2, useCORS: true });
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    const margin = 10;
+                    const imgWidth = pageWidth - margin * 2;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    if (imgHeight <= pageHeight - margin * 2) {
+                        doc.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+                    } else {
+                        const pageContentHeight = pageHeight - margin * 2;
+                        const sourcePageHeight = (pageContentHeight / imgHeight) * canvas.height;
+                        const pages = Math.ceil(canvas.height / sourcePageHeight);
+                        for (let p = 0; p < pages; p++) {
+                            if (p > 0) doc.addPage();
+                            const srcY = p * sourcePageHeight;
+                            const srcH = Math.min(sourcePageHeight, canvas.height - srcY);
+                            const destH = (srcH / canvas.height) * imgHeight;
+                            const pageCanvas = document.createElement('canvas');
+                            pageCanvas.width = canvas.width;
+                            pageCanvas.height = srcH;
+                            const ctx = pageCanvas.getContext('2d');
+                            ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+                            doc.addImage(pageCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, destH);
+                        }
+                    }
+
+                    doc.save(`${reportName}.pdf`);
+                    alert('PDF已导出');
+                } catch (error) {
+                    console.error('PDF导出失败:', error);
+                    alert('PDF导出失败: ' + error.message);
+                } finally {
+                    document.body.removeChild(container);
+                }
+                this.hideReport();
+            }
+
+            loadScript(url) {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = url;
+                    script.async = true;
+                    script.onload = () => resolve(true);
+                    script.onerror = () => reject(new Error('加载失败: ' + url));
+                    document.head.appendChild(script);
+                });
+            }
+
+            async tryLoadFromList(urls, checker) {
+                if (checker()) return true;
+                for (const url of urls) {
+                    try {
+                        await this.loadScript(url);
+                        if (checker()) return true;
+                    } catch (e) {
+                        console.warn(e.message);
+                    }
+                }
+                return checker();
+            }
+
+            async ensurePdfLibraries() {
+                const html2canvasReady = () => typeof window.html2canvas === 'function';
+                const jsPdfReady = () => window.jspdf && typeof window.jspdf.jsPDF === 'function';
+
+                // 从 CDN 加载（Service Worker 会缓存, 联网一次后离线也可用）
+                const html2canvasOk = await this.tryLoadFromList([
+                    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+                    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+                    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+                ], html2canvasReady);
+
+                const jsPdfOk = await this.tryLoadFromList([
+                    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+                    'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+                    'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'
+                ], jsPdfReady);
+
+                return html2canvasOk && jsPdfOk;
+            }
+
+            exportPDFByPrint(reportName, htmlContent) {
+                const printWindow = window.open('', '_blank');
+                if (!printWindow) {
+                    alert('PDF导出失败: 无法打开打印窗口，请允许弹窗或改用CSV导出');
+                    return;
+                }
+
+                const printable = `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${reportName}</title>
+    <style>
+        body { margin: 0; padding: 20px; background: #fff; color: #333; }
+    </style>
+</head>
+<body>
+${htmlContent}
+</body>
+</html>`;
+
+                printWindow.document.open();
+                printWindow.document.write(printable);
+                printWindow.document.close();
+                setTimeout(() => {
+                    printWindow.focus();
+                    printWindow.print();
+                }, 300);
+                alert('当前网络无法加载PDF库，已切换为打印保存PDF');
+            }
+
+            exportCSV() {
+                const reportName = document.getElementById('reportName').value || '\u5bf9\u4e2d\u6d4b\u91cf\u62a5\u544a';
+
+                this.syncLatestReportName();
+
+                const lastReport = this.completedReports[this.completedReports.length - 1];
+                const m = lastReport.measurements;
+
+                const posLabels = ['\u4e0a', '\u4e0b', '\u5de6', '\u53f3'];
+                const posKeys = ['top', 'bottom', 'left', 'right'];
+                const sensors = ['axial1', 'axial2', 'radial'];
+                const sensorLabels = ['\u8f74\u54111', '\u8f74\u54112', '\u5f84\u5411'];
+                const physicalStats = this.buildPhysicalStatsFrom(m);
+
+                let rows = [];
+                // BOM for UTF-8 Excel compatibility
+                rows.push('\u6d4b\u91cf\u540d\u79f0,' + reportName);
+                rows.push('\u6d4b\u91cf\u65f6\u95f4,' + lastReport.date);
+                rows.push('');
+                rows.push('\u6309\u4e0b\u6b21\u6570,\u6b21\u6570');
+                posKeys.forEach((pos, pi) => {
+                    rows.push(`${posLabels[pi]},${(m[pos] || []).length}`);
+                });
+                rows.push('');
+                rows.push('\u65b9\u4f4d,\u4f20\u611f\u5668,\u5e73\u5747\u503c(mm)');
+
+                posKeys.forEach((pos, pi) => {
+                    sensors.forEach((s, si) => {
+                        const cell = physicalStats[pos][s];
+                        rows.push(`${posLabels[pi]},${sensorLabels[si]},${cell.avg !== null ? cell.avg.toFixed(4) : '--'}`);
+                    });
+                });
+
+                rows.push('');
+                rows.push('\u8ba1\u7b97\u7ed3\u679c,\u6570\u503c');
+                this.buildResultEntries(m).forEach(item => {
+                    rows.push(`${item.label},${item.value}`);
+                });
+
+                rows.push('');
+                rows.push('原始测量记录');
+                rows.push('方位,序号,轴向1(mm),轴向2(mm),径向(mm),时间');
+                this.buildMeasurementRows(m).forEach(row => {
+                    rows.push(`${row.position},${row.index},${this.formatMeasurementValue(row.axial1)},${this.formatMeasurementValue(row.axial2)},${this.formatMeasurementValue(row.radial)},${row.time}`);
+                });
+
+                const csvContent = '\uFEFF' + rows.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${reportName}.csv`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                alert('CSV\u5df2\u5bfc\u51fa');
+                this.hideReport();
+            }
+
+            resetMeasurements() {
+                if (!confirm('确定要重置当前测量数据？')) return;
+                this.currentSession = {
+                    measurements: { top: [], bottom: [], left: [], right: [] },
+                    activePosition: null
+                };
+                this.saveSession();
+                document.querySelectorAll('.measure-btn').forEach(btn => {
+                    btn.classList.remove('measured', 'active');
+                });
+                this.updateUI();
+            }
+
+            resetSinglePosition(position) {
+                if (!this.currentSession.measurements[position]) {
+                    return;
+                }
+                if (this.currentSession.measurements[position].length === 0) {
+                    alert('该方向暂无测量数据');
+                    return;
+                }
+                if (!confirm('确定清除该方向测量数据？')) return;
+
+                this.currentSession.measurements[position] = [];
+                if (this.currentSession.activePosition === position) {
+                    this.currentSession.activePosition = null;
+                }
+                this.saveSession();
+                const btn = document.querySelector(`.measure-btn[data-position="${position}"]`);
+                if (btn) {
+                    btn.classList.remove('measured', 'active');
+                }
+                this.updateUI();
+            }
+
+            showSettings() {
+                document.getElementById('axial1IP').value = this.axial1Host;
+                document.getElementById('axial2IP').value = this.axial2Host;
+                document.getElementById('radialIP').value = this.radialHost;
+                document.getElementById('useMockData').checked = this.useMockData;
+                document.getElementById('axialTopSensor').value = this.sensorLayout.axialTopSensor;
+                document.getElementById('radialInitialSide').value = this.sensorLayout.radialInitialSide;
+                this.syncWizardUI();
+                this.gotoWizardStep(0);
+                document.getElementById('settingsModal').style.display = 'block';
+            }
+
+            hideSettings() {
+                document.getElementById('settingsModal').style.display = 'none';
+            }
+
+            // ============ 配置向导 ============
+            syncWizardUI() {
+                // 根据当前 sensorLayout 高亮已选项
+                const map = {
+                    highPressureSide: this.sensorLayout.highPressureSide,
+                    measureEnd: this.sensorLayout.measureEnd,
+                    probeTopBottom: this.sensorLayout.probeTop, // 上下用同一类型
+                    probeLeftRight: this.sensorLayout.probeLeftRight,
+                    rotationDir: this.sensorLayout.rotationDir
+                };
+                document.querySelectorAll('.wizard-option-group').forEach(group => {
+                    const field = group.dataset.field;
+                    const val = map[field];
+                    group.querySelectorAll('.wizard-option').forEach(opt => {
+                        opt.classList.toggle('selected', opt.dataset.value === val);
+                    });
+                });
+            }
+
+            selectWizardOption(opt) {
+                const group = opt.closest('.wizard-option-group');
+                if (!group) return;
+                group.querySelectorAll('.wizard-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+
+                const field = group.dataset.field;
+                const value = opt.dataset.value;
+                if (field === 'highPressureSide') this.sensorLayout.highPressureSide = value;
+                else if (field === 'measureEnd') this.sensorLayout.measureEnd = value;
+                else if (field === 'probeTopBottom') { this.sensorLayout.probeTop = value; this.sensorLayout.probeBottom = value; }
+                else if (field === 'probeLeftRight') this.sensorLayout.probeLeftRight = value;
+                else if (field === 'rotationDir') this.sensorLayout.rotationDir = value;
+            }
+
+            gotoWizardStep(step) {
+                const pages = document.querySelectorAll('.wizard-page');
+                const total = pages.length;
+                this._wizardStep = Math.max(0, Math.min(step, total - 1));
+                pages.forEach(p => p.classList.toggle('active', Number(p.dataset.page) === this._wizardStep));
+                document.querySelectorAll('.wizard-step-dot').forEach(d => {
+                    d.classList.toggle('active', Number(d.dataset.step) <= this._wizardStep);
+                });
+                const prevBtn = document.getElementById('wizardPrevBtn');
+                const nextBtn = document.getElementById('wizardNextBtn');
+                if (prevBtn) prevBtn.style.visibility = this._wizardStep === 0 ? 'hidden' : 'visible';
+                if (nextBtn) nextBtn.style.visibility = this._wizardStep === total - 1 ? 'hidden' : 'visible';
+            }
+
+            wizardNext() { this.gotoWizardStep((this._wizardStep || 0) + 1); }
+            wizardPrev() { this.gotoWizardStep((this._wizardStep || 0) - 1); }
+
+            // ============ 视图切换 ============
+            switchView(mode, silent) {
+                const is3d = mode === '3d';
+                this.view3D.enabled = is3d;
+                const wrap3d = document.getElementById('view3dWrap');
+                const circle2d = document.getElementById('measurementCircle2d');
+                const legend = document.getElementById('sensorLegend');
+                if (wrap3d) wrap3d.style.display = is3d ? 'block' : 'none';
+                if (circle2d) circle2d.style.display = is3d ? 'none' : 'block';
+                // 2D 图例仅在 2D 视图下显示原始读数说明
+                if (legend) legend.style.display = is3d ? 'none' : 'flex';
+                document.getElementById('view3dBtn').classList.toggle('active', is3d);
+                document.getElementById('view2dBtn').classList.toggle('active', !is3d);
+                if (is3d) {
+                    // 若切到 3D 时尚未初始化但 THREE 已就绪, 立即初始化
+                    if (!this.view3D.initialized && typeof THREE !== 'undefined') {
+                        this.init3DView();
+                    }
+                    if (this.view3D.initialized) {
+                        // 等待布局生效后再调整尺寸, 避免容器刚显示时尺寸为 0 导致空白
+                        requestAnimationFrame(() => {
+                            this.onResize3D();
+                            this.update3DReadout();
+                        });
+                    } else if (typeof THREE === 'undefined') {
+                        console.warn('Three.js 仍在加载, 稍后自动进入 3D');
+                    }
+                }
+            }
+            // ============ Three.js 3D 场景 ============
+            init3DView() {
+                if (this.view3D.initialized) return;
+                const container = document.getElementById('view3dContainer');
+                if (!container || typeof THREE === 'undefined') return;
+
+                const w = container.clientWidth || 800;
+                const h = container.clientHeight || 520;
+
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xe8ebef);
+
+                const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 2000);
+                camera.position.set(220, 140, 260);
+                camera.lookAt(0, 0, 0);
+
+                const renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setPixelRatio(window.devicePixelRatio || 1);
+                renderer.setSize(w, h);
+                container.appendChild(renderer.domElement);
+
+                // 光照
+                scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+                const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+                dir.position.set(150, 250, 200);
+                scene.add(dir);
+                const dir2 = new THREE.DirectionalLight(0xffffff, 0.3);
+                dir2.position.set(-150, -100, -200);
+                scene.add(dir2);
+
+                // 地面网格参考
+                const grid = new THREE.GridHelper(600, 30, 0xbbbbbb, 0xdddddd);
+                grid.position.y = -90;
+                scene.add(grid);
+
+                this.view3D.scene = scene;
+                this.view3D.camera = camera;
+                this.view3D.renderer = renderer;
+
+                this.buildCouplingModel();
+                this.setupOrbitControls();
+                this.applyConfigToScene();
+
+                this.view3D.initialized = true;
+                this.animate3D();
+                this.setFrontView();
+                this.update3DReadout();
+                // 布局生效后再校正一次尺寸, 防止初始化时容器尺寸为 0 而空白
+                requestAnimationFrame(() => this.onResize3D());
+
+                window.addEventListener('resize', () => this.onResize3D());
+            }
+            buildCouplingModel() {
+                const scene = this.view3D.scene;
+                const group = new THREE.Group();
+
+                // 轴沿 X 方向。左半联轴器(基准) + 右半联轴器(调整), 中间为对开面(测量面)
+                const flangeR = 60, flangeLen = 26, shaftR = 26, shaftLen = 120, gap = 10;
+
+                const matHP = new THREE.MeshPhongMaterial({ color: 0x2a6496 });   // 高压缸侧(蓝)
+                const matADJ = new THREE.MeshPhongMaterial({ color: 0x8a8f96 });  // 调整侧(灰)
+                const matShaft = new THREE.MeshPhongMaterial({ color: 0x5a6068 });
+
+                const mkFlange = (mat) => new THREE.Mesh(new THREE.CylinderGeometry(flangeR, flangeR, flangeLen, 48), mat);
+                const mkShaft = (mat) => new THREE.Mesh(new THREE.CylinderGeometry(shaftR, shaftR, shaftLen, 32), mat);
+
+                // 左侧半联轴器 (法兰 + 轴), 圆柱默认沿 Y, 旋转到 X
+                const leftFlange = mkFlange(matHP);
+                leftFlange.rotation.z = Math.PI / 2;
+                leftFlange.position.x = -(gap / 2 + flangeLen / 2);
+                const leftShaft = mkShaft(matShaft);
+                leftShaft.rotation.z = Math.PI / 2;
+                leftShaft.position.x = -(gap / 2 + flangeLen + shaftLen / 2);
+
+                const rightFlange = mkFlange(matADJ);
+                rightFlange.rotation.z = Math.PI / 2;
+                rightFlange.position.x = (gap / 2 + flangeLen / 2);
+                const rightShaft = mkShaft(matShaft);
+                rightShaft.rotation.z = Math.PI / 2;
+                rightShaft.position.x = (gap / 2 + flangeLen + shaftLen / 2);
+
+                const leftHalf = new THREE.Group();
+                leftHalf.add(leftFlange, leftShaft);
+                const rightHalf = new THREE.Group();
+                rightHalf.add(rightFlange, rightShaft);
+
+                group.add(leftHalf, rightHalf);
+                this.view3D.leftHalf = leftHalf;
+                this.view3D.rightHalf = rightHalf;
+                this.view3D.flangeR = flangeR;
+
+                // 四方位测量点标签 (top/bottom/left/right), 位于对开面圆周
+                const posDefs = {
+                    top:    new THREE.Vector3(0, flangeR + 40, 0),
+                    bottom: new THREE.Vector3(0, -(flangeR + 40), 0),
+                    left:   new THREE.Vector3(0, 0, flangeR + 40),
+                    right:  new THREE.Vector3(0, 0, -(flangeR + 40))
+                };
+                const posText = { top: '上', bottom: '下', left: '左', right: '右' };
+                Object.keys(posDefs).forEach(pos => {
+                    const sprite = this.makeLabelSprite(posText[pos], '#1a1a1a');
+                    sprite.position.copy(posDefs[pos]);
+                    sprite.userData.position = pos;
+                    sprite.userData.base = posText[pos];
+                    group.add(sprite);
+                    this.view3D.labelSprites[pos] = sprite;
+                });
+
+                scene.add(group);
+                this.view3D.coupling = group;
+                this.bindSpritePicking();
+            }
+            makeLabelSprite(text, color) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 256; canvas.height = 256;
+                const ctx = canvas.getContext('2d');
+                const sprite = new THREE.Sprite();
+                sprite.userData.canvas = canvas;
+                sprite.userData.ctx = ctx;
+                const tex = new THREE.CanvasTexture(canvas);
+                sprite.material = new THREE.SpriteMaterial({ map: tex, transparent: true });
+                sprite.userData.texture = tex;
+                sprite.scale.set(44, 44, 1);
+                // 初始仅方位标题
+                this._renderSpriteContent(sprite, [{ text: text, color: color || '#1a1a1a', big: true }], color || '#1a1a1a');
+                return sprite;
+            }
+
+            // 在 256x256 画布上逐行绘制。lines: [{text, color, big}]。首行(方位)大字, 读数行按传感器颜色小字。
+            _renderSpriteContent(sprite, lines, borderColor) {
+                const ctx = sprite.userData.ctx;
+                ctx.clearRect(0, 0, 256, 256);
+
+                // 背景圆角框: 高度随行数变化, 垂直居中
+                const boxH = Math.min(244, 56 + lines.length * 42);
+                const boxY = (256 - boxH) / 2;
+                ctx.fillStyle = 'rgba(255,255,255,0.94)';
+                this.roundRect(ctx, 6, boxY, 244, boxH, 18);
+                ctx.fill();
+                ctx.strokeStyle = borderColor || '#1a1a1a';
+                ctx.lineWidth = 4;
+                this.roundRect(ctx, 6, boxY, 244, boxH, 18);
+                ctx.stroke();
+
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const lh = 42;
+                const startY = 128 - (lines.length - 1) * lh / 2;
+                lines.forEach((ln, i) => {
+                    ctx.fillStyle = ln.color || '#333';
+                    ctx.font = ln.big
+                        ? 'bold 46px "Microsoft YaHei", sans-serif'
+                        : 'bold 30px "Courier New", monospace';
+                    ctx.fillText(ln.text, 128, startY + i * lh);
+                });
+                sprite.userData.texture.needsUpdate = true;
+            }
+
+            roundRect(ctx, x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+            }
+
+            // lines: [{text, color, big}]; borderColor 为边框色
+            updateSpriteLabel(pos, lines, borderColor) {
+                const sprite = this.view3D.labelSprites[pos];
+                if (!sprite) return;
+                this._renderSpriteContent(sprite, lines, borderColor || '#1a1a1a');
+                // 画布为正方形, 世界缩放随行数增大以保持可读
+                const s = lines.length <= 1 ? 40 : 40 + (lines.length - 1) * 12;
+                sprite.scale.set(s, s, 1);
+            }
+            bindSpritePicking() {
+                const renderer = this.view3D.renderer;
+                if (!renderer) return;
+                const raycaster = new THREE.Raycaster();
+                const mouse = new THREE.Vector2();
+                const dom = renderer.domElement;
+
+                const pick = (clientX, clientY) => {
+                    const rect = dom.getBoundingClientRect();
+                    mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+                    mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+                    raycaster.setFromCamera(mouse, this.view3D.camera);
+                    const sprites = Object.values(this.view3D.labelSprites);
+                    const hits = raycaster.intersectObjects(sprites, false);
+                    if (hits.length > 0) {
+                        const pos = hits[0].object.userData.position;
+                        if (pos) {
+                            this.setActivePosition(pos);
+                            const btn = document.querySelector(`.measure-btn[data-position="${pos}"]`);
+                            this.measure(pos, btn);
+                        }
+                        return true;
+                    }
+                    return false;
+                };
+
+                // 记录是否发生拖动, 拖动时不触发测量
+                let downX = 0, downY = 0, moved = false;
+                dom.addEventListener('pointerdown', (e) => { downX = e.clientX; downY = e.clientY; moved = false; });
+                dom.addEventListener('pointermove', (e) => {
+                    if (Math.abs(e.clientX - downX) > 4 || Math.abs(e.clientY - downY) > 4) moved = true;
+                });
+                dom.addEventListener('pointerup', (e) => { if (!moved) pick(e.clientX, e.clientY); });
+            }
+
+            // 轻量轨道控制 (three.min.js 核心不含 OrbitControls, 自行实现拖动/缩放)
+            setupOrbitControls() {
+                const dom = this.view3D.renderer.domElement;
+                const cam = this.view3D.camera;
+                const state = { dragging: false, lx: 0, ly: 0, theta: 0, phi: 0, radius: 380 };
+                // 由初始相机位置反推球坐标
+                const p = cam.position;
+                state.radius = Math.sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
+                state.theta = Math.atan2(p.z, p.x);
+                state.phi = Math.acos(p.y / state.radius);
+                this.view3D.orbit = state;
+
+                const apply = () => {
+                    const r = state.radius, ph = state.phi, th = state.theta;
+                    cam.position.set(r * Math.sin(ph) * Math.cos(th), r * Math.cos(ph), r * Math.sin(ph) * Math.sin(th));
+                    cam.lookAt(0, 0, 0);
+                };
+                dom.addEventListener('pointerdown', (e) => { state.dragging = true; state.lx = e.clientX; state.ly = e.clientY; });
+                window.addEventListener('pointerup', () => { state.dragging = false; });
+                window.addEventListener('pointermove', (e) => {
+                    if (!state.dragging) return;
+                    state.theta -= (e.clientX - state.lx) * 0.008;
+                    state.phi -= (e.clientY - state.ly) * 0.008;
+                    state.phi = Math.max(0.15, Math.min(Math.PI - 0.15, state.phi));
+                    state.lx = e.clientX; state.ly = e.clientY;
+                    apply();
+                });
+                dom.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    state.radius *= (e.deltaY > 0 ? 1.1 : 0.9);
+                    state.radius = Math.max(150, Math.min(900, state.radius));
+                    apply();
+                }, { passive: false });
+                this.view3D.applyOrbit = apply;
+            }
+
+            animate3D() {
+                if (!this.view3D.initialized) return;
+                this.view3D.animationId = requestAnimationFrame(() => this.animate3D());
+                if (this.view3D.enabled && this.view3D.renderer) {
+                    this.view3D.renderer.render(this.view3D.scene, this.view3D.camera);
+                }
+            }
+            setFrontView() {
+                // 正面工程视角: 沿 +Z 略俯视, 能同时看到两个半联轴器与对开面
+                const st = this.view3D.orbit;
+                if (!st) return;
+                st.theta = Math.PI / 2;   // 面向 +Z
+                st.phi = Math.PI / 2 - 0.28;
+                st.radius = 380;
+                if (this.view3D.applyOrbit) this.view3D.applyOrbit();
+            }
+
+            resetCameraView() {
+                const st = this.view3D.orbit;
+                if (!st) return;
+                st.theta = Math.atan2(260, 220);
+                st.phi = Math.acos(140 / Math.sqrt(220 * 220 + 140 * 140 + 260 * 260));
+                st.radius = Math.sqrt(220 * 220 + 140 * 140 + 260 * 260);
+                if (this.view3D.applyOrbit) this.view3D.applyOrbit();
+            }
+
+            onResize3D() {
+                const container = document.getElementById('view3dContainer');
+                if (!container || !this.view3D.renderer) return;
+                const w = container.clientWidth, h = container.clientHeight;
+                if (w === 0 || h === 0) return;
+                this.view3D.camera.aspect = w / h;
+                this.view3D.camera.updateProjectionMatrix();
+                this.view3D.renderer.setSize(w, h);
+            }
+
+            // 依据配置调整 3D 场景朝向与颜色 (高压缸侧决定基准端在左/右)
+            applyConfigToScene() {
+                const hpLeft = this.sensorLayout.highPressureSide === 'left';
+                // 图例文字先更新 (与 3D 是否已初始化无关)
+                this.updateCylinderLegend(hpLeft);
+                if (!this.view3D.initialized) return;
+                const blue = 0x2a6496, gray = 0x8a8f96;
+                // 高压缸(基准)侧上蓝色, 调整侧上灰色
+                const leftMat = this.view3D.leftHalf?.children[0]?.material;
+                const rightMat = this.view3D.rightHalf?.children[0]?.material;
+                if (leftMat) leftMat.color.setHex(hpLeft ? blue : gray);
+                if (rightMat) rightMat.color.setHex(hpLeft ? gray : blue);
+                this.update3DReadout();
+            }
+
+            // 更新缸体颜色图例文字 (高压/低压缸分别在哪一侧)
+            updateCylinderLegend(hpLeft) {
+                const hp = document.getElementById('lg-hp-side');
+                const lp = document.getElementById('lg-lp-side');
+                if (hp) hp.textContent = hpLeft ? '高压缸(基准/左)' : '高压缸(基准/右)';
+                if (lp) lp.textContent = hpLeft ? '低压缸(调整/右)' : '低压缸(调整/左)';
+            }
+
+            // 更新 3D 右上角对中结果读数 + 方位标签示数
+            update3DReadout() {
+                if (!this.view3D.initialized) return;
+                const computed = this.buildComputedTexts(this.currentSession.measurements);
+                const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+                set('r3d-openTB', computed.openingTB);
+                set('r3d-openLR', computed.openingLR);
+                set('r3d-devTB', computed.circularDeviationTB);
+                set('r3d-devLR', computed.circularDeviationLR);
+
+                // 方位标签显示该方位 轴1 / 轴2 / 径 三路读数, 各用对应传感器颜色 (与图例一致)
+                const display = this.buildPhysicalDisplayValuesFrom(this.currentSession.measurements);
+                const posText = { top: '上', bottom: '下', left: '左', right: '右' };
+                const COLOR = { axial1: '#2a6496', axial2: '#4a7c59', radial: '#a0522d' };
+                ['top', 'bottom', 'left', 'right'].forEach(pos => {
+                    const d = display[pos];
+                    const measured = this.currentSession.measurements[pos].length > 0;
+                    const border = measured ? '#2a6496' : '#1a1a1a';
+                    const lines = [{ text: posText[pos], color: border, big: true }];
+                    if (d.axial1 !== null) lines.push({ text: '轴1 ' + d.axial1.toFixed(2), color: COLOR.axial1 });
+                    if (d.axial2 !== null) lines.push({ text: '轴2 ' + d.axial2.toFixed(2), color: COLOR.axial2 });
+                    if (d.radial !== null) lines.push({ text: '径 ' + d.radial.toFixed(2), color: COLOR.radial });
+                    this.updateSpriteLabel(pos, lines, border);
+                });
+            }
+
+            saveSettings() {
+                const axial1IP = document.getElementById('axial1IP').value.trim();
+                const axial2IP = document.getElementById('axial2IP').value.trim();
+                const radialIP = document.getElementById('radialIP').value.trim();
+                const useMockData = document.getElementById('useMockData').checked;
+
+                const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+
+                if (!useMockData) {
+                    if (!ipPattern.test(axial1IP)) {
+                        alert('轴向传感器1 IP地址格式不正确');
+                        return;
+                    }
+                    if (!ipPattern.test(axial2IP)) {
+                        alert('轴向传感器2 IP地址格式不正确');
+                        return;
+                    }
+                    if (!ipPattern.test(radialIP)) {
+                        alert('径向传感器 IP地址格式不正确');
+                        return;
+                    }
+                }
+
+                this.axial1Host = axial1IP;
+                this.axial2Host = axial2IP;
+                this.radialHost = radialIP;
+                this.useMockData = useMockData;
+                // 合并保留向导字段, 仅更新映射下拉框
+                this.sensorLayout = Object.assign({}, this.sensorLayout, {
+                    axialTopSensor: document.getElementById('axialTopSensor').value,
+                    radialInitialSide: document.getElementById('radialInitialSide').value
+                });
+
+                this.saveToStorage();
+                this.hideSettings();
+                this.updateUI();
+                this.applyConfigToScene();
+                alert('设置已保存');
+            }
+
+            saveToStorage() {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify({
+                        axial1Host: this.axial1Host,
+                        axial2Host: this.axial2Host,
+                        radialHost: this.radialHost,
+                        useMockData: this.useMockData,
+                        sensorLayout: this.sensorLayout
+                    }));
+                } catch (error) {
+                    console.error('保存设置失败:', error);
+                }
+            }
+
+            loadSettings() {
+                try {
+                    const saved = localStorage.getItem(this.storageKey);
+                    if (saved) {
+                        const settings = JSON.parse(saved);
+                        this.axial1Host = settings.axial1Host || this.axial1Host;
+                        this.axial2Host = settings.axial2Host || this.axial2Host;
+                        this.radialHost = settings.radialHost || this.radialHost;
+                        this.useMockData = settings.useMockData || false;
+                        if (settings.sensorLayout) {
+                            this.sensorLayout = Object.assign(this.sensorLayout, settings.sensorLayout);
+                        }
+                    }
+                } catch (error) {
+                    console.error('加载设置失败:', error);
+                }
+            }
+
+            saveSession() {
+                try {
+                    localStorage.setItem(this.sessionKey, JSON.stringify(this.currentSession));
+                } catch (error) {
+                    console.error('保存会话失败:', error);
+                }
+            }
+
+            loadSession() {
+                try {
+                    const saved = localStorage.getItem(this.sessionKey);
+                    if (saved) {
+                        this.currentSession = JSON.parse(saved);
+                    }
+                } catch (error) {
+                    console.error('加载会话失败:', error);
+                }
+            }
+
+            loadReports() {
+                try {
+                    const saved = localStorage.getItem(this.reportsKey);
+                    if (saved) {
+                        this.completedReports = JSON.parse(saved);
+                    }
+                } catch (error) {
+                    console.error('加载报告失败:', error);
+                }
+            }
+
+            showHistoryModal() {
+                const historyList = document.getElementById('historyList');
+                const exportBar = document.getElementById('historyExportBar');
+
+                if (this.completedReports.length === 0) {
+                    historyList.innerHTML = '<div class="history-empty">暂无历史记录</div>';
+                    exportBar.style.display = 'none';
+                } else {
+                    exportBar.style.display = 'block';
+                    let html = '';
+                    for (let i = this.completedReports.length - 1; i >= 0; i--) {
+                        const report = this.completedReports[i];
+                        html += this.generateHistoryItemHTML(report, i);
+                    }
+                    historyList.innerHTML = html;
+                    this.updateHistorySelectedCount();
+                }
+                document.getElementById('historyModal').style.display = 'block';
+            }
+
+            generateHistoryItemHTML(report, index) {
+                const m = report.measurements;
+                const physical = this.buildPhysicalDisplayValuesFrom(m);
+
+                return `
+                    <div class="history-item" style="position:relative;">
+                        <label style="position:absolute;top:12px;right:12px;cursor:pointer;z-index:1;" onclick="event.stopPropagation();">
+                            <input type="checkbox" class="history-checkbox" data-index="${index}" onchange="system.updateHistorySelectedCount()">
+                        </label>
+                        <div onclick="system.showDetailModal(${index})" style="cursor:pointer;">
+                            <div class="history-item-header">
+                                <div class="history-item-title" id="historyTitle-${index}">${report.name}</div>
+                                <div class="history-item-time" style="margin-right:25px;">${report.date}</div>
+                            </div>
+                            <div class="history-item-data">
+                                <div class="history-data-item">
+                                    <div class="history-data-label">上 轴向1</div>
+                                    <div class="history-data-value">${physical.top.axial1 !== null ? physical.top.axial1.toFixed(2) : '--'} mm</div>
+                                </div>
+                                <div class="history-data-item">
+                                    <div class="history-data-label">上 径向</div>
+                                    <div class="history-data-value">${physical.top.radial !== null ? physical.top.radial.toFixed(2) : '--'} mm</div>
+                                </div>
+                                <div class="history-data-item">
+                                    <div class="history-data-label">下 轴向1</div>
+                                    <div class="history-data-value">${physical.bottom.axial1 !== null ? physical.bottom.axial1.toFixed(2) : '--'} mm</div>
+                                </div>
+                                <div class="history-data-item">
+                                    <div class="history-data-label">下 径向</div>
+                                    <div class="history-data-value">${physical.bottom.radial !== null ? physical.bottom.radial.toFixed(2) : '--'} mm</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:8px;display:flex;gap:6px;">
+                            <button class="btn-mini" onclick="event.stopPropagation();system.startEditReportName(${index});">改名</button>
+                        </div>
+                        <div class="history-rename" id="historyRename-${index}" style="display:none;" onclick="event.stopPropagation();">
+                            <input class="history-rename-input" id="historyRenameInput-${index}" type="text" placeholder="输入新名称">
+                            <button class="btn-mini" onclick="system.saveReportName(${index})">保存</button>
+                            <button class="btn-mini" onclick="system.cancelReportName(${index})">取消</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateHistorySelectedCount() {
+                const checked = document.querySelectorAll('.history-checkbox:checked').length;
+                document.getElementById('historySelectedCount').textContent = checked;
+            }
+
+            historySelectAll() {
+                document.querySelectorAll('.history-checkbox').forEach(cb => cb.checked = true);
+                this.updateHistorySelectedCount();
+            }
+
+            historyDeselectAll() {
+                document.querySelectorAll('.history-checkbox').forEach(cb => cb.checked = false);
+                this.updateHistorySelectedCount();
+            }
+
+            startEditReportName(index) {
+                const report = this.completedReports[index];
+                if (!report) return;
+                const box = document.getElementById(`historyRename-${index}`);
+                const input = document.getElementById(`historyRenameInput-${index}`);
+                if (!box || !input) return;
+                input.value = report.name || '';
+                box.style.display = 'flex';
+                input.focus();
+                input.select();
+            }
+
+            cancelReportName(index) {
+                const box = document.getElementById(`historyRename-${index}`);
+                if (box) box.style.display = 'none';
+            }
+
+            saveReportName(index) {
+                const report = this.completedReports[index];
+                const input = document.getElementById(`historyRenameInput-${index}`);
+                if (!report || !input) return;
+                const newName = input.value.trim();
+                if (!newName) {
+                    alert('名称不能为空');
+                    return;
+                }
+                report.name = newName;
+                localStorage.setItem(this.reportsKey, JSON.stringify(this.completedReports));
+                const titleEl = document.getElementById(`historyTitle-${index}`);
+                if (titleEl) titleEl.textContent = newName;
+                this.cancelReportName(index);
+            }
+
+            getSelectedHistoryIndices() {
+                const indices = [];
+                document.querySelectorAll('.history-checkbox:checked').forEach(cb => {
+                    indices.push(parseInt(cb.dataset.index));
+                });
+                indices.sort((a, b) => a - b);
+                return indices;
+            }
+
+            buildReportDataForIndex(idx) {
+                const report = this.completedReports[idx];
+                const m = report.measurements;
+                const posLabels = ['上', '下', '左', '右'];
+                const posKeys = ['top', 'bottom', 'left', 'right'];
+                const sensors = ['axial1', 'axial2', 'radial'];
+                const sensorLabels = ['轴向1', '轴向2', '径向'];
+                const physicalStats = this.buildPhysicalStatsFrom(m);
+
+                let dataRows = [];
+                posKeys.forEach((pos, pi) => {
+                    sensors.forEach((s, si) => {
+                        const cell = physicalStats[pos][s];
+                        dataRows.push({ pos: posLabels[pi], sensor: sensorLabels[si], avg: cell.avg !== null ? cell.avg.toFixed(4) : '--', count: cell.count });
+                    });
+                });
+
+                const results = this.buildResultEntries(m).map(item => `${item.label}: ${item.value}`);
+                return { report, dataRows, results };
+            }
+
+            async exportHistoryPDF() {
+                const indices = this.getSelectedHistoryIndices();
+                if (indices.length === 0) { alert('请先勾选要导出的历史记录'); return; }
+
+                const allData = indices.map(idx => this.buildReportDataForIndex(idx));
+                const title = indices.length === 1 ? allData[0].report.name : `对中测量报告(${indices.length}轮)`;
+
+                // 单条：和之前一样独立显示
+                if (indices.length === 1) {
+                    const data = allData[0];
+                    const report = data.report;
+                    let dataRowsHtml = '';
+                    data.dataRows.forEach(r => {
+                        dataRowsHtml += `<tr><td style="padding:6px 10px;border:1px solid #ddd;">${r.pos}</td><td style="padding:6px 10px;border:1px solid #ddd;">${r.sensor}</td><td style="padding:6px 10px;border:1px solid #ddd;">${r.avg} mm</td></tr>`;
+                    });
+                    let resultsHtml = data.results.map(r => `<p style="margin:4px 0;">${r}</p>`).join('');
+                    const rawLogsHtml = `
+                    <h3 style="font-size:13px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">原始测量记录</h3>
+                    ${this.buildMeasurementLogHtml(report.measurements)}`;
+                    var fullHtml = `
+                    <h2 style="text-align:center;margin:0 0 5px 0;font-size:16px;">${report.name}</h2>
+                    <p style="text-align:center;color:#666;font-size:11px;margin:0 0 15px 0;">测量时间: ${report.date}</p>
+                    <h3 style="font-size:13px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">测量数据</h3>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:15px;font-size:11px;">
+                        <tr style="background:#f0f0f0;"><th style="padding:5px 8px;border:1px solid #ddd;text-align:left;">方位</th><th style="padding:5px 8px;border:1px solid #ddd;text-align:left;">传感器</th><th style="padding:5px 8px;border:1px solid #ddd;text-align:left;">平均值</th></tr>
+                        ${dataRowsHtml}
+                    </table>
+                    ${rawLogsHtml}
+                    <h3 style="font-size:13px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">计算结果</h3>
+                    <div style="margin-bottom:15px;font-size:11px;">${resultsHtml}</div>`;
+                } else {
+                    // 多条：整合到统一表格
+                    const posLabels = ['上', '下', '左', '右'];
+                    const posKeys = ['top', 'bottom', 'left', 'right'];
+                    const sensors = ['axial1', 'axial2', 'radial'];
+                    const sensorLabels = ['轴向1', '轴向2', '径向'];
+                    const thStyle = 'padding:5px 6px;border:1px solid #ddd;text-align:center;font-size:10px;';
+                    const tdStyle = 'padding:5px 6px;border:1px solid #ddd;text-align:center;font-size:10px;';
+
+                    // 测量数据整合表：行=方位×传感器，列=各轮次
+                    let headerCols = `<th style="${thStyle}background:#f0f0f0;">方位</th><th style="${thStyle}background:#f0f0f0;">传感器</th>`;
+                    allData.forEach((d, i) => {
+                        headerCols += `<th style="${thStyle}background:#f0f0f0;">${d.report.name}<br><span style="font-weight:normal;color:#888;font-size:9px;">${d.report.date}</span></th>`;
+                    });
+
+                    let dataBodyHtml = '';
+                    posKeys.forEach((pos, pi) => {
+                        sensors.forEach((s, si) => {
+                            dataBodyHtml += `<tr><td style="${tdStyle}">${posLabels[pi]}</td><td style="${tdStyle}">${sensorLabels[si]}</td>`;
+                            allData.forEach(d => {
+                                const row = d.dataRows.find(r => r.pos === posLabels[pi] && r.sensor === sensorLabels[si]);
+                                dataBodyHtml += `<td style="${tdStyle}">${row ? row.avg : '--'} mm</td>`;
+                            });
+                            dataBodyHtml += '</tr>';
+                        });
+                    });
+
+                    // 计算结果整合表
+                    const resultLabels = [
+                        '上下张口',
+                        '左右张口',
+                        '圆周偏差1（上/下对点）',
+                        '圆周偏差2（左/右对点）'
+                    ];
+
+                    let resultHeaderCols = `<th style="${thStyle}background:#f0f0f0;">项目</th>`;
+                    allData.forEach(d => {
+                        resultHeaderCols += `<th style="${thStyle}background:#f0f0f0;">${d.report.name}<br><span style="font-weight:normal;color:#888;font-size:9px;">${d.report.date}</span></th>`;
+                    });
+                    let resultBodyHtml = '';
+                    resultLabels.forEach((label, li) => {
+                        resultBodyHtml += `<tr><td style="${tdStyle}font-weight:600;">${label}</td>`;
+                        allData.forEach(d => {
+                            const matchResult = d.results.find(r => r.startsWith(label + ':'));
+                            const val = matchResult ? matchResult.split(': ')[1] : '--';
+                            resultBodyHtml += `<td style="${tdStyle}">${val}</td>`;
+                        });
+                        resultBodyHtml += '</tr>';
+                    });
+
+                    const rawLogsHtml = allData.map(d => `
+                    <div style="margin-top:18px;">
+                        <h3 style="font-size:13px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">原始测量记录 - ${d.report.name}</h3>
+                        ${this.buildMeasurementLogHtml(d.report.measurements)}
+                    </div>`).join('');
+
+                    var fullHtml = `
+                    <h2 style="text-align:center;margin:0 0 15px 0;font-size:16px;">${title}</h2>
+                    <h3 style="font-size:13px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">测量数据</h3>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:18px;">
+                        <tr>${headerCols}</tr>
+                        ${dataBodyHtml}
+                    </table>
+                    <h3 style="font-size:13px;margin:0 0 8px 0;border-bottom:1px solid #eee;padding-bottom:5px;">计算结果</h3>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:18px;">
+                        <tr>${resultHeaderCols}</tr>
+                        ${resultBodyHtml}
+                    </table>
+                    ${rawLogsHtml}`;
+                }
+
+                const htmlContent = `
+                <div style="font-family:'Microsoft YaHei','SimHei','PingFang SC',sans-serif;padding:25px;width:750px;background:white;color:#333;font-size:13px;">
+                    ${fullHtml}
+                </div>`;
+
+                // 历史导出同样依赖html2canvas+jsPDF，网络受限时降级为打印保存PDF
+                const libsReady = await this.ensurePdfLibraries();
+                if (!libsReady) {
+                    this.exportPDFByPrint(title, htmlContent);
+                    return;
+                }
+
+                const container = document.createElement('div');
+                container.style.position = 'fixed';
+                container.style.left = '-9999px';
+                container.style.top = '0';
+                container.innerHTML = htmlContent;
+                document.body.appendChild(container);
+
+                try {
+                    const canvas = await html2canvas(container.firstElementChild, { scale: 2, useCORS: true });
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    const margin = 10;
+                    const imgWidth = pageWidth - margin * 2;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    if (imgHeight <= pageHeight - margin * 2) {
+                        doc.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+                    } else {
+                        const pageContentHeight = pageHeight - margin * 2;
+                        const sourcePageHeight = (pageContentHeight / imgHeight) * canvas.height;
+                        const pages = Math.ceil(canvas.height / sourcePageHeight);
+                        for (let p = 0; p < pages; p++) {
+                            if (p > 0) doc.addPage();
+                            const srcY = p * sourcePageHeight;
+                            const srcH = Math.min(sourcePageHeight, canvas.height - srcY);
+                            const destH = (srcH / canvas.height) * imgHeight;
+                            const pageCanvas = document.createElement('canvas');
+                            pageCanvas.width = canvas.width;
+                            pageCanvas.height = srcH;
+                            const ctx = pageCanvas.getContext('2d');
+                            ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+                            doc.addImage(pageCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, destH);
+                        }
+                    }
+                    doc.save(`${title}.pdf`);
+                    alert('PDF已导出');
+                } catch (error) {
+                    console.error('PDF导出失败:', error);
+                    alert('PDF导出失败: ' + error.message);
+                } finally {
+                    document.body.removeChild(container);
+                }
+            }
+
+            exportHistoryCSV() {
+                const indices = this.getSelectedHistoryIndices();
+                if (indices.length === 0) { alert('请先勾选要导出的历史记录'); return; }
+
+                const allData = indices.map(idx => this.buildReportDataForIndex(idx));
+                const title = indices.length === 1 ? allData[0].report.name : `对中测量报告_${indices.length}轮`;
+
+                let rows = [];
+
+                if (indices.length === 1) {
+                    // 单条：保持原格式
+                    const data = allData[0];
+                    const report = data.report;
+                    rows.push('测量名称,' + report.name);
+                    rows.push('测量时间,' + report.date);
+                    rows.push('');
+                    rows.push('方位,传感器,平均值(mm)');
+                    data.dataRows.forEach(r => {
+                        rows.push(`${r.pos},${r.sensor},${r.avg}`);
+                    });
+                    rows.push('');
+                    rows.push('计算结果,数值');
+                    data.results.forEach(r => rows.push(r.replace(': ', ',')));
+                    rows.push('');
+                    rows.push('原始测量记录');
+                    rows.push('方位,序号,轴向1(mm),轴向2(mm),径向(mm),时间');
+                    this.buildMeasurementRows(report.measurements).forEach(row => {
+                        rows.push(`${row.position},${row.index},${this.formatMeasurementValue(row.axial1)},${this.formatMeasurementValue(row.axial2)},${this.formatMeasurementValue(row.radial)},${row.time}`);
+                    });
+                } else {
+                    // 多条：整合表格
+                    const posLabels = ['上', '下', '左', '右'];
+                    const posKeys = ['top', 'bottom', 'left', 'right'];
+                    const sensors = ['axial1', 'axial2', 'radial'];
+                    const sensorLabels = ['轴向1', '轴向2', '径向'];
+
+                    // 标题行
+                    rows.push('对中测量报告汇总 - 共' + allData.length + '轮');
+                    rows.push('');
+
+                    // 测量数据整合表
+                    rows.push('测量数据');
+                    let header = '方位,传感器';
+                    allData.forEach(d => { header += `,${d.report.name}(${d.report.date})`; });
+                    rows.push(header);
+
+                    posKeys.forEach((pos, pi) => {
+                        sensors.forEach((s, si) => {
+                            let row = `${posLabels[pi]},${sensorLabels[si]}`;
+                            allData.forEach(d => {
+                                const match = d.dataRows.find(r => r.pos === posLabels[pi] && r.sensor === sensorLabels[si]);
+                                row += `,${match ? match.avg : '--'}`;
+                            });
+                            rows.push(row);
+                        });
+                    });
+
+                    // 计算结果整合表
+                    rows.push('');
+                    rows.push('计算结果');
+                    let resultHeader = '项目';
+                    allData.forEach(d => { resultHeader += `,${d.report.name}(${d.report.date})`; });
+                    rows.push(resultHeader);
+
+                    const resultLabels = [
+                        '上下张口',
+                        '左右张口',
+                        '圆周偏差1（上/下对点）',
+                        '圆周偏差2（左/右对点）'
+                    ];
+
+                    resultLabels.forEach(label => {
+                        let row = label;
+                        allData.forEach(d => {
+                            const matchResult = d.results.find(r => r.startsWith(label + ':'));
+                            const val = matchResult ? matchResult.split(': ')[1] : '--';
+                            row += `,${val}`;
+                        });
+                        rows.push(row);
+                    });
+
+                    // 原始测量记录分报告追加
+                    allData.forEach(d => {
+                        rows.push('');
+                        rows.push(`原始测量记录 - ${d.report.name}`);
+                        rows.push('方位,序号,轴向1(mm),轴向2(mm),径向(mm),时间');
+                        this.buildMeasurementRows(d.report.measurements).forEach(row => {
+                            rows.push(`${row.position},${row.index},${this.formatMeasurementValue(row.axial1)},${this.formatMeasurementValue(row.axial2)},${this.formatMeasurementValue(row.radial)},${row.time}`);
+                        });
+                    });
+
+                }
+
+                const csvContent = '\uFEFF' + rows.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${title}.csv`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                alert('CSV已导出');
+            }
+
+            hideHistoryModal() {
+                document.getElementById('historyModal').style.display = 'none';
+            }
+
+            showDetailModal(index) {
+                const report = this.completedReports[index];
+                if (!report) return;
+
+                document.getElementById('detailTitle').textContent = report.name;
+                const m = report.measurements;
+                const physicalStats = this.buildPhysicalStatsFrom(m);
+
+                const positions = ['top', 'bottom', 'left', 'right'];
+                const posNames = ['上', '下', '左', '右'];
+                const fields = ['axial1', 'axial2', 'radial'];
+                const fieldNames = ['轴向1', '轴向2', '径向'];
+
+                let gridItems = '';
+                positions.forEach((pos, pi) => {
+                    fields.forEach((f, fi) => {
+                        const cell = physicalStats[pos][f];
+                        gridItems += `
+                        <div class="detail-data-item">
+                            <div class="detail-data-label">${posNames[pi]} ${fieldNames[fi]} (${cell.count}次)</div>
+                            <div class="detail-data-value">${cell.avg !== null ? cell.avg.toFixed(4) : '--'} mm</div>
+                        </div>`;
+                    });
+                });
+
+                const resultItems = this.buildResultEntries(m)
+                    .map(item => `
+                        <div class="result-item">
+                            <div class="result-label">${item.label}</div>
+                            <div class="result-value">${item.value}</div>
+                        </div>`)
+                    .join('');
+
+                const detailHTML = `
+                    <div style="margin-bottom: 20px; padding: 15px; background: #fafafa; border-radius: 6px; border: 1px solid #e5e5e5;">
+                        <div style="color: #737373; font-size: 0.9em; margin-bottom: 5px;">测量时间</div>
+                        <div style="color: #1a1a1a; font-weight: 600;">${report.date}</div>
+                    </div>
+
+                    <div class="detail-data-grid">${gridItems}
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <h4 style="color: #737373; font-size: 0.9em; margin-bottom: 15px; text-transform: uppercase;">原始测量记录</h4>
+                        ${this.buildMeasurementLogHtml(m)}
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <h4 style="color: #737373; font-size: 0.9em; margin-bottom: 15px; text-transform: uppercase;">计算结果</h4>
+                        ${resultItems}
+                    </div>
+                `;
+
+                document.getElementById('detailContent').innerHTML = detailHTML;
+                document.getElementById('detailModal').style.display = 'block';
+            }
+
+            hideDetailModal() {
+                document.getElementById('detailModal').style.display = 'none';
+            }
+        }
+
+        let system;
+        document.addEventListener('DOMContentLoaded', () => {
+            system = new AlignmentMeasurementSystem();
+            window.system = system;
+        });
+    </script>
+    <script>
+        // 离线缓存：注册 pages/ 共享 Service Worker，使断网后仍可访问本页
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../sw.js')
+                    .then(reg => console.log('[pages-cache] SW 已注册，作用域:', reg.scope))
+                    .catch(err => console.warn('[pages-cache] SW 注册失败:', err));
+            });
+        }
+    </script>
+</body>
+</html>
