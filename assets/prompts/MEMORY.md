@@ -30,31 +30,37 @@
 ## 实习经历
 
 ### Research Intern @ DeepWisdom（2026.03 - 至今）· 深圳
-参与三个核心项目：
+Mentor：张佳钇。参与三个核心项目：
 
-#### Harnessing Agentic Evolution
-- 状态：投稿 NeurIPS 2026
-- 作者排位：二作
-- AEvo 是智能体自主进化方向的研究工作，探索如何让 Agent 从历史经验中自动演化学习流程（Learning Procedures）。延续 DeepWisdom 团队在 MetaGPT、AFlow、SPO、AEvo 等一系列 Agentic Evolution 研究的积累，核心思想是让智能体不再依赖人工设计的固定流程，而是能够从自身执行经验中自动提炼、优化和演化出更高效的任务解决策略。
+#### Harnessing Agentic Evolution (AEvo)
+- 状态：投稿 NeurIPS 2026，二作
+- 关键词：meta-learning、AutoResearch、long-horizon
+- 背景：现有 agentic evolution 方案存在两难——人工设计的流程模块化但僵硬，通用 Agent 灵活但在 long-horizon 演化中容易漂移、早停、陷入局部最优和 reward hacking。
+- 方法：提出 AEvo meta-editing harness，把"演化"重构成一个以累积上下文为过程级状态的交互环境；Meta-Agent 不直接生成解，而是去编辑控制后续演化的 Workflow / TaskAgent，为 Workflow-based 与 Agent-based 两类演化提供统一接口。
+- 成果：在 ARC-AGI-2、Terminal-Bench 上超过 ADAS、DGM、AFlow、SPO、GEPA 等 5 个 baseline，相对最强 baseline 提升约 10%；3 个 open-ended 优化任务在同等迭代预算下相对 HyperAgent 达到 SOTA。
 
-#### Foundation Protocol: A Coordination Layer for Agentic Society
-- 状态：Hugging Face Papers / ArXiv 白皮书
-- 作者排位：二作
-- Foundation Protocol 是面向 AI 社会的最小化、图优先的协议核心层。为异构实体（Agent、工具、资源、人类、机构、组织）提供统一的可寻址模型，支持原生多方组织与事件驱动协作，提供计量与结算等经济原语，将策略、溯源和审计作为一等公民。
-- 核心架构——四平面设计：Entity & Trust Plane、Transport & Routing Plane、Interaction & Organization Plane、Regulation & Oversight Plane
-- 核心词汇表：Entity / Session / Activity / Envelope / Event / Receipt-Settlement / Provenance
+#### Foundation Protocol: A Coordination Layer for Agentic Society (FP)
+- 状态：Hugging Face Papers / ArXiv 白皮书（https://huggingface.co/papers/2605.23218），二作
+- 关键词：Multi-Agent System
+- 背景：Agent 规模化之后，瓶颈从模型能力转向"协调"；现有协议各管一段边界，导致集成成本高、provenance 断裂、监管分散。
+- 方法：设计 graph-native 协调层，把 Agent、工具、资源、人、机构统一为可寻址节点，采用四层架构（Entity & Trust / Transport & Routing / Interaction & Organization / Regulation & Oversight）；个人主导协议核心架构与协议 SDK / 应用层实现。
+- 成果：受邀在 DataFun Agentic AI 会议分享；公司内部基于 FP 落地 Ai Link Net、Agent Economy Bench、AgentLab 等项目。
 
-#### AutoWork: Build First-Party Agents for Long-Horizon Work
-- 状态：白皮书阶段
-- AutoWork 是一种 First-Person Agent 框架，使智能体能够直接进入用户的设备、账号与工作流，以用户身份处理消息、撰写文档、组织协作、生成代码并交付结果。核心差异在于从"建议型助手"范式转向"第一方执行系统"。
-- 个人负责：记忆系统（SOUL.md/YOU.md/USER.md 三件套 + Memory Folds 跨 Session 长期记忆）、TUI/GUI/CLI 交互层、核心架构设计
+#### Scaling Open-ended Task & Reasoning Data（最近在做的工作）
+- 关键词：Open-ended Discovery、Verifier-based RL、Data Scaling
+- 背景：FrontierCS、Frontier-Eng、AutoLab 分别从 CS、工程任务、autoresearch 的角度定义了 Open-ended Discovery，FrontierSmith 进一步验证了"CS 问题 → open-ended coding task → single-turn GRPO"这条路径的可行性。我们的目标是把这套思路扩展到更多真实的工程与科学任务上，构建来源可信、verifier-based、dense-reward、open-ended 的任务与数据。
+- 方法：从真实的 engineering / science / auto-research-like 数据源自动构建 open-ended discovery tasks，再用 single-turn GRPO、on-policy SFT 等方法，验证模型跨领域单步推理能力的提升效果。
 
-### LLM Agent 算法实习生 @ Karis / invoko（2025.07 - 2026.02）· 北京
-- ContextCompact - 上下文压缩策略：针对 ReAct 架构 Agent 在长步骤任务中的 Context 窗口限制问题，设计多层级上下文压缩策略（动态摘要 + 关键信息保留 + 滑动窗口），将平均 token 使用量降低 60%，使 Agent 能够持续执行超过 100 步的复杂任务
-- memoryspace - Agent 记忆机制设计：设计 Agent Memory 多层级结构、反思-归档-淘汰更新流程、检索策略及多 Agent 记忆协作机制，让多个 Agent 能相互了解对方正在处理的任务、阶段状态和关键产出
-- sophia-eval - Agent 评测框架：基于 pydantic-ai 从零搭建 Agent 评测框架（Dataset/Case/Runner 三层架构），支持多维度评测指标（准确率、推理步数、成本、延迟等）
-- eval-plat - 内部评测平台全栈开发：前端 Vue + TypeScript + Ant Design，后端 FastAPI + SQLite，实现评测任务管理、结果可视化、历史版本追踪
-- 基础设施建设：核心代码 refactor/debug，构建统一 CLI 工具链（Click/Typer），设计结构化日志系统
+### Agent 算法实习生 @ Karis / invoko（2025.07 - 2026.02）· 北京
+Mentor：向劲宇、白岳霖。两个核心方向：
+
+#### Karis Harness（SmolAgent、Harness Engineering、Agent Memory）
+- 基于 SmolAgent 搭建 KarisHarness，参与 Tooling、Lifecycle、Observability、Context 等核心模块，重点负责 Agent Memory 的设计与实现。
+- Agent Memory：设计并实现存储长期记忆的 Memory Space，以及 Dream 机制（周期性提炼有效经验、沉淀归档、淘汰冗余记忆）；针对不同模式下的运行时上下文设计 Context Compact 策略，显著提升长程任务的执行能力。
+- 成果：在真实业务场景推动产品 Agent 在"效果—成本"曲线上达到 Pareto frontier；在 WebArena、GAIA、ResearchQA 等 agent benchmark 上相对基线 harness 平均提升约 +5%。
+
+#### Karis Evol（Harbor、Vue、FastAPI、PGSQL）
+- 聚焦真实业务增长场景，构建内部测评 Benchmark 与全栈评测平台，持续测评并提升产品 Agent 能力；基于 Harbor 设计 task package；技术栈 Vue + FastAPI。
 
 ## 发表论文
 
@@ -84,12 +90,13 @@
 - 内容：为汽车产线开发高兼容性远程控制系统，实现生产状态远程控制与实时诊断，支持 16 种车型混线生产，换型效率提升 93%
 - 技术栈：Vue/JavaScript/jQuery/Vite（上位机）、Node.js/Express/Shell（后端）
 
-### 联轴器自动对中辅助设备开发（2025.02 - 至今）
-- 机构：天津电建公司
-- 角色：嵌入式软件工程师
-- 内容：融合激光测距+陀螺仪搭建非接触式远程测量系统，取代千分尺人工测量，精度 ±0.01mm，效率提升 3 倍
-- 职责：结构设计（SolidWorks）、嵌入式程序开发（ESP32）、上位机软件（Vue）全流程
-- 技术栈：ESP32 + C++、SolidWorks、Vue、485/UART/Http
+### 激光基准线点定位系统（2025.08 - 2026.12）
+- 机构：中国能源建设集团
+- 角色：算法 / 上位机开发
+- 背景：大型转动设备（汽轮机等，转子直径 1–2 m）多段轴瓦的轴系对中测量，工程精度要求达两丝（0.02 mm）；行业主流的钢丝找中法存在下坠挠度、振动敏感、需反复拆装等固有缺陷。
+- 方法：用激光基准线替代钢丝，通过双相机拍摄光斑 + 镜面虚像重建，在统一设备坐标系下恢复激光基准轴，并解析求解任意点到该轴的垂距；上位机采用 FastAPI + React/Three.js 前后端架构，图像处理与数值解算基于 OpenCV 与 SciPy。
+- 成果：完成原理验证（精度达设计要求）并研制初版设备投入使用，目前处于迭代改进阶段；已获授 6 项专利，已申请中文核心期刊论文 1 篇。
+- 技术栈：FastAPI、React、Three.js、OpenCV、SciPy、双目视觉
 
 ## 技能
 - LLM Agent：ClaudeCode/Opencode/Cursor；熟悉 LangChain/Smolagents/pydantic-ai；AgentMemory 设计；Agent 评测框架
