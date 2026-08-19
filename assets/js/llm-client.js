@@ -46,9 +46,12 @@ class LLMClient {
     shouldFallback(status, errorData) {
         const message = errorData.error?.message || '';
         return (
-            (status === 404 && message.includes('No endpoints found')) ||
+            status === 404 ||
             status === 429 ||
-            message.includes('Provider returned error')
+            status === 402 ||
+            message.includes('Provider returned error') ||
+            message.includes('unavailable') ||
+            message.includes('No endpoints found')
         );
     }
 

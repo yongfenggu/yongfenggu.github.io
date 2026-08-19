@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="古永丰 - 天津大学硕士研究生 · LLM Agent 算法研究">
-    <meta name="keywords" content="古永丰, LLM Agent, 天津大学, 机器学习, Yongfeng Gu">
-    <meta name="author" content="古永丰">
-    <title>Yongfeng Gu | 古永丰</title>
+    <meta name="description" content="Wynn Koo (Yongfeng Gu) - Agentic AI Engineer · Master's student at Tianjin University">
+    <meta name="keywords" content="Wynn Koo, Yongfeng Gu, Agentic AI, LLM Agent, Tianjin University">
+    <meta name="author" content="Wynn Koo">
+    <title>Wynn Koo</title>
 
     <!-- Favicon -->
     <link rel="icon" href="./assets/img/7f21a755-b214-4b39-9932-081dff487120 (1).png" type="image/png">
@@ -198,7 +198,7 @@
         }
 
         .page-section.alt {
-            background: #fafafa;
+            background: #fff;
         }
 
         .section-title {
@@ -217,30 +217,42 @@
             border: 1px solid #eee;
             border-radius: 4px;
             display: grid;
-            grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.4fr);
+            grid-template-columns: minmax(200px, 0.85fr) minmax(0, 1.5fr);
             gap: 24px;
-            align-items: center;
+            align-items: start;
             overflow: hidden;
         }
 
+        .item-media {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 18px 0 18px 18px;
+        }
+
         .item-content {
-            flex: 1;
             padding: 18px 20px 18px 0;
         }
 
         .item-figure {
-            align-self: stretch;
             background: #f5f5f5;
+            border: 1px solid #eee;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 180px;
-            padding: 16px;
+            width: 100%;
+            height: 170px;
+            padding: 14px;
+            cursor: zoom-in;
+            box-sizing: border-box;
         }
 
         .item-figure img {
-            width: 100%;
-            max-height: 220px;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
             object-fit: contain;
             display: block;
         }
@@ -263,21 +275,14 @@
             text-decoration: underline;
         }
 
-        .item-authors {
-            color: #555;
-            font-size: 14px;
-            line-height: 1.7;
-            margin: 6px 0 10px;
-            font-family: Georgia, 'Times New Roman', serif;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        .item-media .tag-list {
+            margin: 0;
+            flex-wrap: nowrap;
         }
 
-        .item-authors strong {
-            color: #222;
-            font-weight: 700;
+        .item-media .tag {
+            padding: 3px 7px;
+            font-size: 10.5px;
         }
 
         .tag-list {
@@ -285,6 +290,19 @@
             flex-wrap: wrap;
             gap: 8px;
             margin: 10px 0;
+        }
+
+        .item-authors {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.7;
+            margin: 6px 0 10px;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        .item-authors strong {
+            color: #222;
+            font-weight: 700;
         }
 
         .tag {
@@ -337,6 +355,67 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 10px;
+        }
+
+        /* Timeline-style experience list */
+        .exp-simple {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .exp-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 24px;
+            align-items: baseline;
+            position: relative;
+            padding: 14px 0 14px 24px;
+            border-left: 2px solid #ececec;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .exp-row:hover {
+            border-left-color: #0066cc;
+            background: #fafcff;
+        }
+
+        .exp-row::before {
+            content: "";
+            position: absolute;
+            left: -6px;
+            top: 19px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #0066cc;
+            box-sizing: border-box;
+        }
+
+        .exp-row .exp-time {
+            color: #888;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .exp-row .exp-desc {
+            color: #222;
+            font-size: 16px;
+            line-height: 1.6;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        .exp-row .exp-desc a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .exp-row .exp-desc a:hover {
+            text-decoration: underline;
         }
 
         .exp-list {
@@ -472,6 +551,16 @@
                 gap: 4px;
             }
 
+            .exp-row {
+                grid-template-columns: 1fr;
+                gap: 4px;
+                padding: 12px 0 12px 20px;
+            }
+
+            .exp-row .exp-desc {
+                font-size: 15px;
+            }
+
             .item-card {
                 flex-direction: column;
                 display: grid;
@@ -479,12 +568,15 @@
                 gap: 8px;
             }
 
+            .item-media {
+                padding: 16px 16px 0;
+            }
+
             .item-content {
-                padding: 0 16px 16px;
+                padding: 12px 16px 16px;
             }
 
             .item-figure {
-                min-height: 140px;
                 padding: 12px;
             }
         }
@@ -515,7 +607,7 @@
         /* Chat Section */
         #chat {
             padding: 60px 0;
-            background: #fafafa;
+            background: #fff;
         }
 
         .chat-container {
@@ -846,26 +938,161 @@
                 height: 28px;
             }
         }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* ============================================
+           News section
+           ============================================ */
+        #news {
+            padding: 56px 0;
+        }
+
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .news-item {
+            display: grid;
+            grid-template-columns: 92px 1fr;
+            gap: 20px;
+            align-items: baseline;
+            padding: 12px 0 12px 16px;
+            border-left: 2px solid #ececec;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .news-item:hover {
+            border-left-color: #0066cc;
+            background: #fafcff;
+        }
+
+        .news-date {
+            color: #999;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: Georgia, 'Times New Roman', serif;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+
+        .news-content {
+            color: #444;
+            font-size: 14.5px;
+            line-height: 1.65;
+        }
+
+        .news-content a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .news-content a:hover {
+            text-decoration: underline;
+        }
+
+        .news-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 4px;
+            margin-right: 8px;
+            background: #e8eef7;
+            color: #315f9a;
+            vertical-align: middle;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .news-badge.talk { background: #e8e1f2; color: #604185; }
+        .news-badge.paper { background: #f1d3dc; color: #9a455c; }
+        .news-badge.patent { background: #cfe7df; color: #26705d; }
+
+        @media (max-width: 768px) {
+            #news { padding: 36px 0; }
+
+            .news-item {
+                grid-template-columns: 1fr;
+                gap: 4px;
+                padding: 10px 0 10px 14px;
+            }
+
+            .nav-actions {
+                gap: 12px;
+            }
+        }
+
+        /* Image lightbox */
+        .img-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.82);
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            cursor: zoom-out;
+        }
+
+        .img-lightbox.open {
+            display: flex;
+        }
+
+        .img-lightbox img {
+            max-width: 92vw;
+            max-height: 90vh;
+            object-fit: contain;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .img-lightbox-close {
+            position: fixed;
+            top: 22px;
+            right: 28px;
+            font-size: 34px;
+            line-height: 1;
+            color: #fff;
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .img-lightbox-close:hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav>
         <div class="container nav-container">
-            <a href="./index.html" class="nav-brand">Yongfeng Gu | 古永丰</a>
-            <button class="nav-toggle" id="navToggle" aria-label="菜单">
-                <span></span><span></span><span></span>
-            </button>
-            <div class="nav-links" id="navLinks">
-                <a href="#publications" class="nav-link">Publications</a>
-                <a href="#experience" class="nav-link">Experience</a>
-                <a href="./projects.html" class="nav-link">Projects</a>
-                <a href="./apps.html" class="nav-link">Apps</a>
+            <a href="./index.html" class="nav-brand">Wynn Koo</a>
+            <div class="nav-actions">
+                <div class="nav-links" id="navLinks">
+                    <a href="#news" class="nav-link">News</a>
+                    <a href="#publications" class="nav-link">Publications</a>
+                    <a href="#experience" class="nav-link">Experience</a>
+                    <a href="./projects.html" class="nav-link">Projects</a>
+                    <a href="./apps.html" class="nav-link">Apps</a>
+                </div>
+                <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         </div>
     </nav>
 
-    <div class="chat-bubble" id="chatBubble" role="button" tabindex="0" aria-label="查看聊天消息">
+    <div class="chat-bubble" id="chatBubble" role="button" tabindex="0" aria-label="Open chat">
         <img src="assets/img/wechat avatar.jpg" alt="Avatar" class="avatar">
         <div class="chat-bubble-content" id="chatBubbleContent"></div>
     </div>
@@ -875,13 +1102,11 @@
         <div class="container">
             <div class="about-content">
                 <div class="about-text">
-                    <h1>古永丰 (Yongfeng Gu)</h1>
-                    <p class="position">Master @ Tianjin University</p>
+                    <h1>古永丰 Wynn Koo</h1>
+                    <p class="position">Agentic AI Engineer</p>
 
-                    <p>我目前在天津大学<a href="https://pmti.tju.edu.cn/" target="_blank">精密测试技术及仪器国家重点实验室</a>攻读硕士学位（2024.09 - 2027.06），研究方向为大尺度测量技术，导师为<a href="https://faculty.tju.edu.cn/096175/zh_CN/index.htm" target="_blank">任永杰</a>教授。</p>
-
-                    <p>2026年3月至今，我在 <a href="https://www.deepwisdom.ai/" target="_blank">DeepWisdom</a> 担任 Research Intern，参与 AEvo（智能体自主进化）、<a href="https://huggingface.co/papers/2605.23218" target="_blank">Foundation Protocol</a>（Agent 通信协议）和 AutoWork（第一方个人智能体）等研究工作。此前，我在 <a href="https://karis.im/" target="_blank">Karis</a> (<a href="https://invoko.ai/" target="_blank">invoko</a>) 担任 LLM Agent 算法实习生，负责 Agent Memory 和 Agent Eval 相关工作。</p>
-
+                    <p>I'm a Master's student at the <a href="https://pmti.tju.edu.cn/" target="_blank">State Key Lab of Precision Measuring Technology &amp; Instruments</a>, Tianjin University (2024–2027), where I work on large-scale vision-based measurement with Prof. <a href="https://faculty.tju.edu.cn/096175/zh_CN/index.htm" target="_blank">Yongjie Ren</a>.</p>
+                    <p>Most of my work these days is on agentic AI. At <a href="https://www.deepwisdom.ai/" target="_blank">DeepWisdom</a>, I helped build <a href="https://arxiv.org/abs/2605.13821" target="_blank">AEvo</a>, a system for agents that evolve their own strategies, and <a href="https://huggingface.co/papers/2605.23218" target="_blank">Foundation Protocol</a>, a coordination layer for multi-agent systems. Earlier, at <a href="https://karis.im/" target="_blank">Karis</a> (<a href="https://invoko.ai/" target="_blank">invoko</a>), I worked on agent harnesses and agent memory.</p>
 
                     <div class="contact-links">
                         <a href="mailto:yongfenggu@tju.edu.cn" title="yongfenggu@tju.edu.cn">
@@ -896,7 +1121,57 @@
                     </div>
                 </div>
                 <div class="about-avatar">
-                    <img src="./assets/img/avatar.jpg" alt="古永丰">
+                    <img src="./assets/img/avatar.jpg" alt="Wynn Koo">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="news" class="page-section">
+        <div class="container">
+            <h2 class="section-title">News</h2>
+            <div class="news-list">
+                <div class="news-item">
+                    <div class="news-date">2026.07.24</div>
+                    <div class="news-content">
+                        <span class="news-badge talk">Talk</span>
+                        <span>Gave an invited talk on Foundation Protocol at the <a href="https://www.bagevent.com/event/9200274?bag_track=109" target="_blank">DataFun Agentic AI conference</a>.</span>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">2026.06.16</div>
+                    <div class="news-content">
+                        <span class="news-badge patent">Patent</span>
+                        <span>Laser reference-line positioning system project granted 6 patents (granted June 16).</span>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">2026.05.22</div>
+                    <div class="news-content">
+                        <span class="news-badge paper">Paper</span>
+                        <span><a href="https://huggingface.co/papers/2605.23218" target="_blank">Foundation Protocol</a> preprint released — a graph-native coordination layer for the agentic society.</span>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">2026.05.13</div>
+                    <div class="news-content">
+                        <span class="news-badge paper">Paper</span>
+                        <span><a href="https://arxiv.org/abs/2605.13821" target="_blank">Harnessing Agentic Evolution (AEvo)</a> submitted to NeurIPS 2026.</span>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">2026.03</div>
+                    <div class="news-content">
+                        <span class="news-badge">News</span>
+                        <span>Joined <a href="https://www.deepwisdom.ai/" target="_blank">DeepWisdom</a> as a Research Intern, working on Agent-related research.</span>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">2026.01.21</div>
+                    <div class="news-content">
+                        <span class="news-badge paper">Paper</span>
+                        <span>Co-authored paper published in <a href="https://pubs.rsc.org/en/content/articlelanding/2026/sc/d5sc07902k" target="_blank">Chemical Science</a> (Royal Society of Chemistry).</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -907,8 +1182,14 @@
             <h2 class="section-title">Publications</h2>
 
             <div class="item-card">
-                <div class="item-figure">
-                    <img src="assets/img/x1.png" alt="Harnessing Agentic Evolution overview">
+                <div class="item-media">
+                    <div class="item-figure">
+                        <img src="assets/img/x1.png" alt="Harnessing Agentic Evolution overview">
+                    </div>
+                    <div class="tag-list">
+                        <span class="tag">NEURIPS 2026</span>
+                        <span class="tag paper">PAPER</span>
+                    </div>
                 </div>
                 <div class="item-content">
                     <div class="item-title">
@@ -917,42 +1198,44 @@
                         </a>
                     </div>
                     <div class="item-authors">
-                        Jiayi Zhang, <strong>Yongfeng Gu</strong>, Jianhao Ruan, Maojia Song, Yiran Peng, Zhiguang Han, Jinyu Xiang, Zhitao Wang, Caiyin Yang, Yixi Ouyang, Bang Liu, Chenglin Wu, Yuyu Luo
-                    </div>
-                    <div class="tag-list">
-                        <span class="tag">NEURIPS 2026</span>
-                        <span class="tag paper">PAPER</span>
-                        <span class="tag role">SECOND AUTHOR</span>
+                        Jiayi Zhang, <strong>Yongfeng Gu</strong>, Jianhao Ruan, Maojia Song, Yiran Peng, Zhiguang Han, Jinyu Xiang,..., Bang Liu, Chenglin Wu, Yuyu Luo
                     </div>
                     <div class="item-desc">
-                        智能体自主进化方向的研究工作，探索如何让 Agent 从历史经验中自动演化学习流程。延续 MetaGPT、AFlow、SPO、AEvo 等 Agentic Evolution 研究积累，核心思想是让智能体从自身执行经验中自动提炼、优化和演化出更高效的任务解决策略。
+                        Reframes agentic evolution as an interactive environment: instead of generating solutions directly, a meta-agent edits the workflow / task-agent that controls later evolution, giving a unified interface for both workflow- and agent-based evolution over long horizons. It outperforms strong baselines on ARC-AGI-2 and Terminal-Bench.
                     </div>
                 </div>
             </div>
 
             <div class="item-card">
-                <div class="item-figure">
-                    <img src="assets/img/x2.png" alt="Foundation Protocol architecture">
-                </div>
-                <div class="item-content">
-                    <div class="item-title"><a href="https://huggingface.co/papers/2605.23218" target="_blank">Foundation Protocol: A Coordination Layer for Agentic Society</a></div>
-                    <div class="item-authors">
-                        Bang Liu, <strong>Yongfeng Gu</strong>, Jiayi Zhang, Zhaoyang Yu, Sirui Hong, Maojia Song, Xiaoqiang Wang, Mingyi Deng, Zijie Zhuang, Ronghao Wang, Mingzhe Cao, Yutong Zhu, Xingjian Li, Yifan Wu, Jianhao Ruan, Yiran Peng, Shuangrui Chen, Jinlin Wang, Yizhang Lin, Dongjie Zhang, Dekun Wu, Chen Ma, Lizi Liao, Han Yu, Jian Pei, Heng Ji, Qiang Yang, Yuyu Luo, Chenglin Wu
+                <div class="item-media">
+                    <div class="item-figure">
+                        <img src="assets/img/x2.png" alt="Foundation Protocol architecture">
                     </div>
                     <div class="tag-list">
                         <span class="tag">ARXIV 2026</span>
                         <span class="tag paper">PAPER</span>
-                        <span class="tag role">SECOND AUTHOR</span>
+                    </div>
+                </div>
+                <div class="item-content">
+                    <div class="item-title"><a href="https://huggingface.co/papers/2605.23218" target="_blank">Foundation Protocol: A Coordination Layer for Agentic Society</a></div>
+                    <div class="item-authors">
+                        Bang Liu, <strong>Yongfeng Gu</strong>, Jiayi Zhang, Zhaoyang Yu, Sirui Hong, Maojia Song, Xiaoqiang Wang,..., Qiang Yang, Yuyu Luo, Chenglin Wu
                     </div>
                     <div class="item-desc">
-                        面向 AI 社会的最小化、图优先协议核心层。为异构实体提供统一的可寻址模型，支持原生多方组织与事件驱动协作，将策略、溯源和审计作为一等公民。核心架构采用四平面设计：Entity & Trust、Transport & Routing、Interaction & Organization、Regulation & Oversight。
+                        A graph-native coordination layer for the AI society. It models heterogeneous entities — agents, tools, resources, people, and institutions — as addressable nodes, and organizes coordination across a four-plane architecture: Entity &amp; Trust, Transport &amp; Routing, Interaction &amp; Organization, and Regulation &amp; Oversight.
                     </div>
                 </div>
             </div>
 
             <div class="item-card">
-                <div class="item-figure">
-                    <img src="assets/img/d5sc07902k-f4_hi-res.gif" alt="Palmprint recognition workflow">
+                <div class="item-media">
+                    <div class="item-figure">
+                        <img src="assets/img/d5sc07902k-f4_hi-res.gif" alt="Palmprint recognition workflow">
+                    </div>
+                    <div class="tag-list">
+                        <span class="tag">CHEMICAL SCIENCE</span>
+                        <span class="tag paper">PAPER</span>
+                    </div>
                 </div>
                 <div class="item-content">
                     <div class="item-title">
@@ -963,13 +1246,8 @@
                     <div class="item-authors">
                         Chenxi Liu, <strong>Yongfeng Gu</strong>, Yongjie Ren, Mingyi Ding, Tao Deng, Harald Fuchs
                     </div>
-                    <div class="tag-list">
-                        <span class="tag">CHEMICAL SCIENCE</span>
-                        <span class="tag paper">PAPER</span>
-                        <span class="tag role">SECOND AUTHOR</span>
-                    </div>
                     <div class="item-desc">
-                        有机神经形态视觉器件研究，通过极性工程调控 HfO₂ 基光晶体管实现超高光探测灵敏度与 256 级（8-bit）多级非易失性存储。本人负责掌纹识别计算部分：基于 CASIA 掌纹数据库完成图像预处理（双边滤波、CLAHE 增强、自适应阈值二值化）、空间分块特征提取（20×20 网格 → 36 维特征向量），并训练 LDA、GBDT、XGBoost 分类模型，最终实现 98% 以上的生物特征识别准确率。
+                        Organic neuromorphic vision devices achieving 8-bit multilevel non-volatile memory for palmprint identification. I built the palmprint recognition pipeline — image preprocessing, block-wise feature extraction, and classifier training — reaching over 98% accuracy.
                     </div>
                 </div>
             </div>
@@ -978,41 +1256,17 @@
 
     <section id="experience" class="page-section">
         <div class="container">
-            <h2 class="section-title">Work Experience</h2>
+            <h2 class="section-title">Experience</h2>
 
-            <div class="exp-block">
-                <div class="exp-header-row">
-                    <div>
-                        <div class="item-title">Research Intern @ DeepWisdom</div>
-                        <div class="item-meta">深圳</div>
-                    </div>
-                    <div class="item-date">2026.03 - 至今</div>
+            <div class="exp-simple">
+                <div class="exp-row">
+                    <div class="exp-time">2026.03 - 2026.08</div>
+                    <div class="exp-desc">Research Intern, <a href="https://www.deepwisdom.ai/" target="_blank">DeepWisdom</a>, Shenzhen, China.</div>
                 </div>
-                <div class="item-desc">
-                    参与三项核心研究工作：
+                <div class="exp-row">
+                    <div class="exp-time">2025.07 - 2026.02</div>
+                    <div class="exp-desc">Agent Algorithm Intern, <a href="https://karis.im/" target="_blank">Karis</a> (<a href="https://invoko.ai/" target="_blank">invoko</a>), Beijing, China.</div>
                 </div>
-                <ul class="exp-list">
-                    <li><a href="https://arxiv.org/abs/2605.13821" target="_blank"><strong>AEvo</strong></a>（智能体自主进化）—— 探索让 Agent 从历史经验中自动改进学习流程，围绕 Procedure 演化、经验反思和多 benchmark 验证展开。</li>
-                    <li><a href="https://huggingface.co/papers/2605.23218" target="_blank"><strong>Foundation Protocol</strong></a>（Agent 通信协议）—— 面向 AI 社会的图优先通信与协作协议，构建四平面架构，支持异构实体寻址、多方组织协作与经济结算。</li>
-                    <li><strong>AutoWork</strong>（第一方个人智能体）—— 负责记忆系统设计（SOUL.md/YOU.md/USER.md 三件套 + Memory Folds）、TUI/GUI/CLI 交互层、核心架构设计。</li>
-                </ul>
-            </div>
-
-            <div class="exp-block">
-                <div class="exp-header-row">
-                    <div>
-                        <div class="item-title">LLM Agent 算法实习生 @ <a href="https://karis.im/" target="_blank">Karis</a> (<a href="https://invoko.ai/" target="_blank">invoko</a>)</div>
-                        <div class="item-meta">北京</div>
-                    </div>
-                    <div class="item-date">2025.07 - 2026.02</div>
-                </div>
-                <ul class="exp-list">
-                    <li><strong>ContextCompact</strong> —— 多层级上下文压缩策略（动态摘要 + 关键信息保留 + 滑动窗口），token 使用量降低 60%，Agent 可持续执行 100+ 步任务</li>
-                    <li><strong>memoryspace</strong> —— 设计 Agent Memory 多层级结构、反思-归档-淘汰更新流程、检索策略及多 Agent 记忆协作机制</li>
-                    <li><strong>sophia-eval</strong> —— 基于 pydantic-ai 搭建 Agent 评测框架（Dataset/Case/Runner 三层架构），支持多维度评测指标</li>
-                    <li><strong>eval-plat</strong> —— 内部评测平台全栈开发，Vue + TypeScript + Ant Design / FastAPI + SQLite</li>
-                    <li><strong>基础设施</strong> —— 核心代码 refactor/debug，统一 CLI 工具链（Click/Typer），结构化日志系统</li>
-                </ul>
             </div>
         </div>
     </section>
@@ -1022,8 +1276,8 @@
         <div class="chat-container">
             <div class="chat-header">
                 <h2>Chat with Me</h2>
-                <button class="clear-chat-btn" id="clearChatBtn" title="清空对话">
-                    <img src="assets/icons/refresh-outline.svg" alt="清空对话">
+                <button class="clear-chat-btn" id="clearChatBtn" title="Clear chat">
+                    <img src="assets/icons/refresh-outline.svg" alt="Clear chat">
                 </button>
             </div>
             <div class="chat-messages" id="chatMessages"></div>
@@ -1037,11 +1291,17 @@
                     maxlength="200"
                 />
                 <button class="chat-send" id="chatSend">
-                    <img src="assets/icons/send.svg" alt="发送" style="width: 20px; height: 20px; filter: brightness(0) invert(1);">
+                    <img src="assets/icons/send.svg" alt="Send" style="width: 20px; height: 20px; filter: brightness(0) invert(1);">
                 </button>
             </div>
         </div>
     </section>
+
+    <!-- Image lightbox -->
+    <div class="img-lightbox" id="imgLightbox">
+        <button class="img-lightbox-close" id="imgLightboxClose" aria-label="Close">&times;</button>
+        <img src="" alt="" id="imgLightboxImg">
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -1100,7 +1360,7 @@
             let bubbleMessages = [];
 
             const CHAT_STORAGE_KEY = 'chat_history';
-            const FIRST_VISIT_GREETING = '你好';
+            const FIRST_VISIT_GREETING = 'Hi';
 
             // 从 localStorage 加载聊天记录
             function loadChatHistory() {
@@ -1372,7 +1632,7 @@
                     if (typingIndicator.isConnected) {
                         typingIndicator.remove();
                     }
-                    addMessage('error', '抱歉，发送消息时出现错误: ' + error.message);
+                    addMessage('error', 'Sorry, something went wrong while sending your message: ' + error.message);
                 } finally {
                     chatSend.disabled = false;
                     chatInput.disabled = false;
@@ -1398,7 +1658,7 @@
 
             // 清空对话按钮点击事件
             clearChatBtn.addEventListener('click', function() {
-                if (confirm('确定要清空所有对话记录吗？')) {
+                if (confirm('Clear all chat history?')) {
                     // 清空界面
                     chatMessages.innerHTML = '';
 
@@ -1444,6 +1704,33 @@
                         chatInput.placeholder = placeholders[idx];
                     }, 5000);
                 });
+        })();
+
+        // 点击 Publications 图片放大预览
+        (function () {
+            const lightbox = document.getElementById('imgLightbox');
+            const lightboxImg = document.getElementById('imgLightboxImg');
+            const closeBtn = document.getElementById('imgLightboxClose');
+            if (!lightbox) return;
+
+            document.querySelectorAll('.item-figure img').forEach(img => {
+                img.parentElement.addEventListener('click', () => {
+                    lightboxImg.src = img.currentSrc || img.src;
+                    lightboxImg.alt = img.alt || '';
+                    lightbox.classList.add('open');
+                });
+            });
+
+            const close = () => {
+                lightbox.classList.remove('open');
+                lightboxImg.src = '';
+            };
+            lightbox.addEventListener('click', e => {
+                if (e.target === lightbox || e.target === closeBtn) close();
+            });
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && lightbox.classList.contains('open')) close();
+            });
         })();
     </script>
 </body>

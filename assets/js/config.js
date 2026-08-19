@@ -4,10 +4,8 @@ const CONFIG = {
     OPENROUTER_API_KEY: atob('c2stb3ItdjEtOTlkMzZjNDIwMGE4NGQyMTI0NDE1YzhmM2MzNzllY2M4NDllM2UwZTk4NGE5MzlhNGQ3NmNlNGM1OWM4ODg2ZQ=='),
 
     // LLM 模型配置
-    MODEL: 'z-ai/glm-4.5-air:free',
+    MODEL: 'google/gemma-4-31b-it:free',
     FALLBACK_MODELS: [
-        'moonshotai/kimi-k2.6:free',
-        'openai/gpt-oss-120b:free',
-        'poolside/laguna-m.1:free'
+        'openai/gpt-oss-20b:free'
     ]
 };
