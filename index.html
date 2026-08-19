@@ -695,6 +695,56 @@
             padding-top: 4px;
         }
 
+        /* Markdown rendering inside assistant replies */
+        .message.assistant .content p {
+            margin: 0 0 8px;
+        }
+        .message.assistant .content > *:last-child {
+            margin-bottom: 0;
+        }
+        .message.assistant .content a {
+            color: #0066cc;
+            text-decoration: underline;
+            word-break: break-word;
+        }
+        .message.assistant .content strong { font-weight: 700; }
+        .message.assistant .content em { font-style: italic; }
+        .message.assistant .content ul,
+        .message.assistant .content ol {
+            margin: 6px 0 8px;
+            padding-left: 22px;
+        }
+        .message.assistant .content li { margin: 3px 0; }
+        .message.assistant .content h1,
+        .message.assistant .content h2,
+        .message.assistant .content h3 {
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1.35;
+            margin: 12px 0 6px;
+        }
+        .message.assistant .content h1 { font-size: 18px; }
+        .message.assistant .content h2 { font-size: 16px; }
+        .message.assistant .content h3 { font-size: 15px; }
+        .message.assistant .content code {
+            background: #f0f0f0;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: Menlo, Consolas, monospace;
+            font-size: 0.88em;
+        }
+        .message.assistant .content pre {
+            background: #f5f5f5;
+            padding: 10px 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+        .message.assistant .content pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85em;
+        }
+
         .message.system {
             align-self: center;
             background: transparent;
@@ -1362,6 +1412,85 @@
             const CHAT_STORAGE_KEY = 'chat_history';
             const FIRST_VISIT_GREETING = 'Hi';
 
+            // 轻量 Markdown 渲染（先转义 HTML，防止 XSS，再解析）
+            function escapeHtml(s) {
+                return s.replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+            }
+
+            function renderInlineMd(s) {
+                // 行内代码先占位，避免其中的符号被后续规则处理
+                const codes = [];
+                s = s.replace(/`([^`]+)`/g, (m, c) => {
+                    codes.push(c);
+                    return ` CODE${codes.length - 1} `;
+                });
+                // 链接 [text](url)：仅允许 http/https/mailto
+                s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, text, url) => {
+                    const safe = /^(https?:|mailto:)/i.test(url) ? url : '#';
+                    return `<a href="${safe}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+                });
+                // 裸链接自动识别（前导为行首/空白/左括号，避免命中已生成标签的 href）
+                s = s.replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g,
+                    (m, pre, url) => `${pre}<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+                // 粗体、斜体
+                s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                s = s.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+                s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+                // 还原行内代码
+                s = s.replace(/ CODE(\d+) /g, (m, i) => `<code>${codes[i]}</code>`);
+                return s;
+            }
+
+            function renderMarkdown(src) {
+                if (!src) return '';
+                const lines = escapeHtml(src).split('\n');
+                const out = [];
+                let para = [];
+                let listType = null; // 'ul' | 'ol'
+                const flushPara = () => {
+                    if (para.length) {
+                        out.push('<p>' + renderInlineMd(para.join('<br>')) + '</p>');
+                        para = [];
+                    }
+                };
+                const closeList = () => {
+                    if (listType) { out.push(listType === 'ul' ? '</ul>' : '</ol>'); listType = null; }
+                };
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    // 围栏代码块
+                    if (/^```/.test(line)) {
+                        flushPara(); closeList();
+                        const code = [];
+                        i++;
+                        while (i < lines.length && !/^```/.test(lines[i])) { code.push(lines[i]); i++; }
+                        out.push('<pre><code>' + code.join('\n') + '</code></pre>');
+                        continue;
+                    }
+                    // 标题
+                    const h = line.match(/^(#{1,6})\s+(.*)$/);
+                    if (h) { flushPara(); closeList(); const lv = h[1].length; out.push(`<h${lv}>` + renderInlineMd(h[2]) + `</h${lv}>`); continue; }
+                    // 分隔线
+                    if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { flushPara(); closeList(); out.push('<hr>'); continue; }
+                    // 无序列表
+                    const ul = line.match(/^\s*[-*+]\s+(.*)$/);
+                    if (ul) { flushPara(); if (listType !== 'ul') { closeList(); out.push('<ul>'); listType = 'ul'; } out.push('<li>' + renderInlineMd(ul[1]) + '</li>'); continue; }
+                    // 有序列表
+                    const ol = line.match(/^\s*\d+[.)]\s+(.*)$/);
+                    if (ol) { flushPara(); if (listType !== 'ol') { closeList(); out.push('<ol>'); listType = 'ol'; } out.push('<li>' + renderInlineMd(ol[1]) + '</li>'); continue; }
+                    // 空行
+                    if (/^\s*$/.test(line)) { flushPara(); closeList(); continue; }
+                    // 普通段落
+                    if (listType) closeList();
+                    para.push(line);
+                }
+                flushPara(); closeList();
+                return out.join('');
+            }
+
             // 从 localStorage 加载聊天记录
             function loadChatHistory() {
                 try {
@@ -1401,9 +1530,10 @@
                                     el.classList.contains('assistant') ? 'assistant' :
                                     el.classList.contains('system') ? 'system' : 'error';
 
-                        // 如果是助手消息，从 content div 中获取文本
+                        // 如果是助手消息，优先取原始 Markdown（dataset.raw），以便重载后重新渲染
+                        const contentEl = el.querySelector('.content');
                         const content = role === 'assistant'
-                            ? el.querySelector('.content')?.textContent || el.textContent
+                            ? (contentEl?.dataset.raw ?? contentEl?.textContent ?? el.textContent)
                             : el.textContent;
 
                         return { role, content };
@@ -1526,7 +1656,8 @@
 
                     const contentDiv = document.createElement('div');
                     contentDiv.className = 'content';
-                    contentDiv.textContent = content;
+                    contentDiv.dataset.raw = content;
+                    contentDiv.innerHTML = renderMarkdown(content);
 
                     messageDiv.appendChild(avatar);
                     messageDiv.appendChild(contentDiv);
@@ -1595,6 +1726,7 @@
 
                     let assistantMessage = null;
                     let assistantContent = null;
+                    let assistantRaw = '';
 
                     // 流式调用 LLM
                     const response = await llmClient.chatStream(messages, chunk => {
@@ -1604,7 +1736,9 @@
                             assistantContent = assistantMessage.querySelector('.content');
                         }
 
-                        assistantContent.textContent += chunk;
+                        assistantRaw += chunk;
+                        assistantContent.dataset.raw = assistantRaw;
+                        assistantContent.innerHTML = renderMarkdown(assistantRaw);
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     });
 
