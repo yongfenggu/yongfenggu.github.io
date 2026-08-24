@@ -168,6 +168,12 @@ nav {
     text-decoration: underline;
 }
 
+.star-badge {
+    height: 16px;
+    vertical-align: text-bottom;
+    margin-left: 4px;
+}
+
 .item-role {
     font-weight: 500;
     color: #444;
