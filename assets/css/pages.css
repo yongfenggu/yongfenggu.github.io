@@ -43,6 +43,12 @@ nav {
     gap: 30px;
 }
 
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
 .nav-link {
     color: #666;
     text-decoration: none;
@@ -153,6 +159,15 @@ nav {
     font-family: Georgia, 'Times New Roman', serif;
 }
 
+.repo-link {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.repo-link:hover {
+    text-decoration: underline;
+}
+
 .item-role {
     font-weight: 500;
     color: #444;
@@ -246,6 +261,10 @@ footer {
 
     .nav-links.open {
         display: flex;
+    }
+
+    .nav-actions {
+        gap: 12px;
     }
 
     .page-section {
