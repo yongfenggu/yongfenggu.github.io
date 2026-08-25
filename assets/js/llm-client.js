@@ -7,10 +7,33 @@ class LLMClient {
     constructor(config = {}) {
         // 默认使用硬编码的 API Key（来自 .env 文件）
         this.apiKey = config.apiKey || (typeof CONFIG !== 'undefined' ? CONFIG.OPENROUTER_API_KEY : null);
-        this.model = config.model || (typeof CONFIG !== 'undefined' ? CONFIG.MODEL : 'arcee-ai/trinity-large-preview:free');
+        this.model = config.model || (typeof CONFIG !== 'undefined' ? CONFIG.MODEL : 'z-ai/glm-5.2:free');
         this.fallbackModels = config.fallbackModels || (typeof CONFIG !== 'undefined' ? CONFIG.FALLBACK_MODELS || [] : []);
         this.baseURL = 'https://openrouter.ai/api/v1/chat/completions';
+        this.modelsURL = 'https://openrouter.ai/api/v1/models';
         this.systemPrompt = config.systemPrompt || '';
+
+        // 动态发现的免费模型（本次会话内）
+        this.dynamicModels = null;
+        // 免费模型列表的本地缓存配置
+        this.modelCacheKey = 'openrouter_free_models_v1';
+        this.modelCacheTTL = 6 * 60 * 60 * 1000; // 6 小时
+        // 质量优先级：命中前缀的模型排在候选前面
+        this.preferredModelOrder = [
+            'z-ai/glm',
+            'minimax/minimax-m3',
+            'minimax/minimax-m2',
+            'deepseek/',
+            'qwen/',
+            'meta-llama/',
+            'nvidia/nemotron-3-ultra',
+            'nvidia/nemotron-3-super',
+            'google/gemma-4-31b',
+            'google/gemma-4-26b',
+            'openrouter/free'
+        ];
+        // 排除不适合闲聊的模型（安全分类、音频、隐身测试等）
+        this.excludedModelKeywords = ['content-safety', 'guard', 'lyria', 'clip', 'stealth', 'embed'];
     }
 
     /**
@@ -30,11 +53,121 @@ class LLMClient {
     }
 
     /**
-     * 按顺序返回主模型和 fallback 模型。
+     * 从 localStorage 读取缓存的免费模型列表（未过期时）。
+     * @returns {Array<string>|null}
+     */
+    readModelCache() {
+        try {
+            const raw = localStorage.getItem(this.modelCacheKey);
+            if (!raw) return null;
+            const { models, ts } = JSON.parse(raw);
+            if (!Array.isArray(models) || !models.length) return null;
+            if (Date.now() - ts > this.modelCacheTTL) return null;
+            return models;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
+     * 将免费模型列表写入 localStorage 缓存。
+     * @param {Array<string>} models
+     */
+    writeModelCache(models) {
+        try {
+            localStorage.setItem(this.modelCacheKey, JSON.stringify({ models, ts: Date.now() }));
+        } catch (e) {
+            // localStorage 不可用时静默忽略
+        }
+    }
+
+    /**
+     * 判断某模型是否为可用于文本对话的免费模型。
+     * @param {Object} model - OpenRouter 模型对象
+     * @returns {boolean}
+     */
+    isUsableFreeModel(model) {
+        const pricing = model.pricing || {};
+        const isFree = pricing.prompt === '0' && pricing.completion === '0';
+        if (!isFree) return false;
+
+        const id = (model.id || '').toLowerCase();
+        if (this.excludedModelKeywords.some(k => id.includes(k))) return false;
+
+        // 必须能输出文本
+        const arch = model.architecture || {};
+        const outputs = arch.output_modalities || [];
+        if (outputs.length && !outputs.includes('text')) return false;
+
+        return true;
+    }
+
+    /**
+     * 按预设的质量优先级对模型 ID 排序。
+     * @param {Array<string>} ids
      * @returns {Array<string>}
      */
-    getModelCandidates() {
-        return [this.model, ...this.fallbackModels].filter(Boolean);
+    sortByPreference(ids) {
+        const rank = id => {
+            const idx = this.preferredModelOrder.findIndex(prefix => id.startsWith(prefix));
+            return idx === -1 ? this.preferredModelOrder.length : idx;
+        };
+        return [...ids].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+    }
+
+    /**
+     * 实时从 OpenRouter 拉取当前可用的免费模型列表。
+     * 结果会缓存到 localStorage，失败时回退到缓存或写死配置。
+     * @returns {Promise<Array<string>>}
+     */
+    async fetchFreeModels() {
+        if (this.dynamicModels) return this.dynamicModels;
+
+        const cached = this.readModelCache();
+        if (cached) {
+            this.dynamicModels = cached;
+            return cached;
+        }
+
+        try {
+            const response = await fetch(this.modelsURL, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!response.ok) throw new Error(`获取模型列表失败: ${response.status}`);
+
+            const data = await response.json();
+            const models = (data.data || [])
+                .filter(m => this.isUsableFreeModel(m))
+                .map(m => m.id);
+
+            if (!models.length) throw new Error('未发现可用的免费模型');
+
+            const sorted = this.sortByPreference(models);
+            this.dynamicModels = sorted;
+            this.writeModelCache(sorted);
+            return sorted;
+        } catch (error) {
+            console.warn('动态获取免费模型失败，使用写死配置作为兜底。', error);
+            return null;
+        }
+    }
+
+    /**
+     * 按顺序返回候选模型：优先动态发现的免费模型，其次写死的主/备选模型。
+     * @returns {Promise<Array<string>>}
+     */
+    async getModelCandidates() {
+        const staticList = [this.model, ...this.fallbackModels].filter(Boolean);
+        const dynamic = await this.fetchFreeModels();
+
+        if (!dynamic || !dynamic.length) return staticList;
+
+        // 动态列表在前，写死配置补在后面去重兜底
+        const merged = [...dynamic];
+        for (const id of staticList) {
+            if (!merged.includes(id)) merged.push(id);
+        }
+        return merged;
     }
 
     /**
@@ -160,7 +293,8 @@ class LLMClient {
 
         try {
             let lastError = null;
-            for (const model of this.getModelCandidates()) {
+            const candidates = await this.getModelCandidates();
+            for (const model of candidates) {
                 const requestBody = {
                     model,
                     messages: messagesWithSystem,
@@ -218,7 +352,8 @@ class LLMClient {
         try {
             let lastError = null;
             let reader = null;
-            for (const model of this.getModelCandidates()) {
+            const candidates = await this.getModelCandidates();
+            for (const model of candidates) {
                 const requestBody = {
                     model,
                     messages: messagesWithSystem,

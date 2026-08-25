@@ -4,8 +4,11 @@ const CONFIG = {
     OPENROUTER_API_KEY: atob('c2stb3ItdjEtOTlkMzZjNDIwMGE4NGQyMTI0NDE1YzhmM2MzNzllY2M4NDllM2UwZTk4NGE5MzlhNGQ3NmNlNGM1OWM4ODg2ZQ=='),
 
     // LLM 模型配置
-    MODEL: 'google/gemma-4-31b-it:free',
+    MODEL: 'z-ai/glm-5.2:free',
     FALLBACK_MODELS: [
-        'openai/gpt-oss-20b:free'
+        'google/gemma-4-31b-it:free',
+        'google/gemma-4-26b-a4b-it:free',
+        'minimax/minimax-m3:free',
+        'nvidia/nemotron-3-super-120b-a12b:free',
     ]
 };
