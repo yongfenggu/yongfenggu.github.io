@@ -1,1041 +1,2148 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Yongfeng Gu - Agentic AI Engineer · Master's student at Tianjin University">
-    <meta name="keywords" content="Wynn Koo, Yongfeng Gu, Agentic AI, LLM Agent, Tianjin University">
-    <meta name="author" content="Yongfeng Gu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Yongfeng Gu - Agentic AI Engineer · Master's student at Tianjin University"
+    />
+    <meta
+      name="keywords"
+      content="Wynn Koo, Yongfeng Gu, Agentic AI, LLM Agent, Tianjin University"
+    />
+    <meta name="author" content="Yongfeng Gu" />
     <title>Yongfeng Gu</title>
 
     <!-- Favicon -->
-    <link rel="icon" href="./assets/img/7f21a755-b214-4b39-9932-081dff487120 (1).png" type="image/png">
+    <link
+      rel="icon"
+      href="./assets/img/7f21a755-b214-4b39-9932-081dff487120 (1).png"
+      type="image/png"
+    />
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { min-width: 360px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; background: #fff; }
-        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        /* Navigation */ nav { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 15px 0; }
-        .nav-container { display: flex; justify-content: space-between; align-items: center; }
-        .nav-brand { font-size: 18px; font-weight: 600; color: #333; text-decoration: none; font-family: Georgia, 'Times New Roman', serif; }
-        .nav-links { display: flex; gap: 30px; }
-        .nav-link { color: #666; text-decoration: none; font-size: 14px; transition: color 0.3s; font-family: Georgia, 'Times New Roman', serif; }
-        .nav-link:hover { color: #000; }
-        .nav-link.active { color: #000; font-weight: 600; }
-        /* Hamburger Menu */ .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; width: 30px; height: 24px; position: relative; flex-shrink: 0; }
-        .nav-toggle span { display: block; width: 100%; height: 2px; background: #333; position: absolute; left: 0; transition: all 0.3s; }
-        .nav-toggle span:nth-child(1) { top: 2px; }
-        .nav-toggle span:nth-child(2) { top: 11px; }
-        .nav-toggle span:nth-child(3) { top: 20px; }
-        .nav-toggle.active span:nth-child(1) { top: 11px; transform: rotate(45deg); }
-        .nav-toggle.active span:nth-child(2) { opacity: 0; }
-        .nav-toggle.active span:nth-child(3) { top: 11px; transform: rotate(-45deg); }
-        /* About Section */ #about { padding: 40px 0; }
-        .about-content { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; align-items: start; }
-        .about-text h1 { font-size: 32px; margin-bottom: 10px; font-weight: 600; font-family: Georgia, 'Times New Roman', serif; }
-        .about-text .position { color: #666; font-size: 16px; margin-bottom: 20px; font-family: Georgia, 'Times New Roman', serif; }
-        .about-text p { color: #555; margin-bottom: 15px; line-height: 1.7; }
-        .about-text a { color: #0066cc; text-decoration: none; }
-        .about-text a:hover { text-decoration: underline; }
-        /* Contact Links */ .contact-links { margin-top: 20px; display: flex; gap: 20px; flex-wrap: wrap; }
-        .contact-links a { color: #666; text-decoration: none; font-size: 14px; display: inline-block; }
-        .contact-links a img { width: 24px; height: 24px; transition: opacity 0.2s; }
-        .contact-links a:hover img { opacity: 0.7; }
-        .about-avatar { text-align: center; }
-        .about-avatar img { width: 280px; height: 280px; border-radius: 8px; object-fit: cover; }
-        /* Home Sections */ .page-section { padding: 28px 0; }
-        .page-section.alt { background: #fff; }
-        .section-title { font-size: 24px; font-weight: 600; margin-bottom: 30px; padding-bottom: 10px; border-bottom: 2px solid #333; font-family: Georgia, 'Times New Roman', serif; }
-        .item-card { margin-bottom: 28px; padding: 0; background: #fff; border: 1px solid #eee; border-radius: 4px; display: grid; grid-template-columns: minmax(200px, 0.85fr) minmax(0, 1.5fr); gap: 24px; align-items: start; overflow: hidden; }
-        .item-media { display: flex; flex-direction: column; gap: 12px; padding: 18px 0 18px 18px; }
-        .item-content { padding: 18px 20px 18px 0; }
-        .item-figure { background: #f5f5f5; border: 1px solid #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; width: 100%; height: 170px; padding: 14px; cursor: zoom-in; box-sizing: border-box; }
-        .item-figure img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
-        .item-title { font-weight: 500; margin-bottom: 8px; line-height: 1.5; font-family: Georgia, 'Times New Roman', serif; }
-        .item-title a { color: #0066cc; text-decoration: none; }
-        .item-title a:hover { text-decoration: underline; }
-        .item-media .tag-list { margin: 0; flex-wrap: nowrap; }
-        .item-media .tag { padding: 3px 7px; font-size: 10.5px; }
-        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-        .item-authors { color: #555; font-size: 14px; line-height: 1.7; margin: 6px 0 10px; font-family: Georgia, 'Times New Roman', serif; }
-        .item-authors strong { color: #222; font-weight: 700; }
-        .tag { display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 4px; background: #e8eef7; color: #315f9a; font-size: 12px; font-weight: 700; letter-spacing: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-        .tag.paper { background: #f1d3dc; color: #9a455c; }
-        .tag.code { background: #cfe7df; color: #26705d; }
-        .tag.role { background: #e8e1f2; color: #604185; }
-        .item-desc { color: #555; font-size: 14px; line-height: 1.7; margin-top: 8px; }
-        .exp-block { margin-bottom: 18px; }
-        .exp-block:last-child { margin-bottom: 0; }
-        .exp-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        /* Projects section */ .item-meta { color: #666; font-size: 14px; line-height: 1.6; font-family: Georgia, 'Times New Roman', serif; }
-        .item-role { font-weight: 500; color: #444; }
-        .item-date { color: #999; font-size: 13px; font-family: Georgia, 'Times New Roman', serif; margin-left: 20px; white-space: nowrap; }
-        .star-badge { height: 16px; vertical-align: text-bottom; margin-left: 4px; }
-        .more-projects { display: none; }
-        .more-projects.open { display: block; }
-        .more-row { text-align: right; }
-        .more-link { color: #0066cc; font-size: 14px; font-family: Georgia, 'Times New Roman', serif; cursor: pointer; text-decoration: none; }
-        .more-link:hover { text-decoration: underline; }
-        /* Timeline-style experience list */ .exp-simple { display: flex; flex-direction: column; gap: 4px; }
-        .exp-row { display: grid; grid-template-columns: 150px 1fr; gap: 24px; align-items: baseline; position: relative; padding: 14px 0 14px 24px; border-left: 2px solid #ececec; transition: border-color 0.2s, background 0.2s; }
-        .exp-row:hover { border-left-color: #0066cc; background: #fafcff; }
-        .exp-row::before { content: ""; position: absolute; left: -6px; top: 19px; width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 2px solid #0066cc; box-sizing: border-box; }
-        .exp-row .exp-time { color: #888; font-family: Georgia, 'Times New Roman', serif; font-size: 14px; font-weight: 600; letter-spacing: 0.3px; white-space: nowrap; }
-        .exp-row .exp-desc { color: #222; font-size: 16px; line-height: 1.6; font-family: Georgia, 'Times New Roman', serif; }
-        .exp-row .exp-desc a { color: #0066cc; text-decoration: none; }
-        .exp-row .exp-desc a:hover { text-decoration: underline; }
-        /* Chat Section */ .chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 10px; border-bottom: 2px solid #333; }
-        .chat-header h2 { font-size: 24px; font-weight: 600; font-family: Georgia, 'Times New Roman', serif; margin: 0; }
-        .clear-chat-btn { background: transparent; border: none; padding: 4px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-        .clear-chat-btn img { width: 20px; height: 20px; filter: brightness(0) saturate(100%) invert(20%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(90%); transition: all 0.2s; }
-        .clear-chat-btn:hover img { filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%); }
-        /* Footer */ footer { padding: 30px 0; text-align: center; color: #666; font-size: 14px; border-top: 1px solid #e0e0e0; }
-        /* Responsive */
-        @media (max-width: 768px) {
-          .nav-toggle { display: block; }
-          .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 16px 20px; gap: 16px; border-bottom: 1px solid #e0e0e0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
-          .nav-links.open { display: flex; }
-          nav { position: relative; }
-          #about { padding: 28px 0; }
-          .about-content { grid-template-columns: 1fr; gap: 24px; }
-          .about-avatar { order: -1; }
-          .about-avatar img { width: 220px; height: 220px; }
-          .about-text h1 { font-size: 24px; }
-          .about-text .position { font-size: 14px; margin-bottom: 14px; }
-          .about-text p { font-size: 14px; }
-          .page-section { padding: 20px 0; }
-          .section-title { font-size: 20px; margin-bottom: 20px; }
-          .exp-header-row { flex-direction: column; gap: 4px; }
-          .exp-row { grid-template-columns: 1fr; gap: 4px; padding: 12px 0 12px 20px; }
-          .exp-row .exp-desc { font-size: 15px; }
-          .item-card { flex-direction: column; display: grid; grid-template-columns: 1fr; gap: 8px; }
-          .item-media { padding: 16px 16px 0; }
-          .item-content { padding: 12px 16px 16px; }
-          .item-figure { padding: 12px; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        min-width: 360px;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #fff;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      /* Navigation */
+      nav {
+        background: #fff;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 15px 0;
+      }
+      .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .nav-brand {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        text-decoration: none;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .nav-links {
+        display: flex;
+        gap: 30px;
+      }
+      .nav-link {
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .nav-link:hover {
+        color: #000;
+      }
+      .nav-link.active {
+        color: #000;
+        font-weight: 600;
+      }
+      /* Hamburger Menu */
+      .nav-toggle {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        width: 30px;
+        height: 24px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .nav-toggle span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: #333;
+        position: absolute;
+        left: 0;
+        transition: all 0.3s;
+      }
+      .nav-toggle span:nth-child(1) {
+        top: 2px;
+      }
+      .nav-toggle span:nth-child(2) {
+        top: 11px;
+      }
+      .nav-toggle span:nth-child(3) {
+        top: 20px;
+      }
+      .nav-toggle.active span:nth-child(1) {
+        top: 11px;
+        transform: rotate(45deg);
+      }
+      .nav-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+      .nav-toggle.active span:nth-child(3) {
+        top: 11px;
+        transform: rotate(-45deg);
+      }
+      /* About Section */
+      #about {
+        padding: 40px 0;
+      }
+      .about-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+        align-items: start;
+      }
+      .about-text h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .about-text .position {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 20px;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .about-text p {
+        color: #555;
+        margin-bottom: 15px;
+        line-height: 1.7;
+      }
+      .about-text a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      .about-text a:hover {
+        text-decoration: underline;
+      }
+      /* Contact Links */
+      .contact-links {
+        margin-top: 20px;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .contact-links a {
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+      }
+      .contact-links a img {
+        width: 24px;
+        height: 24px;
+        transition: opacity 0.2s;
+      }
+      .contact-links a:hover img {
+        opacity: 0.7;
+      }
+      .about-avatar {
+        text-align: center;
+      }
+      .about-avatar img {
+        width: 280px;
+        height: 280px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+      /* Home Sections */
+      .page-section {
+        padding: 28px 0;
+      }
+      .page-section.alt {
+        background: #fff;
+      }
+      .section-title {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #333;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .item-card {
+        margin-bottom: 28px;
+        padding: 0;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        display: grid;
+        grid-template-columns: minmax(200px, 0.85fr) minmax(0, 1.5fr);
+        gap: 24px;
+        align-items: start;
+        overflow: hidden;
+      }
+      .item-media {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 18px 0 18px 18px;
+      }
+      .item-content {
+        padding: 18px 20px 18px 0;
+      }
+      .item-figure {
+        background: #f5f5f5;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 170px;
+        padding: 14px;
+        cursor: zoom-in;
+        box-sizing: border-box;
+      }
+      .item-figure img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+      }
+      .item-title {
+        font-weight: 500;
+        margin-bottom: 8px;
+        line-height: 1.5;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .item-title a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      .item-title a:hover {
+        text-decoration: underline;
+      }
+      .item-media .tag-list {
+        margin: 0;
+        flex-wrap: nowrap;
+      }
+      .item-media .tag {
+        padding: 3px 7px;
+        font-size: 10.5px;
+      }
+      .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0;
+      }
+      .item-authors {
+        color: #555;
+        font-size: 14px;
+        line-height: 1.7;
+        margin: 6px 0 10px;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .item-authors strong {
+        color: #222;
+        font-weight: 700;
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 9px;
+        border-radius: 4px;
+        background: #e8eef7;
+        color: #315f9a;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+      }
+      .tag.paper {
+        background: #f1d3dc;
+        color: #9a455c;
+      }
+      .tag.code {
+        background: #cfe7df;
+        color: #26705d;
+      }
+      .tag.role {
+        background: #e8e1f2;
+        color: #604185;
+      }
+      .item-desc {
+        color: #555;
+        font-size: 14px;
+        line-height: 1.7;
+        margin-top: 8px;
+      }
+      .exp-block {
+        margin-bottom: 18px;
+      }
+      .exp-block:last-child {
+        margin-bottom: 0;
+      }
+      .exp-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+      /* Projects section */
+      .item-meta {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.6;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .item-role {
+        font-weight: 500;
+        color: #444;
+      }
+      .item-date {
+        color: #999;
+        font-size: 13px;
+        font-family: Georgia, "Times New Roman", serif;
+        margin-left: 20px;
+        white-space: nowrap;
+      }
+      .star-badge {
+        height: 16px;
+        vertical-align: text-bottom;
+        margin-left: 4px;
+      }
+      .more-projects {
+        display: none;
+      }
+      .more-projects.open {
+        display: block;
+      }
+      .more-row {
+        text-align: right;
+      }
+      .more-link {
+        color: #0066cc;
+        font-size: 14px;
+        font-family: Georgia, "Times New Roman", serif;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .more-link:hover {
+        text-decoration: underline;
+      }
+      /* Timeline-style experience list */
+      .exp-simple {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .exp-row {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 24px;
+        align-items: baseline;
+        position: relative;
+        padding: 14px 0 14px 24px;
+        border-left: 2px solid #ececec;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .exp-row:hover {
+        border-left-color: #0066cc;
+        background: #fafcff;
+      }
+      .exp-row::before {
+        content: "";
+        position: absolute;
+        left: -6px;
+        top: 19px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #0066cc;
+        box-sizing: border-box;
+      }
+      .exp-row .exp-time {
+        color: #888;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+      }
+      .exp-row .exp-desc {
+        color: #222;
+        font-size: 16px;
+        line-height: 1.6;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .exp-row .exp-desc a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      .exp-row .exp-desc a:hover {
+        text-decoration: underline;
+      }
+      /* Chat Section */
+      .chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #333;
+      }
+      .chat-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        font-family: Georgia, "Times New Roman", serif;
+        margin: 0;
+      }
+      .clear-chat-btn {
+        background: transparent;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .clear-chat-btn img {
+        width: 20px;
+        height: 20px;
+        filter: brightness(0) saturate(100%) invert(20%) sepia(0%) saturate(0%)
+          hue-rotate(0deg) brightness(95%) contrast(90%);
+        transition: all 0.2s;
+      }
+      .clear-chat-btn:hover img {
+        filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%)
+          hue-rotate(0deg) brightness(0%) contrast(100%);
+      }
+      /* Footer */
+      footer {
+        padding: 30px 0;
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+        border-top: 1px solid #e0e0e0;
+      }
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav-toggle {
+          display: block;
         }
-        @media (max-width: 480px) {
-          .container { padding: 0 16px; }
-          .about-avatar img { width: 180px; height: 180px; }
-          .about-text h1 { font-size: 22px; }
-          #chat { padding: 36px 0; }
-          .chat-header h2 { font-size: 20px; }
+        .nav-links {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: #fff;
+          flex-direction: column;
+          padding: 16px 20px;
+          gap: 16px;
+          border-bottom: 1px solid #e0e0e0;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        /* Chat Section */ #chat { padding: 60px 0; background: #fff; }
-        .chat-container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        .chat-messages { min-height: 0; max-height: 500px; overflow-y: auto; padding: 0 0 20px 0; display: flex; flex-direction: column; gap: 20px; }
-        .chat-messages:empty { display: none; }
-        /* 隐藏滚动条但保持滚动功能 */ .chat-messages::-webkit-scrollbar { display: none; }
-        /* 兼容 Firefox */ .chat-messages { scrollbar-width: none; }
-        /* 兼容 IE/Edge */ .chat-messages { -ms-overflow-style: none; }
-        .message { max-width: 70%; padding: 14px 18px; border-radius: 3px; line-height: 1.7; font-size: 14px; animation: fadeIn 0.3s ease-in; }
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-        .message.user { align-self: flex-end; background: transparent; color: #333; padding: 8px 0; }
-        .message.assistant { align-self: flex-start; background: transparent; color: #333; display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; }
-        .message.assistant .avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
-        .message.assistant .content { flex: 1; padding-top: 4px; }
-        /* Markdown rendering inside assistant replies */ .message.assistant .content p { margin: 0 0 8px; }
-        .message.assistant .content > *:last-child { margin-bottom: 0; }
-        .message.assistant .content a { color: #0066cc; text-decoration: underline; word-break: break-word; }
-        .message.assistant .content strong { font-weight: 700; }
-        .message.assistant .content em { font-style: italic; }
-        .message.assistant .content ul, .message.assistant .content ol { margin: 6px 0 8px; padding-left: 22px; }
-        .message.assistant .content li { margin: 3px 0; }
-        .message.assistant .content h1, .message.assistant .content h2, .message.assistant .content h3 { font-family: Georgia, 'Times New Roman', serif; line-height: 1.35; margin: 12px 0 6px; }
-        .message.assistant .content h1 { font-size: 18px; }
-        .message.assistant .content h2 { font-size: 16px; }
-        .message.assistant .content h3 { font-size: 15px; }
-        .message.assistant .content code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-family: Menlo, Consolas, monospace; font-size: 0.88em; }
-        .message.assistant .content pre { background: #f5f5f5; padding: 10px 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0; }
-        .message.assistant .content pre code { background: none; padding: 0; font-size: 0.85em; }
-        .message.system { align-self: center; background: transparent; color: #999; font-size: 13px; max-width: 85%; text-align: center; font-family: Georgia, 'Times New Roman', serif; font-style: italic; padding: 8px 16px; }
-        .message.error { align-self: center; background: #fff8e1; color: #f57c00; border: 1px solid #ffe0b2; font-size: 13px; max-width: 85%; text-align: center; }
-        .chat-input-container { padding: 0; background: transparent; display: flex; gap: 12px; align-items: stretch; }
-        .chat-input { flex: 1; border: 1px solid #ddd; border-radius: 2px; padding: 12px 16px; font-size: 14px; outline: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #fff; transition: border-color 0.2s; resize: none; }
-        .chat-input:focus { border-color: #666; }
-        .chat-send { background: #333; color: white; border: none; border-radius: 2px; padding: 12px 16px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; font-family: Georgia, 'Times New Roman', serif; white-space: nowrap; display: flex; align-items: center; justify-content: center; }
-        .chat-send:hover:not(:disabled) { background: #000; transform: translateY(-1px); }
-        .chat-send:active:not(:disabled) { transform: translateY(0); }
-        .chat-send:disabled { background: #ddd; color: #999; cursor: not-allowed; }
-        .chat-bubble { position: fixed; top: 78px; right: 24px; z-index: 1001; width: min(360px, calc(100vw - 32px)); max-height: 48vh; padding: 14px 16px; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); display: flex; gap: 12px; align-items: flex-start; opacity: 0; pointer-events: none; transform: translateY(-10px); transition: opacity 0.2s ease, transform 0.2s ease; cursor: pointer; }
-        .chat-bubble.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
-        .chat-bubble .avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
-        .chat-bubble-content { flex: 1; min-width: 0; max-height: calc(48vh - 28px); overflow: auto; color: #333; font-size: 14px; line-height: 1.6; scrollbar-width: none; }
-        .chat-bubble-content::-webkit-scrollbar { display: none; }
-        .chat-bubble-message + .chat-bubble-message { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
-        .typing-indicator { align-self: flex-start; background: transparent; padding: 8px 0; display: none; animation: fadeIn 0.3s ease-in; }
-        .typing-indicator.active { display: flex; gap: 12px; align-items: flex-start; }
-        .typing-indicator .avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
-        .typing-indicator .dots { display: flex; gap: 5px; align-items: center; padding-top: 4px; }
-        .typing-indicator .dots span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #bbb; animation: typing 1.4s infinite ease-in-out; }
-        .typing-indicator .dots span:nth-child(1) { animation-delay: 0s; }
-        .typing-indicator .dots span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator .dots span:nth-child(3) { animation-delay: 0.4s; }
-        0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-        30% { transform: translateY(-8px); opacity: 1; }
-        @media (max-width: 768px) {
-          .chat-container { padding: 0 16px; }
-          .chat-messages { min-height: 0; max-height: 400px; padding: 0 0 16px 0; gap: 16px; }
-          .chat-input-container { padding: 0; }
-          .message { max-width: 88%; padding: 10px 12px; font-size: 14px; }
-          .message.assistant .avatar { width: 28px; height: 28px; }
-          .chat-input { padding: 10px 12px; font-size: 16px; }
-          .chat-send { padding: 10px 14px; }
-          .chat-bubble { top: 68px; right: 16px; }
-          .typing-indicator .avatar { width: 28px; height: 28px; }
+        .nav-links.open {
+          display: flex;
         }
-        .nav-actions { display: flex; align-items: center; gap: 16px; }
-        /* ============================================ News section ============================================ */ #news { padding: 56px 0; }
-        .news-list { display: flex; flex-direction: column; gap: 2px; }
-        .news-item { display: grid; grid-template-columns: 92px 1fr; gap: 20px; align-items: baseline; padding: 12px 0 12px 16px; border-left: 2px solid #ececec; transition: border-color 0.2s, background 0.2s; }
-        .news-item:hover { border-left-color: #0066cc; background: #fafcff; }
-        .news-date { color: #999; font-size: 13px; font-weight: 600; font-family: Georgia, 'Times New Roman', serif; white-space: nowrap; letter-spacing: 0.3px; }
-        .news-content { color: #444; font-size: 14.5px; line-height: 1.65; }
-        .news-content a { color: #0066cc; text-decoration: none; }
-        .news-content a:hover { text-decoration: underline; }
-        .news-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 4px; margin-right: 8px; background: #e8eef7; color: #315f9a; vertical-align: middle; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .news-badge.talk { background: #e8e1f2; color: #604185; }
-        .news-badge.paper { background: #f1d3dc; color: #9a455c; }
-        .news-badge.patent { background: #cfe7df; color: #26705d; }
-        @media (max-width: 768px) {
-          #news { padding: 36px 0; }
-          .news-item { grid-template-columns: 1fr; gap: 4px; padding: 10px 0 10px 14px; }
-          .nav-actions { gap: 12px; }
+        nav {
+          position: relative;
         }
-        /* Image lightbox */ .img-lightbox { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.82); align-items: center; justify-content: center; padding: 40px; cursor: zoom-out; }
-        .img-lightbox.open { display: flex; }
-        .img-lightbox img { max-width: 92vw; max-height: 90vh; object-fit: contain; background: #fff; border-radius: 4px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
-        .img-lightbox-close { position: fixed; top: 22px; right: 28px; font-size: 34px; line-height: 1; color: #fff; background: none; border: none; cursor: pointer; opacity: 0.8; }
-        .img-lightbox-close:hover { opacity: 1; }
+        #about {
+          padding: 28px 0;
+        }
+        .about-content {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+        .about-avatar {
+          order: -1;
+        }
+        .about-avatar img {
+          width: 220px;
+          height: 220px;
+        }
+        .about-text h1 {
+          font-size: 24px;
+        }
+        .about-text .position {
+          font-size: 14px;
+          margin-bottom: 14px;
+        }
+        .about-text p {
+          font-size: 14px;
+        }
+        .page-section {
+          padding: 20px 0;
+        }
+        .section-title {
+          font-size: 20px;
+          margin-bottom: 20px;
+        }
+        .exp-header-row {
+          flex-direction: column;
+          gap: 4px;
+        }
+        .exp-row {
+          grid-template-columns: 1fr;
+          gap: 4px;
+          padding: 12px 0 12px 20px;
+        }
+        .exp-row .exp-desc {
+          font-size: 15px;
+        }
+        .item-card {
+          flex-direction: column;
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+        .item-media {
+          padding: 16px 16px 0;
+        }
+        .item-content {
+          padding: 12px 16px 16px;
+        }
+        .item-figure {
+          padding: 12px;
+        }
+      }
+      @media (max-width: 480px) {
+        .container {
+          padding: 0 16px;
+        }
+        .about-avatar img {
+          width: 180px;
+          height: 180px;
+        }
+        .about-text h1 {
+          font-size: 22px;
+        }
+        #chat {
+          padding: 36px 0;
+        }
+        .chat-header h2 {
+          font-size: 20px;
+        }
+      }
+      /* Chat Section */
+      #chat {
+        padding: 60px 0;
+        background: #fff;
+      }
+      .chat-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+      .chat-messages {
+        min-height: 0;
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 0 0 20px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .chat-messages:empty {
+        display: none;
+      }
+      /* 隐藏滚动条但保持滚动功能 */
+      .chat-messages::-webkit-scrollbar {
+        display: none;
+      }
+      /* 兼容 Firefox */
+      .chat-messages {
+        scrollbar-width: none;
+      }
+      /* 兼容 IE/Edge */
+      .chat-messages {
+        -ms-overflow-style: none;
+      }
+      .message {
+        max-width: 70%;
+        padding: 14px 18px;
+        border-radius: 3px;
+        line-height: 1.7;
+        font-size: 14px;
+        animation: fadeIn 0.3s ease-in;
+      }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .message.user {
+        align-self: flex-end;
+        background: transparent;
+        color: #333;
+        padding: 8px 0;
+      }
+      .message.assistant {
+        align-self: flex-start;
+        background: transparent;
+        color: #333;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 8px 0;
+      }
+      .message.assistant .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        object-fit: cover;
+      }
+      .message.assistant .content {
+        flex: 1;
+        padding-top: 4px;
+      }
+      /* Markdown rendering inside assistant replies */
+      .message.assistant .content p {
+        margin: 0 0 8px;
+      }
+      .message.assistant .content > *:last-child {
+        margin-bottom: 0;
+      }
+      .message.assistant .content a {
+        color: #0066cc;
+        text-decoration: underline;
+        word-break: break-word;
+      }
+      .message.assistant .content strong {
+        font-weight: 700;
+      }
+      .message.assistant .content em {
+        font-style: italic;
+      }
+      .message.assistant .content ul,
+      .message.assistant .content ol {
+        margin: 6px 0 8px;
+        padding-left: 22px;
+      }
+      .message.assistant .content li {
+        margin: 3px 0;
+      }
+      .message.assistant .content h1,
+      .message.assistant .content h2,
+      .message.assistant .content h3 {
+        font-family: Georgia, "Times New Roman", serif;
+        line-height: 1.35;
+        margin: 12px 0 6px;
+      }
+      .message.assistant .content h1 {
+        font-size: 18px;
+      }
+      .message.assistant .content h2 {
+        font-size: 16px;
+      }
+      .message.assistant .content h3 {
+        font-size: 15px;
+      }
+      .message.assistant .content code {
+        background: #f0f0f0;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-family: Menlo, Consolas, monospace;
+        font-size: 0.88em;
+      }
+      .message.assistant .content pre {
+        background: #f5f5f5;
+        padding: 10px 12px;
+        border-radius: 6px;
+        overflow-x: auto;
+        margin: 8px 0;
+      }
+      .message.assistant .content pre code {
+        background: none;
+        padding: 0;
+        font-size: 0.85em;
+      }
+      .message.system {
+        align-self: center;
+        background: transparent;
+        color: #999;
+        font-size: 13px;
+        max-width: 85%;
+        text-align: center;
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: italic;
+        padding: 8px 16px;
+      }
+      .message.error {
+        align-self: center;
+        background: #fff8e1;
+        color: #f57c00;
+        border: 1px solid #ffe0b2;
+        font-size: 13px;
+        max-width: 85%;
+        text-align: center;
+      }
+      .chat-input-container {
+        padding: 0;
+        background: transparent;
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+      }
+      .chat-input {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        padding: 12px 16px;
+        font-size: 14px;
+        outline: none;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: #fff;
+        transition: border-color 0.2s;
+        resize: none;
+      }
+      .chat-input:focus {
+        border-color: #666;
+      }
+      .chat-send {
+        background: #333;
+        color: white;
+        border: none;
+        border-radius: 2px;
+        padding: 12px 16px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+        font-family: Georgia, "Times New Roman", serif;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chat-send:hover:not(:disabled) {
+        background: #000;
+        transform: translateY(-1px);
+      }
+      .chat-send:active:not(:disabled) {
+        transform: translateY(0);
+      }
+      .chat-send:disabled {
+        background: #ddd;
+        color: #999;
+        cursor: not-allowed;
+      }
+      .chat-bubble {
+        position: fixed;
+        top: 78px;
+        right: 24px;
+        z-index: 1001;
+        width: min(360px, calc(100vw - 32px));
+        max-height: 48vh;
+        padding: 14px 16px;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-10px);
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease;
+        cursor: pointer;
+      }
+      .chat-bubble.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+      .chat-bubble .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        object-fit: cover;
+      }
+      .chat-bubble-content {
+        flex: 1;
+        min-width: 0;
+        max-height: calc(48vh - 28px);
+        overflow: auto;
+        color: #333;
+        font-size: 14px;
+        line-height: 1.6;
+        scrollbar-width: none;
+      }
+      .chat-bubble-content::-webkit-scrollbar {
+        display: none;
+      }
+      .chat-bubble-message + .chat-bubble-message {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+      }
+      .typing-indicator {
+        align-self: flex-start;
+        background: transparent;
+        padding: 8px 0;
+        display: none;
+        animation: fadeIn 0.3s ease-in;
+      }
+      .typing-indicator.active {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .typing-indicator .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        object-fit: cover;
+      }
+      .typing-indicator .dots {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        padding-top: 4px;
+      }
+      .typing-indicator .dots span {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #bbb;
+        animation: typing 1.4s infinite ease-in-out;
+      }
+      .typing-indicator .dots span:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .typing-indicator .dots span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing-indicator .dots span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+        opacity: 0.4;
+      }
+      30% {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+      @media (max-width: 768px) {
+        .chat-container {
+          padding: 0 16px;
+        }
+        .chat-messages {
+          min-height: 0;
+          max-height: 400px;
+          padding: 0 0 16px 0;
+          gap: 16px;
+        }
+        .chat-input-container {
+          padding: 0;
+        }
+        .message {
+          max-width: 88%;
+          padding: 10px 12px;
+          font-size: 14px;
+        }
+        .message.assistant .avatar {
+          width: 28px;
+          height: 28px;
+        }
+        .chat-input {
+          padding: 10px 12px;
+          font-size: 16px;
+        }
+        .chat-send {
+          padding: 10px 14px;
+        }
+        .chat-bubble {
+          top: 68px;
+          right: 16px;
+        }
+        .typing-indicator .avatar {
+          width: 28px;
+          height: 28px;
+        }
+      }
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      /* ============================================ News section ============================================ */
+      #news {
+        padding: 56px 0;
+      }
+      .news-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .news-item {
+        display: grid;
+        grid-template-columns: 92px 1fr;
+        gap: 20px;
+        align-items: baseline;
+        padding: 12px 0 12px 16px;
+        border-left: 2px solid #ececec;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .news-item:hover {
+        border-left-color: #0066cc;
+        background: #fafcff;
+      }
+      .news-date {
+        color: #999;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: Georgia, "Times New Roman", serif;
+        white-space: nowrap;
+        letter-spacing: 0.3px;
+      }
+      .news-content {
+        color: #444;
+        font-size: 14.5px;
+        line-height: 1.65;
+      }
+      .news-content a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      .news-content a:hover {
+        text-decoration: underline;
+      }
+      .news-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 1px 7px;
+        border-radius: 4px;
+        margin-right: 8px;
+        background: #e8eef7;
+        color: #315f9a;
+        vertical-align: middle;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      .news-badge.talk {
+        background: #e8e1f2;
+        color: #604185;
+      }
+      .news-badge.paper {
+        background: #f1d3dc;
+        color: #9a455c;
+      }
+      .news-badge.patent {
+        background: #cfe7df;
+        color: #26705d;
+      }
+      @media (max-width: 768px) {
+        #news {
+          padding: 36px 0;
+        }
+        .news-item {
+          grid-template-columns: 1fr;
+          gap: 4px;
+          padding: 10px 0 10px 14px;
+        }
+        .nav-actions {
+          gap: 12px;
+        }
+      }
+      /* Image lightbox */
+      .img-lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: rgba(0, 0, 0, 0.82);
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        cursor: zoom-out;
+      }
+      .img-lightbox.open {
+        display: flex;
+      }
+      .img-lightbox img {
+        max-width: 92vw;
+        max-height: 90vh;
+        object-fit: contain;
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+      .img-lightbox-close {
+        position: fixed;
+        top: 22px;
+        right: 28px;
+        font-size: 34px;
+        line-height: 1;
+        color: #fff;
+        background: none;
+        border: none;
+        cursor: pointer;
+        opacity: 0.8;
+      }
+      .img-lightbox-close:hover {
+        opacity: 1;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navigation -->
     <nav>
-        <div class="container nav-container">
-            <a href="./index.html" class="nav-brand">Yongfeng Gu</a>
-            <div class="nav-actions">
-                <div class="nav-links" id="navLinks">
-                    <a href="#news" class="nav-link">News</a>
-                    <a href="#publications" class="nav-link">Publications</a>
-                    <a href="#experience" class="nav-link">Experience</a>
-                    <a href="#projects" class="nav-link">Projects</a>
-                    <a href="./apps.html" class="nav-link">Apps</a>
-                </div>
-                <button class="nav-toggle" id="navToggle" aria-label="Menu">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
+      <div class="container nav-container">
+        <a href="./index.html" class="nav-brand">Yongfeng Gu</a>
+        <div class="nav-actions">
+          <div class="nav-links" id="navLinks">
+            <a href="#news" class="nav-link">News</a>
+            <a href="#publications" class="nav-link">Publications</a>
+            <a href="#experience" class="nav-link">Experience</a>
+            <a href="#projects" class="nav-link">Projects</a>
+            <a href="./apps.html" class="nav-link">Apps</a>
+          </div>
+          <button class="nav-toggle" id="navToggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
         </div>
+      </div>
     </nav>
 
-    <div class="chat-bubble" id="chatBubble" role="button" tabindex="0" aria-label="Open chat">
-        <img src="assets/img/wechat avatar.jpg" alt="Avatar" class="avatar">
-        <div class="chat-bubble-content" id="chatBubbleContent"></div>
+    <div
+      class="chat-bubble"
+      id="chatBubble"
+      role="button"
+      tabindex="0"
+      aria-label="Open chat"
+    >
+      <img src="assets/img/wechat avatar.jpg" alt="Avatar" class="avatar" />
+      <div class="chat-bubble-content" id="chatBubbleContent"></div>
     </div>
 
     <!-- About Section -->
     <section id="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h1>Yongfeng Gu</h1>
-                    <p class="position">Agentic AI Engineer</p>
+      <div class="container">
+        <div class="about-content">
+          <div class="about-text">
+            <h1>Yongfeng Gu</h1>
+            <p class="position">Agentic AI Engineer</p>
 
-                    <p>I'm a Master's student at the <a href="https://pmti.tju.edu.cn/" target="_blank">State Key Lab of Precision Measuring Technology &amp; Instruments</a>, Tianjin University (2024–2027), where I work on large-scale vision-based measurement with Prof. <a href="https://faculty.tju.edu.cn/096175/zh_CN/index.htm" target="_blank">Yongjie Ren</a>.</p>
-                    <p>Most of my work centers on agentic AI, spanning agentic model training, agent harnesses, and multi-agent systems. Alongside that, I have a solid foundation and hands-on project experience in computer vision, full-stack, and embedded development. I'm currently looking for new-grad opportunities for the 2027 cohort.</p>
+            <p>
+              I focus on Agentic AI, particularly agentic model training, agent
+              harnesses, and multi-agent systems. I also work across computer
+              vision, full-stack, and embedded development.
+            </p>
 
-                    <div class="contact-links">
-                        <a href="mailto:yongfenggu@tju.edu.cn" title="yongfenggu@tju.edu.cn">
-                            <img src="assets/icons/email-fill.svg" alt="Email">
-                        </a>
-                        <a href="https://github.com/yongfenggu" target="_blank" title="GitHub: @GGyongfeng">
-                            <img src="assets/icons/github.svg" alt="GitHub">
-                        </a>
-                        <a href="https://scholar.google.com/citations?user=BwrMcW0AAAAJ" target="_blank" title="Google Scholar">
-                            <img src="assets/icons/google-scholar.svg" alt="Google Scholar">
-                        </a>
-                    </div>
-                </div>
-                <div class="about-avatar">
-                    <img src="./assets/img/avatar.jpg" alt="Yongfeng Gu">
-                </div>
+            <p>
+              I'm an M.S. student at
+              <a href="https://pmti.tju.edu.cn/" target="_blank"
+                >Tianjin University</a
+              >
+              (2024–2027), advised by Prof.
+              <a
+                href="https://faculty.tju.edu.cn/096175/zh_CN/index.htm"
+                target="_blank"
+                >Yongjie Ren</a
+              >. Research on vision-based measurement. Seeking
+              2027 new-grad opportunities.
+            </p>
+            <div class="contact-links">
+              <a
+                href="mailto:yongfenggu@tju.edu.cn"
+                title="yongfenggu@tju.edu.cn"
+              >
+                <img src="assets/icons/email-fill.svg" alt="Email" />
+              </a>
+              <a
+                href="https://github.com/yongfenggu"
+                target="_blank"
+                title="GitHub: @GGyongfeng"
+              >
+                <img src="assets/icons/github.svg" alt="GitHub" />
+              </a>
+              <a
+                href="https://scholar.google.com/citations?user=BwrMcW0AAAAJ"
+                target="_blank"
+                title="Google Scholar"
+              >
+                <img
+                  src="assets/icons/google-scholar.svg"
+                  alt="Google Scholar"
+                />
+              </a>
             </div>
+          </div>
+          <div class="about-avatar">
+            <img src="./assets/img/avatar.jpg" alt="Yongfeng Gu" />
+          </div>
         </div>
+      </div>
     </section>
 
     <section id="news" class="page-section">
-        <div class="container">
-            <h2 class="section-title">News</h2>
-            <div class="news-list">
-                <div class="news-item">
-                    <div class="news-date">2026.07.24</div>
-                    <div class="news-content">
-                        <span class="news-badge talk">Talk</span>
-                        <span>Gave an invited talk on Foundation Protocol at the <a href="https://www.bagevent.com/event/9200274?bag_track=109" target="_blank">DataFun Agentic AI conference</a>.</span>
-                    </div>
-                </div>
-                <div class="news-item">
-                    <div class="news-date">2026.06.16</div>
-                    <div class="news-content">
-                        <span class="news-badge patent">Patent</span>
-                        <span>Laser reference-line positioning system project granted <a href="http://epub.cnipa.gov.cn/cred/CN121855399B" target="_blank">6 patents</a> (granted June 16).</span>
-                    </div>
-                </div>
-                <div class="news-item">
-                    <div class="news-date">2026.05.22</div>
-                    <div class="news-content">
-                        <span class="news-badge paper">Paper</span>
-                        <span><a href="https://huggingface.co/papers/2605.23218" target="_blank">Foundation Protocol</a> preprint released — a graph-native coordination layer for the agentic society.</span>
-                    </div>
-                </div>
-                <div class="news-item">
-                    <div class="news-date">2026.05.13</div>
-                    <div class="news-content">
-                        <span class="news-badge paper">Paper</span>
-                        <span><a href="https://arxiv.org/abs/2605.13821" target="_blank">Harnessing Agentic Evolution (AEvo)</a> submitted to NeurIPS 2026.</span>
-                    </div>
-                </div>
-                <div class="news-item">
-                    <div class="news-date">2026.03</div>
-                    <div class="news-content">
-                        <span class="news-badge">News</span>
-                        <span>Joined <a href="https://www.deepwisdom.ai/" target="_blank">DeepWisdom</a> as a Research Intern, working on Agent-related research.</span>
-                    </div>
-                </div>
-                <div class="news-item">
-                    <div class="news-date">2026.01.21</div>
-                    <div class="news-content">
-                        <span class="news-badge paper">Paper</span>
-                        <span>Co-authored paper published in <a href="https://pubs.rsc.org/en/content/articlelanding/2026/sc/d5sc07902k" target="_blank">Chemical Science</a> (Royal Society of Chemistry).</span>
-                    </div>
-                </div>
+      <div class="container">
+        <h2 class="section-title">News</h2>
+        <div class="news-list">
+          <div class="news-item">
+            <div class="news-date">2026.07.24</div>
+            <div class="news-content">
+              <span class="news-badge talk">Talk</span>
+              <span
+                >Gave an invited talk on Foundation Protocol at the
+                <a
+                  href="https://www.bagevent.com/event/9200274?bag_track=109"
+                  target="_blank"
+                  >DataFun Agentic AI conference</a
+                >.</span
+              >
             </div>
+          </div>
+          <div class="news-item">
+            <div class="news-date">2026.06.16</div>
+            <div class="news-content">
+              <span class="news-badge patent">Patent</span>
+              <span
+                >Laser reference-line positioning system project granted
+                <a
+                  href="http://epub.cnipa.gov.cn/cred/CN121855399B"
+                  target="_blank"
+                  >6 patents</a
+                >
+                (granted June 16).</span
+              >
+            </div>
+          </div>
+          <div class="news-item">
+            <div class="news-date">2026.05.22</div>
+            <div class="news-content">
+              <span class="news-badge paper">Paper</span>
+              <span
+                ><a
+                  href="https://huggingface.co/papers/2605.23218"
+                  target="_blank"
+                  >Foundation Protocol</a
+                >
+                preprint released — a graph-native coordination layer for the
+                agentic society.</span
+              >
+            </div>
+          </div>
+          <div class="news-item">
+            <div class="news-date">2026.05.13</div>
+            <div class="news-content">
+              <span class="news-badge paper">Paper</span>
+              <span
+                ><a href="https://arxiv.org/abs/2605.13821" target="_blank"
+                  >Harnessing Agentic Evolution (AEvo)</a
+                >
+                submitted to NeurIPS 2026.</span
+              >
+            </div>
+          </div>
+          <div class="news-item">
+            <div class="news-date">2026.03</div>
+            <div class="news-content">
+              <span class="news-badge">News</span>
+              <span
+                >Joined
+                <a href="https://www.deepwisdom.ai/" target="_blank"
+                  >DeepWisdom</a
+                >
+                as a Research Intern, working on Agent-related research.</span
+              >
+            </div>
+          </div>
+          <div class="news-item">
+            <div class="news-date">2026.01.21</div>
+            <div class="news-content">
+              <span class="news-badge paper">Paper</span>
+              <span
+                >Co-authored paper published in
+                <a
+                  href="https://pubs.rsc.org/en/content/articlelanding/2026/sc/d5sc07902k"
+                  target="_blank"
+                  >Chemical Science</a
+                >
+                (Royal Society of Chemistry).</span
+              >
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <section id="publications" class="page-section alt">
-        <div class="container">
-            <h2 class="section-title">Publications</h2>
+      <div class="container">
+        <h2 class="section-title">Publications</h2>
 
-            <div class="item-card">
-                <div class="item-media">
-                    <div class="item-figure">
-                        <img src="assets/img/x1.png" alt="Harnessing Agentic Evolution overview">
-                    </div>
-                    <div class="tag-list">
-                        <span class="tag">NEURIPS 2026</span>
-                        <span class="tag paper">PAPER</span>
-                    </div>
-                </div>
-                <div class="item-content">
-                    <div class="item-title">
-                        <a href="https://arxiv.org/abs/2605.13821" target="_blank">
-                            Harnessing Agentic Evolution
-                        </a>
-                    </div>
-                    <div class="item-authors">
-                        Jiayi Zhang, <strong>Yongfeng Gu</strong>, Jianhao Ruan, Maojia Song, Yiran Peng, Zhiguang Han, Jinyu Xiang,..., Bang Liu, Chenglin Wu, Yuyu Luo
-                    </div>
-                    <div class="item-desc">
-                        Reframes agentic evolution as an interactive environment: instead of generating solutions directly, a meta-agent edits the workflow / task-agent that controls later evolution, giving a unified interface for both workflow- and agent-based evolution over long horizons. It outperforms strong baselines on ARC-AGI-2 and Terminal-Bench.
-                    </div>
-                </div>
+        <div class="item-card">
+          <div class="item-media">
+            <div class="item-figure">
+              <img
+                src="assets/img/x1.png"
+                alt="Harnessing Agentic Evolution overview"
+              />
             </div>
-
-            <div class="item-card">
-                <div class="item-media">
-                    <div class="item-figure">
-                        <img src="assets/img/x2.png" alt="Foundation Protocol architecture">
-                    </div>
-                    <div class="tag-list">
-                        <span class="tag">ARXIV 2026</span>
-                        <span class="tag paper">PAPER</span>
-                    </div>
-                </div>
-                <div class="item-content">
-                    <div class="item-title"><a href="https://huggingface.co/papers/2605.23218" target="_blank">Foundation Protocol: A Coordination Layer for Agentic Society</a></div>
-                    <div class="item-authors">
-                        Bang Liu, <strong>Yongfeng Gu</strong>, Jiayi Zhang, Zhaoyang Yu, Sirui Hong, Maojia Song, Xiaoqiang Wang,..., Qiang Yang, Yuyu Luo, Chenglin Wu
-                    </div>
-                    <div class="item-desc">
-                        A graph-native coordination layer for the AI society. It models heterogeneous entities — agents, tools, resources, people, and institutions — as addressable nodes, and organizes coordination across a four-plane architecture: Entity &amp; Trust, Transport &amp; Routing, Interaction &amp; Organization, and Regulation &amp; Oversight.
-                    </div>
-                </div>
+            <div class="tag-list">
+              <span class="tag">NEURIPS 2026</span>
+              <span class="tag paper">PAPER</span>
             </div>
-
-            <div class="item-card">
-                <div class="item-media">
-                    <div class="item-figure">
-                        <img src="assets/img/d5sc07902k-f4_hi-res.gif" alt="Palmprint recognition workflow">
-                    </div>
-                    <div class="tag-list">
-                        <span class="tag">CHEMICAL SCIENCE</span>
-                        <span class="tag paper">PAPER</span>
-                    </div>
-                </div>
-                <div class="item-content">
-                    <div class="item-title">
-                        <a href="https://pubs.rsc.org/en/content/articlelanding/2026/sc/d5sc07902k" target="_blank">
-                            Organic Neuromorphic Vision Devices with Multilevel Memory for Palmprint Identification
-                        </a>
-                    </div>
-                    <div class="item-authors">
-                        Chenxi Liu, <strong>Yongfeng Gu</strong>, Yongjie Ren, Mingyi Ding, Tao Deng, Harald Fuchs
-                    </div>
-                    <div class="item-desc">
-                        Organic neuromorphic vision devices achieving 8-bit multilevel non-volatile memory for palmprint identification. I built the palmprint recognition pipeline — image preprocessing, block-wise feature extraction, and classifier training — reaching over 98% accuracy.
-                    </div>
-                </div>
+          </div>
+          <div class="item-content">
+            <div class="item-title">
+              <a href="https://arxiv.org/abs/2605.13821" target="_blank">
+                Harnessing Agentic Evolution
+              </a>
             </div>
+            <div class="item-authors">
+              Jiayi Zhang, <strong>Yongfeng Gu</strong>, Jianhao Ruan, Maojia
+              Song, Yiran Peng, Zhiguang Han, Jinyu Xiang,..., Bang Liu,
+              Chenglin Wu, Yuyu Luo
+            </div>
+            <div class="item-desc">
+              Reframes agentic evolution as an interactive environment: instead
+              of generating solutions directly, a meta-agent edits the workflow
+              / task-agent that controls later evolution, giving a unified
+              interface for both workflow- and agent-based evolution over long
+              horizons. It outperforms strong baselines on ARC-AGI-2 and
+              Terminal-Bench.
+            </div>
+          </div>
         </div>
+
+        <div class="item-card">
+          <div class="item-media">
+            <div class="item-figure">
+              <img
+                src="assets/img/x2.png"
+                alt="Foundation Protocol architecture"
+              />
+            </div>
+            <div class="tag-list">
+              <span class="tag">ARXIV 2026</span>
+              <span class="tag paper">PAPER</span>
+            </div>
+          </div>
+          <div class="item-content">
+            <div class="item-title">
+              <a href="https://huggingface.co/papers/2605.23218" target="_blank"
+                >Foundation Protocol: A Coordination Layer for Agentic
+                Society</a
+              >
+            </div>
+            <div class="item-authors">
+              Bang Liu, <strong>Yongfeng Gu</strong>, Jiayi Zhang, Zhaoyang Yu,
+              Sirui Hong, Maojia Song, Xiaoqiang Wang,..., Qiang Yang, Yuyu Luo,
+              Chenglin Wu
+            </div>
+            <div class="item-desc">
+              A graph-native coordination layer for the AI society. It models
+              heterogeneous entities — agents, tools, resources, people, and
+              institutions — as addressable nodes, and organizes coordination
+              across a four-plane architecture: Entity &amp; Trust, Transport
+              &amp; Routing, Interaction &amp; Organization, and Regulation
+              &amp; Oversight.
+            </div>
+          </div>
+        </div>
+
+        <div class="item-card">
+          <div class="item-media">
+            <div class="item-figure">
+              <img
+                src="assets/img/d5sc07902k-f4_hi-res.gif"
+                alt="Palmprint recognition workflow"
+              />
+            </div>
+            <div class="tag-list">
+              <span class="tag">CHEMICAL SCIENCE</span>
+              <span class="tag paper">PAPER</span>
+            </div>
+          </div>
+          <div class="item-content">
+            <div class="item-title">
+              <a
+                href="https://pubs.rsc.org/en/content/articlelanding/2026/sc/d5sc07902k"
+                target="_blank"
+              >
+                Organic Neuromorphic Vision Devices with Multilevel Memory for
+                Palmprint Identification
+              </a>
+            </div>
+            <div class="item-authors">
+              Chenxi Liu, <strong>Yongfeng Gu</strong>, Yongjie Ren, Mingyi
+              Ding, Tao Deng, Harald Fuchs
+            </div>
+            <div class="item-desc">
+              Organic neuromorphic vision devices achieving 8-bit multilevel
+              non-volatile memory for palmprint identification. I built the
+              palmprint recognition pipeline — image preprocessing, block-wise
+              feature extraction, and classifier training — reaching over 98%
+              accuracy.
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="experience" class="page-section">
-        <div class="container">
-            <h2 class="section-title">Experience</h2>
+      <div class="container">
+        <h2 class="section-title">Experience</h2>
 
-            <div class="exp-simple">
-                <div class="exp-row">
-                    <div class="exp-time">2026.03 - 2026.08</div>
-                    <div class="exp-desc">Research Intern, <a href="https://www.deepwisdom.ai/" target="_blank">DeepWisdom</a>, Shenzhen, China.</div>
-                </div>
-                <div class="exp-row">
-                    <div class="exp-time">2025.07 - 2026.02</div>
-                    <div class="exp-desc">Agent Algorithm Intern, <a href="https://karis.im/" target="_blank">Karis</a> (<a href="https://invoko.ai/" target="_blank">invoko</a>), Beijing, China.</div>
-                </div>
+        <div class="exp-simple">
+          <div class="exp-row">
+            <div class="exp-time">2026.03 - 2026.08</div>
+            <div class="exp-desc">
+              Research Intern,
+              <a href="https://www.deepwisdom.ai/" target="_blank">DeepWisdom</a
+              >, Shenzhen, China.
             </div>
+          </div>
+          <div class="exp-row">
+            <div class="exp-time">2025.07 - 2026.02</div>
+            <div class="exp-desc">
+              Agent Algorithm Intern,
+              <a href="https://karis.im/" target="_blank">Karis</a> (<a
+                href="https://invoko.ai/"
+                target="_blank"
+                >invoko</a
+              >), Beijing, China.
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <section id="projects" class="page-section alt">
-        <div class="container">
-            <h2 class="section-title">Selected Projects</h2>
+      <div class="container">
+        <h2 class="section-title">Selected Projects</h2>
 
-            <div class="exp-block">
-                <div class="exp-header-row">
-                    <div>
-                        <div class="item-title"><a href="https://github.com/FoundationAgents/foundation-protocol" target="_blank">Foundation Protocol : Multi-Agent Collaboration Runtime</a></div>
-                        <div class="item-meta"><span class="item-role">Core Contributor</span> · FoundationAgents <a href="https://github.com/FoundationAgents/foundation-protocol/stargazers" target="_blank"><img class="star-badge" src="https://img.shields.io/github/stars/FoundationAgents/foundation-protocol?style=social" alt="GitHub stars"></a></div>
-                    </div>
-                    <div class="item-date">2026.03 - 2026.08</div>
-                </div>
-                <div class="item-desc">
-                    A Python runtime for multi-entity AI collaboration — agents, humans, and tools working together on a shared protocol layer.
-                </div>
+        <div class="exp-block">
+          <div class="exp-header-row">
+            <div>
+              <div class="item-title">
+                <a
+                  href="https://github.com/FoundationAgents/foundation-protocol"
+                  target="_blank"
+                  >Foundation Protocol : Multi-Agent Collaboration Runtime</a
+                >
+              </div>
+              <div class="item-meta">
+                <span class="item-role">Core Contributor</span> ·
+                FoundationAgents
+                <a
+                  href="https://github.com/FoundationAgents/foundation-protocol/stargazers"
+                  target="_blank"
+                  ><img
+                    class="star-badge"
+                    src="https://img.shields.io/github/stars/FoundationAgents/foundation-protocol?style=social"
+                    alt="GitHub stars"
+                /></a>
+              </div>
             </div>
-
-            <div class="exp-block">
-                <div class="exp-header-row">
-                    <div>
-                        <div class="item-title"><a href="https://github.com/FoundationAgents/ai-link-net" target="_blank">AI Link Net : AI Team Collaboration Framework</a></div>
-                        <div class="item-meta"><span class="item-role">Core Contributor</span> · FoundationAgents <a href="https://github.com/FoundationAgents/ai-link-net/stargazers" target="_blank"><img class="star-badge" src="https://img.shields.io/github/stars/FoundationAgents/ai-link-net?style=social" alt="GitHub stars"></a></div>
-                    </div>
-                    <div class="item-date">2026.03 - 2026.08</div>
-                </div>
-                <div class="item-desc">
-                    Build AI teams that work together — agents, humans, and tools connected through a unified protocol.
-                </div>
-            </div>
-
-            <div class="more-projects" id="moreProjects">
-                <div class="exp-block">
-                    <div class="exp-header-row">
-                        <div>
-                            <div class="item-title"><a href="https://github.com/yongfenggu/dcpam" target="_blank">DCPAM : Laser Reference Line Point-Positioning System</a></div>
-                            <div class="item-meta"><span class="item-role">Algorithm Engineer</span> · China Energy Engineering Group</div>
-                        </div>
-                        <div class="item-date">2025.08 - 2026.12</div>
-                    </div>
-                    <div class="item-desc">
-                        Laser-based shaft alignment measurement for large rotating equipment, achieving 0.02 mm engineering accuracy. First-generation device delivered and in field use; 6 patents granted and 1 paper submitted to a Chinese core journal.
-                    </div>
-                </div>
-
-                <div class="exp-block">
-                    <div class="exp-header-row">
-                        <div>
-                            <div class="item-title"><a href="https://github.com/yongfenggu/huixue-education-system" target="_blank">Huixue Education System</a></div>
-                            <div class="item-meta"><span class="item-role">Full-Stack Developer</span> · Huixue Education</div>
-                        </div>
-                        <div class="item-date">2024.12 - 2025.02</div>
-                    </div>
-                    <div class="item-desc">
-                        Built an order management system deployed across 6 cities, serving 2,000+ daily active users and handling 300+ orders per day.
-                    </div>
-                </div>
-
-                <div class="exp-block">
-                    <div class="exp-header-row">
-                        <div>
-                            <div class="item-title"><a href="https://github.com/yongfenggu/CLASSIFIER_NRRD" target="_blank">Deep Learning-Based Dosage Prediction for Pediatric Pneumonia</a></div>
-                            <div class="item-meta"><span class="item-role">Algorithm Engineer</span> · Tianjin Children's Hospital</div>
-                        </div>
-                        <div class="item-date">2024.07 - 2024.09</div>
-                    </div>
-                    <div class="item-desc">
-                        Trained CNN models to assess pneumonia severity from chest X-rays, and built an inference application that provides RMPP treatment dosage recommendations for clinicians.
-                    </div>
-                </div>
-            </div>
-
-            <div class="more-row"><a class="more-link" id="moreToggle">more</a></div>
+            <div class="item-date">2026.03 - 2026.08</div>
+          </div>
+          <div class="item-desc">
+            A Python runtime for multi-entity AI collaboration — agents, humans,
+            and tools working together on a shared protocol layer.
+          </div>
         </div>
+
+        <div class="exp-block">
+          <div class="exp-header-row">
+            <div>
+              <div class="item-title">
+                <a
+                  href="https://github.com/FoundationAgents/ai-link-net"
+                  target="_blank"
+                  >AI Link Net : AI Team Collaboration Framework</a
+                >
+              </div>
+              <div class="item-meta">
+                <span class="item-role">Core Contributor</span> ·
+                FoundationAgents
+                <a
+                  href="https://github.com/FoundationAgents/ai-link-net/stargazers"
+                  target="_blank"
+                  ><img
+                    class="star-badge"
+                    src="https://img.shields.io/github/stars/FoundationAgents/ai-link-net?style=social"
+                    alt="GitHub stars"
+                /></a>
+              </div>
+            </div>
+            <div class="item-date">2026.03 - 2026.08</div>
+          </div>
+          <div class="item-desc">
+            Build AI teams that work together — agents, humans, and tools
+            connected through a unified protocol.
+          </div>
+        </div>
+
+        <div class="more-projects" id="moreProjects">
+          <div class="exp-block">
+            <div class="exp-header-row">
+              <div>
+                <div class="item-title">
+                  <a href="https://github.com/yongfenggu/dcpam" target="_blank"
+                    >DCPAM : Laser Reference Line Point-Positioning System</a
+                  >
+                </div>
+                <div class="item-meta">
+                  <span class="item-role">Algorithm Engineer</span> · China
+                  Energy Engineering Group
+                </div>
+              </div>
+              <div class="item-date">2025.08 - 2026.12</div>
+            </div>
+            <div class="item-desc">
+              Laser-based shaft alignment measurement for large rotating
+              equipment, achieving 0.02 mm engineering accuracy.
+              First-generation device delivered and in field use; 6 patents
+              granted and 1 paper submitted to a Chinese core journal.
+            </div>
+          </div>
+
+          <div class="exp-block">
+            <div class="exp-header-row">
+              <div>
+                <div class="item-title">
+                  <a
+                    href="https://github.com/yongfenggu/huixue-education-system"
+                    target="_blank"
+                    >Huixue Education System</a
+                  >
+                </div>
+                <div class="item-meta">
+                  <span class="item-role">Full-Stack Developer</span> · Huixue
+                  Education
+                </div>
+              </div>
+              <div class="item-date">2024.12 - 2025.02</div>
+            </div>
+            <div class="item-desc">
+              Built an order management system deployed across 6 cities, serving
+              2,000+ daily active users and handling 300+ orders per day.
+            </div>
+          </div>
+
+          <div class="exp-block">
+            <div class="exp-header-row">
+              <div>
+                <div class="item-title">
+                  <a
+                    href="https://github.com/yongfenggu/CLASSIFIER_NRRD"
+                    target="_blank"
+                    >Deep Learning-Based Dosage Prediction for Pediatric
+                    Pneumonia</a
+                  >
+                </div>
+                <div class="item-meta">
+                  <span class="item-role">Algorithm Engineer</span> · Tianjin
+                  Children's Hospital
+                </div>
+              </div>
+              <div class="item-date">2024.07 - 2024.09</div>
+            </div>
+            <div class="item-desc">
+              Trained CNN models to assess pneumonia severity from chest X-rays,
+              and built an inference application that provides RMPP treatment
+              dosage recommendations for clinicians.
+            </div>
+          </div>
+        </div>
+
+        <div class="more-row">
+          <a class="more-link" id="moreToggle">more</a>
+        </div>
+      </div>
     </section>
 
     <!-- Chat Section -->
     <section id="chat">
-        <div class="chat-container">
-            <div class="chat-header">
-                <h2>Chat with Me</h2>
-                <button class="clear-chat-btn" id="clearChatBtn" title="Clear chat">
-                    <img src="assets/icons/refresh-outline.svg" alt="Clear chat">
-                </button>
-            </div>
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input-container">
-                <input
-                    type="text"
-                    class="chat-input"
-                    id="chatInput"
-                    placeholder=""
-                    autocomplete="off"
-                    maxlength="200"
-                />
-                <button class="chat-send" id="chatSend">
-                    <img src="assets/icons/send.svg" alt="Send" style="width: 20px; height: 20px; filter: brightness(0) invert(1);">
-                </button>
-            </div>
+      <div class="chat-container">
+        <div class="chat-header">
+          <h2>Chat with Me</h2>
+          <button class="clear-chat-btn" id="clearChatBtn" title="Clear chat">
+            <img src="assets/icons/refresh-outline.svg" alt="Clear chat" />
+          </button>
         </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-container">
+          <input
+            type="text"
+            class="chat-input"
+            id="chatInput"
+            placeholder=""
+            autocomplete="off"
+            maxlength="200"
+          />
+          <button class="chat-send" id="chatSend">
+            <img
+              src="assets/icons/send.svg"
+              alt="Send"
+              style="width: 20px; height: 20px; filter: brightness(0) invert(1)"
+            />
+          </button>
+        </div>
+      </div>
     </section>
 
     <!-- Image lightbox -->
     <div class="img-lightbox" id="imgLightbox">
-        <button class="img-lightbox-close" id="imgLightboxClose" aria-label="Close">&times;</button>
-        <img src="" alt="" id="imgLightboxImg">
+      <button
+        class="img-lightbox-close"
+        id="imgLightboxClose"
+        aria-label="Close"
+      >
+        &times;
+      </button>
+      <img src="" alt="" id="imgLightboxImg" />
     </div>
 
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <p>&copy; <span id="year"></span> Yongfeng Gu</p>
-        </div>
+      <div class="container">
+        <p>&copy; <span id="year"></span> Yongfeng Gu</p>
+      </div>
     </footer>
 
     <script src="assets/js/config.js"></script>
     <script src="assets/js/llm-client.js"></script>
     <script>
-        // Update copyright year
-        document.getElementById('year').textContent = new Date().getFullYear();
+      // Update copyright year
+      document.getElementById("year").textContent = new Date().getFullYear();
 
-        // Projects "More" toggle
-        const moreToggle = document.getElementById('moreToggle');
-        const moreProjects = document.getElementById('moreProjects');
-        moreToggle.addEventListener('click', () => {
-            const open = moreProjects.classList.toggle('open');
-            moreToggle.textContent = open ? 'less' : 'more';
+      // Projects "More" toggle
+      const moreToggle = document.getElementById("moreToggle");
+      const moreProjects = document.getElementById("moreProjects");
+      moreToggle.addEventListener("click", () => {
+        const open = moreProjects.classList.toggle("open");
+        moreToggle.textContent = open ? "less" : "more";
+      });
+
+      // Hamburger menu toggle
+      const navToggle = document.getElementById("navToggle");
+      const navLinks = document.getElementById("navLinks");
+      navToggle.addEventListener("click", () => {
+        navToggle.classList.toggle("active");
+        navLinks.classList.toggle("open");
+      });
+
+      // Close menu on link click
+      navLinks.querySelectorAll(".nav-link").forEach((link) => {
+        link.addEventListener("click", () => {
+          navToggle.classList.remove("active");
+          navLinks.classList.remove("open");
         });
+      });
 
-        // Hamburger menu toggle
-        const navToggle = document.getElementById('navToggle');
-        const navLinks = document.getElementById('navLinks');
-        navToggle.addEventListener('click', () => {
-            navToggle.classList.toggle('active');
-            navLinks.classList.toggle('open');
+      // Smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
+          }
         });
+      });
 
-        // Close menu on link click
-        navLinks.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                navToggle.classList.remove('active');
-                navLinks.classList.remove('open');
-            });
-        });
+      // Chat functionality
+      (function () {
+        const chatMessages = document.getElementById("chatMessages");
+        const chatInput = document.getElementById("chatInput");
+        const chatSend = document.getElementById("chatSend");
+        const clearChatBtn = document.getElementById("clearChatBtn");
+        const chatSection = document.getElementById("chat");
+        const chatBubble = document.getElementById("chatBubble");
+        const chatBubbleContent = document.getElementById("chatBubbleContent");
 
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
+        let llmClient = null;
+        let conversationHistory = [];
+        let userPrompt = "";
+        let isChatVisible = false;
+        let bubbleMessages = [];
 
-        // Chat functionality
-        (function() {
-            const chatMessages = document.getElementById('chatMessages');
-            const chatInput = document.getElementById('chatInput');
-            const chatSend = document.getElementById('chatSend');
-            const clearChatBtn = document.getElementById('clearChatBtn');
-            const chatSection = document.getElementById('chat');
-            const chatBubble = document.getElementById('chatBubble');
-            const chatBubbleContent = document.getElementById('chatBubbleContent');
+        const CHAT_STORAGE_KEY = "chat_history";
+        const FIRST_VISIT_GREETING = "Hi";
 
-            let llmClient = null;
-            let conversationHistory = [];
-            let userPrompt = '';
-            let isChatVisible = false;
-            let bubbleMessages = [];
+        // 轻量 Markdown 渲染（先转义 HTML，防止 XSS，再解析）
+        function escapeHtml(s) {
+          return s
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        }
 
-            const CHAT_STORAGE_KEY = 'chat_history';
-            const FIRST_VISIT_GREETING = 'Hi';
+        function renderInlineMd(s) {
+          // 行内代码先占位，避免其中的符号被后续规则处理
+          const codes = [];
+          s = s.replace(/`([^`]+)`/g, (m, c) => {
+            codes.push(c);
+            return ` CODE${codes.length - 1} `;
+          });
+          // 链接 [text](url)：仅允许 http/https/mailto
+          s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, text, url) => {
+            const safe = /^(https?:|mailto:)/i.test(url) ? url : "#";
+            return `<a href="${safe}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+          });
+          // 裸链接自动识别（前导为行首/空白/左括号，避免命中已生成标签的 href）
+          s = s.replace(
+            /(^|[\s(])(https?:\/\/[^\s<)]+)/g,
+            (m, pre, url) =>
+              `${pre}<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`,
+          );
+          // 粗体、斜体
+          s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+          s = s.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+          s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+          // 还原行内代码
+          s = s.replace(/ CODE(\d+) /g, (m, i) => `<code>${codes[i]}</code>`);
+          return s;
+        }
 
-            // 轻量 Markdown 渲染（先转义 HTML，防止 XSS，再解析）
-            function escapeHtml(s) {
-                return s.replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;');
+        function renderMarkdown(src) {
+          if (!src) return "";
+          const lines = escapeHtml(src).split("\n");
+          const out = [];
+          let para = [];
+          let listType = null; // 'ul' | 'ol'
+          const flushPara = () => {
+            if (para.length) {
+              out.push("<p>" + renderInlineMd(para.join("<br>")) + "</p>");
+              para = [];
             }
-
-            function renderInlineMd(s) {
-                // 行内代码先占位，避免其中的符号被后续规则处理
-                const codes = [];
-                s = s.replace(/`([^`]+)`/g, (m, c) => {
-                    codes.push(c);
-                    return ` CODE${codes.length - 1} `;
-                });
-                // 链接 [text](url)：仅允许 http/https/mailto
-                s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, text, url) => {
-                    const safe = /^(https?:|mailto:)/i.test(url) ? url : '#';
-                    return `<a href="${safe}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-                });
-                // 裸链接自动识别（前导为行首/空白/左括号，避免命中已生成标签的 href）
-                s = s.replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g,
-                    (m, pre, url) => `${pre}<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
-                // 粗体、斜体
-                s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-                s = s.replace(/__([^_]+)__/g, '<strong>$1</strong>');
-                s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
-                // 还原行内代码
-                s = s.replace(/ CODE(\d+) /g, (m, i) => `<code>${codes[i]}</code>`);
-                return s;
+          };
+          const closeList = () => {
+            if (listType) {
+              out.push(listType === "ul" ? "</ul>" : "</ol>");
+              listType = null;
             }
+          };
 
-            function renderMarkdown(src) {
-                if (!src) return '';
-                const lines = escapeHtml(src).split('\n');
-                const out = [];
-                let para = [];
-                let listType = null; // 'ul' | 'ol'
-                const flushPara = () => {
-                    if (para.length) {
-                        out.push('<p>' + renderInlineMd(para.join('<br>')) + '</p>');
-                        para = [];
-                    }
-                };
-                const closeList = () => {
-                    if (listType) { out.push(listType === 'ul' ? '</ul>' : '</ol>'); listType = null; }
-                };
-
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i];
-                    // 围栏代码块
-                    if (/^```/.test(line)) {
-                        flushPara(); closeList();
-                        const code = [];
-                        i++;
-                        while (i < lines.length && !/^```/.test(lines[i])) { code.push(lines[i]); i++; }
-                        out.push('<pre><code>' + code.join('\n') + '</code></pre>');
-                        continue;
-                    }
-                    // 标题
-                    const h = line.match(/^(#{1,6})\s+(.*)$/);
-                    if (h) { flushPara(); closeList(); const lv = h[1].length; out.push(`<h${lv}>` + renderInlineMd(h[2]) + `</h${lv}>`); continue; }
-                    // 分隔线
-                    if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { flushPara(); closeList(); out.push('<hr>'); continue; }
-                    // 无序列表
-                    const ul = line.match(/^\s*[-*+]\s+(.*)$/);
-                    if (ul) { flushPara(); if (listType !== 'ul') { closeList(); out.push('<ul>'); listType = 'ul'; } out.push('<li>' + renderInlineMd(ul[1]) + '</li>'); continue; }
-                    // 有序列表
-                    const ol = line.match(/^\s*\d+[.)]\s+(.*)$/);
-                    if (ol) { flushPara(); if (listType !== 'ol') { closeList(); out.push('<ol>'); listType = 'ol'; } out.push('<li>' + renderInlineMd(ol[1]) + '</li>'); continue; }
-                    // 空行
-                    if (/^\s*$/.test(line)) { flushPara(); closeList(); continue; }
-                    // 普通段落
-                    if (listType) closeList();
-                    para.push(line);
-                }
-                flushPara(); closeList();
-                return out.join('');
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            // 围栏代码块
+            if (/^```/.test(line)) {
+              flushPara();
+              closeList();
+              const code = [];
+              i++;
+              while (i < lines.length && !/^```/.test(lines[i])) {
+                code.push(lines[i]);
+                i++;
+              }
+              out.push("<pre><code>" + code.join("\n") + "</code></pre>");
+              continue;
             }
-
-            // 从 localStorage 加载聊天记录
-            function loadChatHistory() {
-                try {
-                    const saved = localStorage.getItem(CHAT_STORAGE_KEY);
-                    if (!saved) return false;
-
-                    const data = JSON.parse(saved);
-                    const messages = data.messages || [];
-                    conversationHistory = data.conversationHistory || [];
-
-                    // 恢复聊天界面
-                    messages.forEach(msg => {
-                        // 跳过 system 和 error 消息中的头像元素
-                        if (msg.role === 'user' || msg.role === 'assistant') {
-                            addMessage(msg.role, msg.content, false);
-                        } else {
-                            const messageDiv = document.createElement('div');
-                            messageDiv.className = `message ${msg.role}`;
-                            messageDiv.textContent = msg.content;
-                            chatMessages.appendChild(messageDiv);
-                        }
-                    });
-
-                    console.log('聊天记录已加载');
-                    return messages.length > 0 || conversationHistory.length > 0;
-                } catch (error) {
-                    console.error('加载聊天记录失败:', error);
-                    return false;
-                }
+            // 标题
+            const h = line.match(/^(#{1,6})\s+(.*)$/);
+            if (h) {
+              flushPara();
+              closeList();
+              const lv = h[1].length;
+              out.push(`<h${lv}>` + renderInlineMd(h[2]) + `</h${lv}>`);
+              continue;
             }
-
-            // 保存聊天记录到 localStorage
-            function saveChatHistory() {
-                try {
-                    const messages = Array.from(chatMessages.children).map(el => {
-                        const role = el.classList.contains('user') ? 'user' :
-                                    el.classList.contains('assistant') ? 'assistant' :
-                                    el.classList.contains('system') ? 'system' : 'error';
-
-                        // 如果是助手消息，优先取原始 Markdown（dataset.raw），以便重载后重新渲染
-                        const contentEl = el.querySelector('.content');
-                        const content = role === 'assistant'
-                            ? (contentEl?.dataset.raw ?? contentEl?.textContent ?? el.textContent)
-                            : el.textContent;
-
-                        return { role, content };
-                    });
-
-                    const data = {
-                        conversationHistory,
-                        messages,
-                        timestamp: new Date().toISOString()
-                    };
-
-                    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(data));
-                } catch (error) {
-                    console.error('保存聊天记录失败:', error);
-                }
+            // 分隔线
+            if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
+              flushPara();
+              closeList();
+              out.push("<hr>");
+              continue;
             }
-
-            // 加载 prompt（通过 manifest 加载所有文件）
-            async function loadUserPrompt() {
-                try {
-                    const res = await fetch('assets/prompts/manifest.json');
-                    if (!res.ok) return;
-                    const files = await res.json();
-                    const texts = await Promise.all(
-                        files.map(f => fetch(`assets/prompts/${f}`).then(r => r.ok ? r.text() : ''))
-                    );
-                    userPrompt = texts.join('\n\n');
-                    console.log('Prompt 已加载');
-                } catch (error) {
-                    console.error('加载 Prompt 失败:', error);
-                }
+            // 无序列表
+            const ul = line.match(/^\s*[-*+]\s+(.*)$/);
+            if (ul) {
+              flushPara();
+              if (listType !== "ul") {
+                closeList();
+                out.push("<ul>");
+                listType = "ul";
+              }
+              out.push("<li>" + renderInlineMd(ul[1]) + "</li>");
+              continue;
             }
-
-            // 初始化 LLM 客户端
-            function initLLMClient() {
-                const systemPrompt = `${userPrompt}`;
-
-                llmClient = new LLMClient({
-                    systemPrompt: systemPrompt
-                });
-
-                return true;
+            // 有序列表
+            const ol = line.match(/^\s*\d+[.)]\s+(.*)$/);
+            if (ol) {
+              flushPara();
+              if (listType !== "ol") {
+                closeList();
+                out.push("<ol>");
+                listType = "ol";
+              }
+              out.push("<li>" + renderInlineMd(ol[1]) + "</li>");
+              continue;
             }
-
-            function renderChatBubble() {
-                chatBubbleContent.innerHTML = '';
-
-                bubbleMessages
-                    .filter(message => message.trim())
-                    .forEach(message => {
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'chat-bubble-message';
-                        messageDiv.textContent = message;
-                        chatBubbleContent.appendChild(messageDiv);
-                    });
-
-                const shouldShow = !isChatVisible && chatBubbleContent.childElementCount > 0;
-                chatBubble.classList.toggle('visible', shouldShow);
+            // 空行
+            if (/^\s*$/.test(line)) {
+              flushPara();
+              closeList();
+              continue;
             }
+            // 普通段落
+            if (listType) closeList();
+            para.push(line);
+          }
+          flushPara();
+          closeList();
+          return out.join("");
+        }
 
-            function showBubbleMessage(content = '') {
-                if (isChatVisible || !content.trim()) return;
-                bubbleMessages.push(content);
-                renderChatBubble();
-            }
+        // 从 localStorage 加载聊天记录
+        function loadChatHistory() {
+          try {
+            const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+            if (!saved) return false;
 
-            function clearChatBubble() {
-                bubbleMessages = [];
-                renderChatBubble();
-            }
+            const data = JSON.parse(saved);
+            const messages = data.messages || [];
+            conversationHistory = data.conversationHistory || [];
 
-            function scrollToChat() {
-                clearChatBubble();
-                chatSection.scrollIntoView({ behavior: 'smooth' });
-                setTimeout(() => chatInput.focus(), 450);
-            }
-
-            function setupChatVisibility() {
-                if ('IntersectionObserver' in window) {
-                    const observer = new IntersectionObserver(entries => {
-                        isChatVisible = entries.some(entry => entry.isIntersecting);
-                        if (isChatVisible) {
-                            clearChatBubble();
-                        } else {
-                            renderChatBubble();
-                        }
-                    }, {
-                        threshold: 0.2
-                    });
-
-                    observer.observe(chatSection);
-                } else {
-                    const updateVisibility = () => {
-                        const rect = chatSection.getBoundingClientRect();
-                        isChatVisible = rect.top < window.innerHeight && rect.bottom > 0;
-                        if (isChatVisible) {
-                            clearChatBubble();
-                        } else {
-                            renderChatBubble();
-                        }
-                    };
-
-                    window.addEventListener('scroll', updateVisibility, { passive: true });
-                    window.addEventListener('resize', updateVisibility);
-                    updateVisibility();
-                }
-            }
-
-            // 添加消息到聊天窗口
-            function addMessage(role, content, shouldSave = true) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${role}`;
-
-                // 如果是助手消息，添加头像
-                if (role === 'assistant') {
-                    const avatar = document.createElement('img');
-                    avatar.src = 'assets/img/wechat avatar.jpg';
-                    avatar.alt = 'Avatar';
-                    avatar.className = 'avatar';
-
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'content';
-                    contentDiv.dataset.raw = content;
-                    contentDiv.innerHTML = renderMarkdown(content);
-
-                    messageDiv.appendChild(avatar);
-                    messageDiv.appendChild(contentDiv);
-                } else {
-                    messageDiv.textContent = content;
-                }
-
+            // 恢复聊天界面
+            messages.forEach((msg) => {
+              // 跳过 system 和 error 消息中的头像元素
+              if (msg.role === "user" || msg.role === "assistant") {
+                addMessage(msg.role, msg.content, false);
+              } else {
+                const messageDiv = document.createElement("div");
+                messageDiv.className = `message ${msg.role}`;
+                messageDiv.textContent = msg.content;
                 chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                // 保存到 localStorage
-                if (shouldSave) {
-                    saveChatHistory();
-                }
-
-                return messageDiv;
-            }
-
-            // 创建打字指示器
-            function createTypingIndicator() {
-                const indicator = document.createElement('div');
-                indicator.className = 'typing-indicator active';
-
-                // 添加头像
-                const avatar = document.createElement('img');
-                avatar.src = 'assets/img/wechat avatar.jpg';
-                avatar.alt = 'Avatar';
-                avatar.className = 'avatar';
-
-                // 添加动画点容器
-                const dots = document.createElement('div');
-                dots.className = 'dots';
-                dots.innerHTML = '<span></span><span></span><span></span>';
-
-                indicator.appendChild(avatar);
-                indicator.appendChild(dots);
-                chatMessages.appendChild(indicator);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                return indicator;
-            }
-
-            // 发送消息
-            async function sendMessage(messageOverride = null, options = {}) {
-                const message = messageOverride || chatInput.value.trim() || chatInput.placeholder;
-                if (!message) return;
-
-                // 检查并初始化客户端
-                if (!llmClient) {
-                    if (!initLLMClient()) return;
-                }
-
-                // 显示用户消息
-                addMessage('user', message);
-                chatInput.value = '';
-                chatSend.disabled = true;
-                chatInput.disabled = true;
-
-                // 显示打字指示器
-                const typingIndicator = createTypingIndicator();
-
-                try {
-                    const messages = [
-                        ...conversationHistory,
-                        { role: 'user', content: message }
-                    ];
-
-                    let assistantMessage = null;
-                    let assistantContent = null;
-                    let assistantRaw = '';
-
-                    // 流式调用 LLM
-                    const response = await llmClient.chatStream(messages, chunk => {
-                        if (!assistantMessage) {
-                            typingIndicator.remove();
-                            assistantMessage = addMessage('assistant', '', false);
-                            assistantContent = assistantMessage.querySelector('.content');
-                        }
-
-                        assistantRaw += chunk;
-                        assistantContent.dataset.raw = assistantRaw;
-                        assistantContent.innerHTML = renderMarkdown(assistantRaw);
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    });
-
-                    if (typingIndicator.isConnected) {
-                        typingIndicator.remove();
-                    }
-
-                    if (!assistantMessage && response) {
-                        assistantMessage = addMessage('assistant', response, false);
-                    }
-
-                    // 更新对话历史
-                    conversationHistory.push(
-                        { role: 'user', content: message },
-                        { role: 'assistant', content: response }
-                    );
-
-                    // 保存聊天记录
-                    saveChatHistory();
-
-                    // 如果用户不在 Chat with Me 区域，收完整条回复后用气泡提示。
-                    showBubbleMessage(response);
-                } catch (error) {
-                    console.error('发送消息失败:', error);
-                    if (typingIndicator.isConnected) {
-                        typingIndicator.remove();
-                    }
-                    addMessage('error', 'Sorry, something went wrong while sending your message: ' + error.message);
-                } finally {
-                    chatSend.disabled = false;
-                    chatInput.disabled = false;
-                    if (options.focusOnDone !== false && isChatVisible) {
-                        chatInput.focus({ preventScroll: true });
-                    }
-                }
-            }
-
-            // 发送按钮点击事件
-            chatSend.addEventListener('click', function(e) {
-                e.preventDefault();
-                sendMessage();
+              }
             });
 
-            // 回车发送
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
+            console.log("聊天记录已加载");
+            return messages.length > 0 || conversationHistory.length > 0;
+          } catch (error) {
+            console.error("加载聊天记录失败:", error);
+            return false;
+          }
+        }
+
+        // 保存聊天记录到 localStorage
+        function saveChatHistory() {
+          try {
+            const messages = Array.from(chatMessages.children).map((el) => {
+              const role = el.classList.contains("user")
+                ? "user"
+                : el.classList.contains("assistant")
+                  ? "assistant"
+                  : el.classList.contains("system")
+                    ? "system"
+                    : "error";
+
+              // 如果是助手消息，优先取原始 Markdown（dataset.raw），以便重载后重新渲染
+              const contentEl = el.querySelector(".content");
+              const content =
+                role === "assistant"
+                  ? (contentEl?.dataset.raw ??
+                    contentEl?.textContent ??
+                    el.textContent)
+                  : el.textContent;
+
+              return { role, content };
             });
 
-            // 清空对话按钮点击事件
-            clearChatBtn.addEventListener('click', function() {
-                if (confirm('Clear all chat history?')) {
-                    // 清空界面
-                    chatMessages.innerHTML = '';
-
-                    // 清空对话历史
-                    conversationHistory = [];
-
-                    // 重置客户端
-                    llmClient = null;
-
-                    // 清空 localStorage
-                    localStorage.removeItem(CHAT_STORAGE_KEY);
-                    clearChatBubble();
-
-                    console.log('对话记录已清空');
-                }
-            });
-
-            chatBubble.addEventListener('click', scrollToChat);
-            chatBubble.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    scrollToChat();
-                }
-            });
-
-            // 初始化
-            setupChatVisibility();
-            const hasChatHistory = loadChatHistory();
-            loadUserPrompt().then(() => {
-                if (!hasChatHistory) {
-                    sendMessage(FIRST_VISIT_GREETING, { focusOnDone: false });
-                }
-            });
-
-            // 轮换 placeholder
-            fetch('assets/prompts/placeholders.json')
-                .then(r => r.json())
-                .then(placeholders => {
-                    let idx = Math.floor(Math.random() * placeholders.length);
-                    chatInput.placeholder = placeholders[idx];
-                    setInterval(() => {
-                        idx = (idx + 1) % placeholders.length;
-                        chatInput.placeholder = placeholders[idx];
-                    }, 5000);
-                });
-        })();
-
-        // 点击 Publications 图片放大预览
-        (function () {
-            const lightbox = document.getElementById('imgLightbox');
-            const lightboxImg = document.getElementById('imgLightboxImg');
-            const closeBtn = document.getElementById('imgLightboxClose');
-            if (!lightbox) return;
-
-            document.querySelectorAll('.item-figure img').forEach(img => {
-                img.parentElement.addEventListener('click', () => {
-                    lightboxImg.src = img.currentSrc || img.src;
-                    lightboxImg.alt = img.alt || '';
-                    lightbox.classList.add('open');
-                });
-            });
-
-            const close = () => {
-                lightbox.classList.remove('open');
-                lightboxImg.src = '';
+            const data = {
+              conversationHistory,
+              messages,
+              timestamp: new Date().toISOString(),
             };
-            lightbox.addEventListener('click', e => {
-                if (e.target === lightbox || e.target === closeBtn) close();
+
+            localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(data));
+          } catch (error) {
+            console.error("保存聊天记录失败:", error);
+          }
+        }
+
+        // 加载 prompt（通过 manifest 加载所有文件）
+        async function loadUserPrompt() {
+          try {
+            const res = await fetch("assets/prompts/manifest.json");
+            if (!res.ok) return;
+            const files = await res.json();
+            const texts = await Promise.all(
+              files.map((f) =>
+                fetch(`assets/prompts/${f}`).then((r) =>
+                  r.ok ? r.text() : "",
+                ),
+              ),
+            );
+            userPrompt = texts.join("\n\n");
+            console.log("Prompt 已加载");
+          } catch (error) {
+            console.error("加载 Prompt 失败:", error);
+          }
+        }
+
+        // 初始化 LLM 客户端
+        function initLLMClient() {
+          const systemPrompt = `${userPrompt}`;
+
+          llmClient = new LLMClient({
+            systemPrompt: systemPrompt,
+          });
+
+          return true;
+        }
+
+        function renderChatBubble() {
+          chatBubbleContent.innerHTML = "";
+
+          bubbleMessages
+            .filter((message) => message.trim())
+            .forEach((message) => {
+              const messageDiv = document.createElement("div");
+              messageDiv.className = "chat-bubble-message";
+              messageDiv.textContent = message;
+              chatBubbleContent.appendChild(messageDiv);
             });
-            document.addEventListener('keydown', e => {
-                if (e.key === 'Escape' && lightbox.classList.contains('open')) close();
+
+          const shouldShow =
+            !isChatVisible && chatBubbleContent.childElementCount > 0;
+          chatBubble.classList.toggle("visible", shouldShow);
+        }
+
+        function showBubbleMessage(content = "") {
+          if (isChatVisible || !content.trim()) return;
+          bubbleMessages.push(content);
+          renderChatBubble();
+        }
+
+        function clearChatBubble() {
+          bubbleMessages = [];
+          renderChatBubble();
+        }
+
+        function scrollToChat() {
+          clearChatBubble();
+          chatSection.scrollIntoView({ behavior: "smooth" });
+          setTimeout(() => chatInput.focus(), 450);
+        }
+
+        function setupChatVisibility() {
+          if ("IntersectionObserver" in window) {
+            const observer = new IntersectionObserver(
+              (entries) => {
+                isChatVisible = entries.some((entry) => entry.isIntersecting);
+                if (isChatVisible) {
+                  clearChatBubble();
+                } else {
+                  renderChatBubble();
+                }
+              },
+              {
+                threshold: 0.2,
+              },
+            );
+
+            observer.observe(chatSection);
+          } else {
+            const updateVisibility = () => {
+              const rect = chatSection.getBoundingClientRect();
+              isChatVisible = rect.top < window.innerHeight && rect.bottom > 0;
+              if (isChatVisible) {
+                clearChatBubble();
+              } else {
+                renderChatBubble();
+              }
+            };
+
+            window.addEventListener("scroll", updateVisibility, {
+              passive: true,
             });
-        })();
+            window.addEventListener("resize", updateVisibility);
+            updateVisibility();
+          }
+        }
+
+        // 添加消息到聊天窗口
+        function addMessage(role, content, shouldSave = true) {
+          const messageDiv = document.createElement("div");
+          messageDiv.className = `message ${role}`;
+
+          // 如果是助手消息，添加头像
+          if (role === "assistant") {
+            const avatar = document.createElement("img");
+            avatar.src = "assets/img/wechat avatar.jpg";
+            avatar.alt = "Avatar";
+            avatar.className = "avatar";
+
+            const contentDiv = document.createElement("div");
+            contentDiv.className = "content";
+            contentDiv.dataset.raw = content;
+            contentDiv.innerHTML = renderMarkdown(content);
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+          } else {
+            messageDiv.textContent = content;
+          }
+
+          chatMessages.appendChild(messageDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          // 保存到 localStorage
+          if (shouldSave) {
+            saveChatHistory();
+          }
+
+          return messageDiv;
+        }
+
+        // 创建打字指示器
+        function createTypingIndicator() {
+          const indicator = document.createElement("div");
+          indicator.className = "typing-indicator active";
+
+          // 添加头像
+          const avatar = document.createElement("img");
+          avatar.src = "assets/img/wechat avatar.jpg";
+          avatar.alt = "Avatar";
+          avatar.className = "avatar";
+
+          // 添加动画点容器
+          const dots = document.createElement("div");
+          dots.className = "dots";
+          dots.innerHTML = "<span></span><span></span><span></span>";
+
+          indicator.appendChild(avatar);
+          indicator.appendChild(dots);
+          chatMessages.appendChild(indicator);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          return indicator;
+        }
+
+        // 发送消息
+        async function sendMessage(messageOverride = null, options = {}) {
+          const message =
+            messageOverride || chatInput.value.trim() || chatInput.placeholder;
+          if (!message) return;
+
+          // 检查并初始化客户端
+          if (!llmClient) {
+            if (!initLLMClient()) return;
+          }
+
+          // 显示用户消息
+          addMessage("user", message);
+          chatInput.value = "";
+          chatSend.disabled = true;
+          chatInput.disabled = true;
+
+          // 显示打字指示器
+          const typingIndicator = createTypingIndicator();
+
+          try {
+            const messages = [
+              ...conversationHistory,
+              { role: "user", content: message },
+            ];
+
+            let assistantMessage = null;
+            let assistantContent = null;
+            let assistantRaw = "";
+
+            // 流式调用 LLM
+            const response = await llmClient.chatStream(messages, (chunk) => {
+              if (!assistantMessage) {
+                typingIndicator.remove();
+                assistantMessage = addMessage("assistant", "", false);
+                assistantContent = assistantMessage.querySelector(".content");
+              }
+
+              assistantRaw += chunk;
+              assistantContent.dataset.raw = assistantRaw;
+              assistantContent.innerHTML = renderMarkdown(assistantRaw);
+              chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+
+            if (typingIndicator.isConnected) {
+              typingIndicator.remove();
+            }
+
+            if (!assistantMessage && response) {
+              assistantMessage = addMessage("assistant", response, false);
+            }
+
+            // 更新对话历史
+            conversationHistory.push(
+              { role: "user", content: message },
+              { role: "assistant", content: response },
+            );
+
+            // 保存聊天记录
+            saveChatHistory();
+
+            // 如果用户不在 Chat with Me 区域，收完整条回复后用气泡提示。
+            showBubbleMessage(response);
+          } catch (error) {
+            console.error("发送消息失败:", error);
+            if (typingIndicator.isConnected) {
+              typingIndicator.remove();
+            }
+            addMessage(
+              "error",
+              "Sorry, something went wrong while sending your message: " +
+                error.message,
+            );
+          } finally {
+            chatSend.disabled = false;
+            chatInput.disabled = false;
+            if (options.focusOnDone !== false && isChatVisible) {
+              chatInput.focus({ preventScroll: true });
+            }
+          }
+        }
+
+        // 发送按钮点击事件
+        chatSend.addEventListener("click", function (e) {
+          e.preventDefault();
+          sendMessage();
+        });
+
+        // 回车发送
+        chatInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        });
+
+        // 清空对话按钮点击事件
+        clearChatBtn.addEventListener("click", function () {
+          if (confirm("Clear all chat history?")) {
+            // 清空界面
+            chatMessages.innerHTML = "";
+
+            // 清空对话历史
+            conversationHistory = [];
+
+            // 重置客户端
+            llmClient = null;
+
+            // 清空 localStorage
+            localStorage.removeItem(CHAT_STORAGE_KEY);
+            clearChatBubble();
+
+            console.log("对话记录已清空");
+          }
+        });
+
+        chatBubble.addEventListener("click", scrollToChat);
+        chatBubble.addEventListener("keypress", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            scrollToChat();
+          }
+        });
+
+        // 初始化
+        setupChatVisibility();
+        const hasChatHistory = loadChatHistory();
+        loadUserPrompt().then(() => {
+          if (!hasChatHistory) {
+            sendMessage(FIRST_VISIT_GREETING, { focusOnDone: false });
+          }
+        });
+
+        // 轮换 placeholder
+        fetch("assets/prompts/placeholders.json")
+          .then((r) => r.json())
+          .then((placeholders) => {
+            let idx = Math.floor(Math.random() * placeholders.length);
+            chatInput.placeholder = placeholders[idx];
+            setInterval(() => {
+              idx = (idx + 1) % placeholders.length;
+              chatInput.placeholder = placeholders[idx];
+            }, 5000);
+          });
+      })();
+
+      // 点击 Publications 图片放大预览
+      (function () {
+        const lightbox = document.getElementById("imgLightbox");
+        const lightboxImg = document.getElementById("imgLightboxImg");
+        const closeBtn = document.getElementById("imgLightboxClose");
+        if (!lightbox) return;
+
+        document.querySelectorAll(".item-figure img").forEach((img) => {
+          img.parentElement.addEventListener("click", () => {
+            lightboxImg.src = img.currentSrc || img.src;
+            lightboxImg.alt = img.alt || "";
+            lightbox.classList.add("open");
+          });
+        });
+
+        const close = () => {
+          lightbox.classList.remove("open");
+          lightboxImg.src = "";
+        };
+        lightbox.addEventListener("click", (e) => {
+          if (e.target === lightbox || e.target === closeBtn) close();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && lightbox.classList.contains("open"))
+            close();
+        });
+      })();
     </script>
-</body>
+  </body>
 </html>
