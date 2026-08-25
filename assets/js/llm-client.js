@@ -13,6 +13,11 @@ class LLMClient {
         this.modelsURL = 'https://openrouter.ai/api/v1/models';
         this.systemPrompt = config.systemPrompt || '';
 
+        // DeepSeek 兜底配置：OpenRouter 免费模型全部失败时启用
+        this.deepseekApiKey = config.deepseekApiKey || (typeof CONFIG !== 'undefined' ? CONFIG.DEEPSEEK_API_KEY : null);
+        this.deepseekModel = config.deepseekModel || (typeof CONFIG !== 'undefined' ? CONFIG.DEEPSEEK_MODEL : 'deepseek-v4-flash');
+        this.deepseekURL = 'https://api.deepseek.com/chat/completions';
+
         // 动态发现的免费模型（本次会话内）
         this.dynamicModels = null;
         // 免费模型列表的本地缓存配置
@@ -279,6 +284,46 @@ class LLMClient {
     }
 
     /**
+     * 调用 DeepSeek API（OpenRouter 免费模型全部失败时的兜底）。
+     * DeepSeek 兼容 OpenAI 格式，但用独立的 key、URL，并需关闭思考模式以省 token。
+     * @param {Object} requestBody - 请求体（不含 model）
+     * @param {boolean} stream - 是否流式
+     * @returns {Promise<Object|ReadableStreamDefaultReader>}
+     */
+    async postDeepSeek(requestBody, stream = false) {
+        if (!this.deepseekApiKey) {
+            throw new Error('DeepSeek API Key 未配置');
+        }
+
+        const response = await fetch(this.deepseekURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.deepseekApiKey}`
+            },
+            body: JSON.stringify({
+                model: this.deepseekModel,
+                thinking: { type: 'disabled' }, // 关闭思考模式，闲聊无需推理，省输出 token
+                ...requestBody,
+                stream
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const error = new Error(
+                `DeepSeek 请求失败: ${response.status} ${response.statusText}` +
+                (errorData.error?.message ? ` - ${errorData.error.message}` : '')
+            );
+            error.status = response.status;
+            error.errorData = errorData;
+            throw error;
+        }
+
+        return stream ? response.body.getReader() : response.json();
+    }
+
+    /**
      * 调用 LLM API
      * @param {Array} messages - 消息历史数组
      * @param {Object} options - 可选配置
@@ -306,9 +351,21 @@ class LLMClient {
                 } catch (error) {
                     lastError = error;
                     if (!this.shouldFallback(error.status, error.errorData || {})) {
-                        throw error;
+                        // 换其它 OpenRouter 模型也无意义，跳出去走 DeepSeek 兜底
+                        break;
                     }
                     console.warn(`模型 ${model} 暂不可用，尝试 fallback 模型。`);
+                }
+            }
+
+            // OpenRouter 免费模型全部失败，切换到 DeepSeek 兜底
+            if (this.deepseekApiKey) {
+                console.warn('OpenRouter 免费模型全部不可用，切换到 DeepSeek。');
+                try {
+                    return await this.postDeepSeek({ messages: messagesWithSystem, ...options }, false);
+                } catch (dsError) {
+                    console.error('DeepSeek 兜底也失败：', dsError);
+                    lastError = dsError;
                 }
             }
 
@@ -367,9 +424,21 @@ class LLMClient {
                 } catch (error) {
                     lastError = error;
                     if (!this.shouldFallback(error.status, error.errorData || {})) {
-                        throw error;
+                        // 换其它 OpenRouter 模型也无意义，跳出去走 DeepSeek 兜底
+                        break;
                     }
                     console.warn(`模型 ${model} 暂不可用，尝试 fallback 模型。`);
+                }
+            }
+
+            // OpenRouter 免费模型全部失败，切换到 DeepSeek 兜底（流式）
+            if (!reader && this.deepseekApiKey) {
+                console.warn('OpenRouter 免费模型全部不可用，切换到 DeepSeek（流式）。');
+                try {
+                    reader = await this.postDeepSeek({ messages: messagesWithSystem, ...options }, true);
+                } catch (dsError) {
+                    console.error('DeepSeek 流式兜底也失败：', dsError);
+                    lastError = dsError;
                 }
             }
 

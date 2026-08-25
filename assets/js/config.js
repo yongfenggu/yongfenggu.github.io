@@ -10,5 +10,9 @@ const CONFIG = {
         'google/gemma-4-26b-a4b-it:free',
         'minimax/minimax-m3:free',
         'nvidia/nemotron-3-super-120b-a12b:free',
-    ]
+    ],
+
+    // DeepSeek 兜底:当 OpenRouter 免费模型全部限流/失败时自动切换
+    DEEPSEEK_API_KEY: atob('c2stZDY5OTJiMmJhYjlmNDBkNGJkM2Y1Nzc4MTU4OGVmZWQ='),
+    DEEPSEEK_MODEL: 'deepseek-v4-flash' // 最便宜的模型
 };
