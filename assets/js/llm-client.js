@@ -330,13 +330,17 @@ class LLMClient {
      * @returns {Promise<Object>} - API 响应
      */
     async chat(messages, options = {}) {
-        if (!this.apiKey) {
-            throw new Error('API Key 未设置，请先调用 setApiKey() 方法');
+        // 暂时直接使用 DeepSeek，不再走 OpenRouter
+        if (!this.deepseekApiKey) {
+            throw new Error('DeepSeek API Key 未设置');
         }
 
         const messagesWithSystem = this.buildMessagesWithSystem(messages);
 
         try {
+            return await this.postDeepSeek({ messages: messagesWithSystem, ...options }, false);
+
+            /* ===== OpenRouter 逻辑暂时停用（保留以便日后恢复） =====
             let lastError = null;
             const candidates = await this.getModelCandidates();
             for (const model of candidates) {
@@ -370,6 +374,7 @@ class LLMClient {
             }
 
             throw lastError;
+            ===== OpenRouter 逻辑结束 ===== */
         } catch (error) {
             console.error('LLM API 调用错误:', error);
             throw error;
@@ -400,13 +405,17 @@ class LLMClient {
      * @returns {Promise<string>} - 完整的响应内容
      */
     async chatStream(messages, onChunk, options = {}) {
-        if (!this.apiKey) {
-            throw new Error('API Key 未设置，请先调用 setApiKey() 方法');
+        // 暂时直接使用 DeepSeek，不再走 OpenRouter
+        if (!this.deepseekApiKey) {
+            throw new Error('DeepSeek API Key 未设置');
         }
 
         const messagesWithSystem = this.buildMessagesWithSystem(messages);
 
         try {
+            let reader = await this.postDeepSeek({ messages: messagesWithSystem, ...options }, true);
+
+            /* ===== OpenRouter 逻辑暂时停用（保留以便日后恢复） =====
             let lastError = null;
             let reader = null;
             const candidates = await this.getModelCandidates();
@@ -445,6 +454,7 @@ class LLMClient {
             if (!reader) {
                 throw lastError;
             }
+            ===== OpenRouter 逻辑结束 ===== */
 
             const decoder = new TextDecoder();
             let fullContent = '';
