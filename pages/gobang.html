@@ -99,7 +99,8 @@
 
         .btn-restart,
         .btn-undo,
-        .btn-history {
+        .btn-history,
+        .btn-settings {
             background: rgba(255, 255, 255, 0.95);
             color: #2c2c2c;
         }
@@ -596,6 +597,224 @@
                 gap: 5px;
             }
         }
+        /* ========== 实时胜率面板 ========== */
+        .winrate-panel {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+            max-width: 600px;
+            padding: 8px 10px;
+            border: 2px solid #2c2c2c;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .winrate-panel.active {
+            display: flex;
+        }
+
+        .winrate-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 12px;
+            color: #2c2c2c;
+        }
+
+        .winrate-side {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .winrate-num {
+            font-size: 15px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .winrate-bar {
+            display: flex;
+            height: 14px;
+            border: 2px solid #2c2c2c;
+            border-radius: 2px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .winrate-fill {
+            transition: width 0.45s ease;
+        }
+
+        .winrate-fill.black {
+            background: linear-gradient(180deg, #4a4a4a 0%, #000 100%);
+        }
+
+        .winrate-fill.white {
+            background: linear-gradient(180deg, #fff 0%, #d8d8d0 100%);
+        }
+
+        .winrate-meta {
+            font-size: 11px;
+            color: #777;
+            font-variant-numeric: tabular-nums;
+            min-height: 15px;
+        }
+
+        .winrate-meta .thinking {
+            color: #b8860b;
+        }
+
+        /* ========== 设置弹窗 ========== */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c2c2c;
+        }
+
+        .setting-hint {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .switch {
+            position: relative;
+            flex-shrink: 0;
+            width: 44px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .switch input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch .track {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #2c2c2c;
+            border-radius: 2px;
+            background: rgba(200, 200, 200, 0.5);
+            transition: background 0.25s;
+        }
+
+        .switch .knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 14px;
+            height: 14px;
+            background: #2c2c2c;
+            border-radius: 1px;
+            transition: transform 0.25s;
+        }
+
+        .switch input:checked ~ .track {
+            background: #2c2c2c;
+        }
+
+        .switch input:checked ~ .knob {
+            transform: translateX(21px);
+            background: #fff;
+        }
+
+        .role-group {
+            display: flex;
+            flex-shrink: 0;
+            border: 2px solid #2c2c2c;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .role-group label {
+            margin: 0;
+            padding: 5px 11px;
+            font-size: 12px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.2s;
+            font-family: "STKaiti", "KaiTi", "楷体", serif;
+        }
+
+        .role-group label + label {
+            border-left: 2px solid #2c2c2c;
+        }
+
+        .role-group input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .role-group input:checked + span {
+            font-weight: 700;
+        }
+
+        .role-group label:has(input:checked) {
+            background: #2c2c2c;
+            color: #fff;
+        }
+
+        /* 带姓名输入的设置行：标题与身份切换一行，输入框另起一行 */
+        .setting-row.stacked {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .setting-row-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .setting-name {
+            width: 100%;
+            padding: 8px 10px;
+            border: 2px solid #2c2c2c;
+            border-radius: 2px;
+            font-size: 14px;
+            outline: none;
+            font-family: "STKaiti", "KaiTi", "楷体", serif;
+            background: rgba(255, 255, 255, 0.95);
+            color: #2c2c2c;
+        }
+
+        .setting-name:focus {
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .setting-name:disabled {
+            background: rgba(200, 200, 200, 0.4);
+            border-color: #999;
+            color: #777;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -614,7 +833,8 @@
             <div class="button-group">
                 <button class="btn-undo" id="undoBtn" onclick="undoMove()">悔棋</button>
                 <button class="btn-history" onclick="showHistory()">历史</button>
-                <button class="btn-restart" onclick="showNewGameModal()">新局</button>
+                <button class="btn-restart" onclick="startNewGame()">新局</button>
+                <button class="btn-settings" onclick="showSettings()">设置</button>
             </div>
 
             <!-- 回放控制 -->
@@ -625,6 +845,27 @@
                 <button class="btn-replay" id="autoPlayBtn" onclick="toggleAutoPlay()">▶ 播放</button>
                 <button class="btn-continue" onclick="continueGame()">继续对局</button>
             </div>
+        </div>
+
+        <!-- 实时胜率面板 -->
+        <div class="winrate-panel" id="winratePanel">
+            <div class="winrate-head">
+                <span class="winrate-side">
+                    <span class="player-dot black" style="width:11px;height:11px;box-shadow:none;"></span>
+                    <span id="wrBlackName">黑方</span>
+                    <span class="winrate-num" id="wrBlackNum">50.0%</span>
+                </span>
+                <span class="winrate-side">
+                    <span class="winrate-num" id="wrWhiteNum">50.0%</span>
+                    <span id="wrWhiteName">白方</span>
+                    <span class="player-dot white" style="width:11px;height:11px;box-shadow:none;border-width:1px;"></span>
+                </span>
+            </div>
+            <div class="winrate-bar">
+                <div class="winrate-fill black" id="wrFillBlack" style="width:50%"></div>
+                <div class="winrate-fill white" id="wrFillWhite" style="width:50%"></div>
+            </div>
+            <div class="winrate-meta" id="wrMeta"></div>
         </div>
 
         <div class="board-container">
@@ -645,50 +886,81 @@
         </div>
     </div>
 
-    <!-- 新开一局弹窗 -->
-    <div class="modal" id="newGameModal">
+    <!-- 设置弹窗：对局配置（姓名/身份/先手）与显示偏好都集中在这里 -->
+    <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>新开一局</h2>
-                <button class="close-btn" onclick="closeNewGameModal()">&times;</button>
+                <h2>设置</h2>
+                <button class="close-btn" onclick="closeSettings()">&times;</button>
             </div>
             <div class="new-game-form">
-                <div class="form-group">
-                    <label>玩家一：</label>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="newPlayer1Name" placeholder="请输入姓名" maxlength="10" oninput="updateRadioLabels()" style="flex: 1;">
-                        <label class="radio-label" style="margin: 0;">
-                            <input type="checkbox" id="player1IsAI" onchange="handleAICheckbox(1)">
-                            <span>机器人</span>
-                        </label>
-                    </div>
+                <div class="setting-row">
+                    <span class="setting-label">
+                        实时胜率
+                        <span class="setting-hint">每手棋后自动计算并显示双方胜率</span>
+                    </span>
+                    <label class="switch">
+                        <input type="checkbox" id="setShowWinrate" onchange="onToggleWinrate()">
+                        <span class="track"></span>
+                        <span class="knob"></span>
+                    </label>
                 </div>
-                <div class="form-group">
-                    <label>玩家二：</label>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="text" id="newPlayer2Name" placeholder="请输入姓名" maxlength="10" oninput="updateRadioLabels()" style="flex: 1;">
-                        <label class="radio-label" style="margin: 0;">
-                            <input type="checkbox" id="player2IsAI" onchange="handleAICheckbox(2)">
-                            <span>机器人</span>
-                        </label>
+
+                <div class="setting-row stacked">
+                    <div class="setting-row-head">
+                        <span class="setting-label">
+                            玩家一
+                            <span class="setting-hint" id="setPlayer1Hint">执黑先手</span>
+                        </span>
+                        <span class="role-group">
+                            <label><input type="radio" name="setRole1" value="human" onchange="onChangeRole(1,'human')"><span>真人</span></label>
+                            <label><input type="radio" name="setRole1" value="ai" onchange="onChangeRole(1,'ai')"><span>AI</span></label>
+                        </span>
                     </div>
+                    <input type="text" class="setting-name" id="setPlayer1Name" placeholder="请输入姓名"
+                           maxlength="10" oninput="onChangeName(1)">
                 </div>
-                <div class="form-group">
-                    <label>谁执黑棋（先手）：</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="newBlackPlayer" value="1" checked>
-                            <span id="radioPlayer1Name">玩家一</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="newBlackPlayer" value="2">
-                            <span id="radioPlayer2Name">玩家二</span>
-                        </label>
+
+                <div class="setting-row stacked">
+                    <div class="setting-row-head">
+                        <span class="setting-label">
+                            玩家二
+                            <span class="setting-hint" id="setPlayer2Hint">执白后手</span>
+                        </span>
+                        <span class="role-group">
+                            <label><input type="radio" name="setRole2" value="human" onchange="onChangeRole(2,'human')"><span>真人</span></label>
+                            <label><input type="radio" name="setRole2" value="ai" onchange="onChangeRole(2,'ai')"><span>AI</span></label>
+                        </span>
                     </div>
+                    <input type="text" class="setting-name" id="setPlayer2Name" placeholder="请输入姓名"
+                           maxlength="10" oninput="onChangeName(2)">
                 </div>
+
+                <div class="setting-row">
+                    <span class="setting-label">
+                        谁执黑先手
+                        <span class="setting-hint">改动会在下一局生效</span>
+                    </span>
+                    <span class="role-group">
+                        <label><input type="radio" name="setBlack" value="1" onchange="onChangeBlack(1)"><span id="setBlackLabel1">玩家一</span></label>
+                        <label><input type="radio" name="setBlack" value="2" onchange="onChangeBlack(2)"><span id="setBlackLabel2">玩家二</span></label>
+                    </span>
+                </div>
+
+                <div class="setting-row">
+                    <span class="setting-label">
+                        AI 棋力
+                        <span class="setting-hint">越强思考越久，手机上建议中级</span>
+                    </span>
+                    <span class="role-group">
+                        <label><input type="radio" name="setLevel" value="easy" onchange="onChangeLevel('easy')"><span>初级</span></label>
+                        <label><input type="radio" name="setLevel" value="medium" onchange="onChangeLevel('medium')"><span>中级</span></label>
+                        <label><input type="radio" name="setLevel" value="hard" onchange="onChangeLevel('hard')"><span>高级</span></label>
+                    </span>
+                </div>
+
                 <div class="form-actions">
-                    <button class="btn-small btn-load" onclick="startNewGame()">开始游戏</button>
-                    <button class="btn-small btn-delete" onclick="closeNewGameModal()">取消</button>
+                    <button class="btn-small btn-load" onclick="closeSettings()">完成</button>
                 </div>
             </div>
         </div>
@@ -704,6 +976,258 @@
             </div>
         </div>
     </div>
+
+    <!--
+      五子棋引擎：negamax + alpha-beta + 迭代加深。
+      这段源码有两种跑法，共用同一份实现：
+        1. http(s) 下取本 script 的文本构造 Worker，搜索不阻塞界面；
+        2. file:// 下浏览器禁止用 Blob 建 Worker，就直接在主线程调用这里的函数。
+      所以它写成对 self 挂载的形式，在窗口和 Worker 里都成立。
+    -->
+    <script id="engineSrc">
+    (function (root) {
+        'use strict';
+        const N = 15;
+        const DIRS = [[0, 1], [1, 0], [1, 1], [1, -1]];
+        // 滑窗内同色子数对应权重，逐级拉开差距，让威胁压过零散布子的噪声
+        const RUN = [0, 1, 20, 400, 9000, 10000000];
+        const WIN = 10000000;
+
+        // 以长度 5 的滑窗统计双方形状分。滑窗天然区分活四(占两窗)与冲四(占一窗)，
+        // 也能算到 11011 这类跳four。必须严格零和，否则 negamax 的取反假设不成立。
+        function evaluate(b, me) {
+            const opp = me === 1 ? 2 : 1;
+            let mineTotal = 0, oppTotal = 0;
+            for (let r = 0; r < N; r++) {
+                for (let c = 0; c < N; c++) {
+                    for (let d = 0; d < 4; d++) {
+                        const dr = DIRS[d][0], dc = DIRS[d][1];
+                        const er = r + 4 * dr, ec = c + 4 * dc;
+                        if (er < 0 || er >= N || ec < 0 || ec >= N) continue;
+                        let mine = 0, theirs = 0;
+                        for (let k = 0; k < 5; k++) {
+                            const v = b[(r + k * dr) * N + (c + k * dc)];
+                            if (v === me) mine++;
+                            else if (v === opp) theirs++;
+                        }
+                        // 窗内混有双方棋子，这个窗谁都成不了五
+                        if (mine > 0 && theirs > 0) continue;
+                        if (mine > 0) mineTotal += RUN[mine];
+                        else if (theirs > 0) oppTotal += RUN[theirs];
+                    }
+                }
+            }
+            return mineTotal - oppTotal;
+        }
+
+        // 单点落子价值，用于候选点排序；同时叠加对手在此处的价值以兼顾堵点
+        function pointScore(b, r, c, who) {
+            let s = 0;
+            for (let d = 0; d < 4; d++) {
+                const dr = DIRS[d][0], dc = DIRS[d][1];
+                let run = 1, openEnds = 0, gap = 0;
+                for (const sign of [1, -1]) {
+                    let step = 1, blanks = 0;
+                    while (step <= 4) {
+                        const rr = r + sign * dr * step, cc = c + sign * dc * step;
+                        if (rr < 0 || rr >= N || cc < 0 || cc >= N) break;
+                        const v = b[rr * N + cc];
+                        if (v === who) { run++; if (blanks) gap++; }
+                        else if (v === 0) { if (blanks) break; blanks = 1; openEnds++; }
+                        else break;
+                        step++;
+                    }
+                }
+                if (run >= 5) return WIN;
+                s += RUN[Math.min(run, 5)] * (openEnds === 2 ? 2.2 : openEnds === 1 ? 1 : 0.25);
+                if (gap) s += RUN[Math.min(run, 5)] * 0.4;
+            }
+            return s;
+        }
+
+        function isWin(b, r, c, who) {
+            for (let d = 0; d < 4; d++) {
+                const dr = DIRS[d][0], dc = DIRS[d][1];
+                let run = 1;
+                for (const sign of [1, -1]) {
+                    let step = 1;
+                    while (step <= 4) {
+                        const rr = r + sign * dr * step, cc = c + sign * dc * step;
+                        if (rr < 0 || rr >= N || cc < 0 || cc >= N) break;
+                        if (b[rr * N + cc] !== who) break;
+                        run++; step++;
+                    }
+                }
+                if (run >= 5) return true;
+            }
+            return false;
+        }
+
+        // 只在已有棋子半径 2 内取候选点，并按攻防合计分排序后截断
+        function genMoves(b, who, limit) {
+            const opp = who === 1 ? 2 : 1;
+            const out = [];
+            for (let r = 0; r < N; r++) {
+                for (let c = 0; c < N; c++) {
+                    if (b[r * N + c] !== 0) continue;
+                    let near = false;
+                    for (let dr = -2; dr <= 2 && !near; dr++) {
+                        for (let dc = -2; dc <= 2; dc++) {
+                            const rr = r + dr, cc = c + dc;
+                            if (rr >= 0 && rr < N && cc >= 0 && cc < N && b[rr * N + cc] !== 0) { near = true; break; }
+                        }
+                    }
+                    if (!near) continue;
+                    const s = pointScore(b, r, c, who) + pointScore(b, r, c, opp) * 0.9;
+                    out.push({ r: r, c: c, s: s });
+                }
+            }
+            out.sort((x, y) => y.s - x.s);
+            return out.slice(0, limit);
+        }
+
+        let deadline = 0;
+        let aborted = false;
+        let minBranch = 6;   // 深层收窄的下限，由档位设定
+
+        function negamax(b, who, depth, alpha, beta, branch) {
+            if (Date.now() > deadline) { aborted = true; return evaluate(b, who); }
+            if (depth === 0) return evaluate(b, who);
+
+            const moves = genMoves(b, who, branch);
+            if (moves.length === 0) return evaluate(b, who);
+
+            let best = -Infinity;
+            for (let i = 0; i < moves.length; i++) {
+                const m = moves[i];
+                const idx = m.r * N + m.c;
+                b[idx] = who;
+                let val;
+                if (isWin(b, m.r, m.c, who)) {
+                    // 越早赢分越高，避免拖沓
+                    val = WIN + depth;
+                } else {
+                    // 深层收窄分支但不低于 minBranch：这个下限太小，防守方就找不到正确堵点，
+                    // 会把本可防的攻击误判成必胜，胜率也随之乱跳。实测它比搜索深度更影响棋力。
+                    val = -negamax(b, who === 1 ? 2 : 1, depth - 1, -beta, -alpha, Math.max(minBranch, branch - 2));
+                }
+                b[idx] = 0;
+                if (val > best) best = val;
+                if (best > alpha) alpha = best;
+                if (alpha >= beta) break;
+                if (aborted) break;
+            }
+            return best;
+        }
+
+        // 迭代加深搜索，返回最佳点与站在 who 视角的分数
+        function search(b, who, maxDepth, branch, timeMs, minBr) {
+            deadline = Date.now() + timeMs;
+            aborted = false;
+            minBranch = minBr || 6;
+
+            const roots = genMoves(b, who, branch);
+            if (roots.length === 0) {
+                const mid = (N - 1) / 2 | 0;
+                return { move: { r: mid, c: mid }, score: 0, depth: 0 };
+            }
+
+            // 己方能立即成五，或必须堵对手的五，直接定夺不必深搜
+            for (const m of roots) {
+                b[m.r * N + m.c] = who;
+                const w = isWin(b, m.r, m.c, who);
+                b[m.r * N + m.c] = 0;
+                if (w) return { move: m, score: WIN, depth: 1 };
+            }
+            // 堵对手成五点不做捷径：搜索本身就会发现不堵即负，
+            // 若在此提前返回静态评估分，会和搜索分不同尺度，导致胜率跳变
+            const opp = who === 1 ? 2 : 1;
+
+            let bestMove = roots[0], bestScore = -Infinity, reached = 0;
+            for (let d = 2; d <= maxDepth; d += 2) {
+                let localBest = -Infinity, localMove = null;
+                let alpha = -Infinity;
+                for (const m of roots) {
+                    const idx = m.r * N + m.c;
+                    b[idx] = who;
+                    const val = -negamax(b, opp, d - 1, -Infinity, -alpha, branch);
+                    b[idx] = 0;
+                    if (val > localBest) { localBest = val; localMove = m; }
+                    if (val > alpha) alpha = val;
+                    if (aborted) break;
+                }
+                // 本层被时间打断则丢弃该层结果，保留上一层的完整结论
+                if (aborted && localMove === null) break;
+                if (!aborted) { bestMove = localMove; bestScore = localBest; reached = d; }
+                if (aborted) break;
+                if (bestScore >= WIN) break;
+            }
+
+            if (bestScore === -Infinity) { bestScore = evaluate(b, who); reached = 0; }
+            return { move: bestMove, score: bestScore, depth: reached };
+        }
+
+        // 评估分 -> 胜率。尺度 15000 是实测选的：五子棋里"轮到谁走"本身值约 8500 分，
+        // 尺度太小会让这点先手优势把数字顶到两端，每手在 0/100 之间翻烧饼。
+        // 搜到必胜/必败时直接给极值，不受尺度影响。
+        function toWinrate(score) {
+            if (score >= WIN) return 1;
+            if (score <= -WIN) return 0;
+            const p = 1 / (1 + Math.exp(-score / 15000));
+            return Math.min(0.99, Math.max(0.01, p));
+        }
+
+        // 档位参数经对局实测标定（各档互相对下，每组 6~8 局）：
+        //   宽度(branch/minBr)比深度(depth)更能提升棋力——加深到 8 层对胜负几无影响，
+        //   而把 branch 从 11 加到 16 能以 5:1 胜过原配置。原因是深层分支太窄时防守方
+        //   找不到正确堵点。depth 只是上限，真正卡住搜索的是 time。
+        const LEVELS = {
+            easy:   { depth: 2, branch: 8,  minBr: 6,  time: 300 },
+            medium: { depth: 4, branch: 11, minBr: 8,  time: 800 },
+            hard:   { depth: 6, branch: 16, minBr: 10, time: 2000 }
+        };
+        // 胜率分析用固定档位：显示的数字必须前后可比，不能随 AI 棋力变化
+        const ANALYZE = { depth: 6, branch: 11, minBr: 6, time: 800 };
+
+        // 处理一次请求，返回结果对象。Worker 和主线程走同一个入口。
+        function handle(msg) {
+            const b = Int8Array.from(msg.board);
+            const t0 = Date.now();
+
+            if (msg.type === 'move') {
+                const cfg = LEVELS[msg.level] || LEVELS.medium;
+                // 主线程模式会传入更小的 budget，防止长时间搜索把界面卡住
+                const budget = msg.budget ? Math.min(cfg.time, msg.budget) : cfg.time;
+                const res = search(b, msg.player, cfg.depth, cfg.branch, budget, cfg.minBr);
+                return {
+                    type: 'move', id: msg.id, row: res.move.r, col: res.move.c,
+                    winrate: toWinrate(res.score), depth: res.depth, ms: Date.now() - t0
+                };
+            }
+            if (msg.type === 'analyze') {
+                // 主线程模式下用更短的时限，避免点一下卡住界面
+                const budget = msg.budget || ANALYZE.time;
+                const res = search(b, msg.player, ANALYZE.depth, ANALYZE.branch, budget, ANALYZE.minBr);
+                return {
+                    type: 'analyze', id: msg.id, player: msg.player,
+                    winrate: toWinrate(res.score), depth: res.depth, ms: Date.now() - t0
+                };
+            }
+            return null;
+        }
+
+        root.GobangEngine = { handle: handle, search: search, evaluate: evaluate, toWinrate: toWinrate, LEVELS: LEVELS };
+
+        // 用 importScripts 区分身份：Worker 里才有它。window 上也有 postMessage，
+        // 单看 postMessage 会误判，把页面自己的 message 事件也接过来。
+        if (typeof root.postMessage === 'function' && typeof root.importScripts === 'function') {
+            root.onmessage = function (e) {
+                const out = handle(e.data);
+                if (out) root.postMessage(out);
+            };
+        }
+    })(typeof self !== 'undefined' ? self : this);
+    </script>
 
     <script>
         const BOARD_SIZE = 15;
@@ -734,11 +1258,319 @@
         let player1Name = '';
         let player2Name = '';
         let blackPlayer = 1; // 1 表示玩家一是黑方，2 表示玩家二是黑方
+        let pendingBlackPlayer = 1; // 设置里选的先手，对局中不立即生效，开新局时才应用
         let isHistoryGame = false; // 标记是否从历史记录加载的游戏
         let autoPlayTimer = null; // 自动播放定时器
         let player1IsAI = false; // 玩家一是否为 AI
         let player2IsAI = false; // 玩家二是否为 AI
         let aiThinkingTimer = null; // AI 思考定时器
+
+        // ========== 引擎与设置 ==========
+        let showWinrate = true;       // 是否显示实时胜率，默认开
+        let aiLevel = 'medium';       // AI 棋力档位
+        let engine = null;            // Worker 实例
+        let reqSeq = 0;               // 请求序号，用于丢弃过期结果
+        let analyzeReqId = 0;         // 当前有效的胜率请求
+        let moveReqId = 0;            // 当前有效的 AI 落子请求
+
+        let engineMode = 'none';   // 'worker' | 'inline' | 'none'
+
+        // 准备引擎。优先用 Worker（搜索不占用界面线程）；
+        // file:// 下浏览器禁止 Blob Worker，退回主线程同步调用同一套引擎。
+        function initEngine() {
+            if (engineMode !== 'none') return true;
+
+            // 先试 Worker
+            try {
+                const src = document.getElementById('engineSrc').textContent;
+                const url = URL.createObjectURL(new Blob([src], { type: 'application/javascript' }));
+                const w = new Worker(url);
+                URL.revokeObjectURL(url);
+                w.onmessage = onEngineMessage;
+                w.onerror = (ev) => {
+                    // 关键：某些浏览器（含 file:// 下的 Chrome）建 Worker 时不同步报错，
+                    // 而是稍后才触发这里。此时已经发出的请求会静默丢失，必须切模式后重发，
+                    // 否则表现就是 AI 不落子、胜率一直空着。
+                    if (ev && ev.preventDefault) ev.preventDefault();
+                    console.warn('[engine] Worker 不可用，改用主线程模式');
+                    try { w.terminate(); } catch (e) {}
+                    engine = null;
+                    engineMode = window.GobangEngine ? 'inline' : 'none';
+
+                    const pending = pendingMsg;
+                    pendingMsg = null;
+                    if (pending && engineMode === 'inline') engineRequest(pending);
+                };
+                engine = w;
+                engineMode = 'worker';
+                return true;
+            } catch (err) {
+                console.warn('[engine] 无法建立 Worker（file:// 下属正常），改用主线程模式');
+            }
+
+            // 退回主线程：引擎脚本已在本页执行过，直接用全局对象
+            if (window.GobangEngine) {
+                engine = null;
+                engineMode = 'inline';
+                return true;
+            }
+            return false;
+        }
+
+        // 主线程模式下的时限：搜索会阻塞界面，所以比 Worker 模式收紧。
+        // move 给到 1200ms 是因为高级档搜满 6 层约需 700ms，压到 600 会退化成 4 层；
+        // AI 思考时短暂卡顿可以接受。analyze 每手都触发，卡顿更扰人，压到 350ms——
+        // 实测它和 800ms 的胜率差异在 1% 内，不影响显示。
+        const INLINE_BUDGET = { move: 1200, analyze: 350 };
+        let pendingMsg = null;     // 最近一次发给 Worker 的请求，供切换模式后重发
+        let watchdog = null;       // Worker 无响应的超时兜底
+
+        // 统一的请求出口，屏蔽 Worker / 主线程的差异
+        function engineRequest(msg) {
+            if (!initEngine()) return false;
+            if (engineMode === 'worker') {
+                pendingMsg = msg;
+                engine.postMessage(msg);
+
+                // 看门狗：Worker 有时既不回消息也不报错（脚本在里面没跑起来），
+                // 超时就判定不可用，切主线程重算，避免 AI 永久卡住
+                clearTimeout(watchdog);
+                watchdog = setTimeout(() => {
+                    if (!pendingMsg) return;
+                    console.warn('[engine] Worker 无响应，改用主线程模式');
+                    try { engine.terminate(); } catch (e) {}
+                    engine = null;
+                    engineMode = window.GobangEngine ? 'inline' : 'none';
+                    const p = pendingMsg;
+                    pendingMsg = null;
+                    if (p && engineMode === 'inline') engineRequest(p);
+                }, 6000);
+                return true;
+            }
+            // initEngine 之后才知道是不是主线程模式，这里才补上时限
+            msg.budget = INLINE_BUDGET[msg.type];
+            // 主线程模式：让出一帧再算，好让"思考中"这类提示能先画出来
+            setTimeout(() => {
+                try {
+                    const out = window.GobangEngine.handle(msg);
+                    if (out) onEngineMessage({ data: out });
+                } catch (err) {
+                    console.warn('[engine] 主线程计算失败:', err);
+                }
+            }, 20);
+            return true;
+        }
+
+        // 棋盘转成一维数组传给 Worker
+        function flatBoard() {
+            const flat = new Array(BOARD_SIZE * BOARD_SIZE);
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) flat[r * BOARD_SIZE + c] = board[r][c];
+            }
+            return flat;
+        }
+
+        function onEngineMessage(e) {
+            const d = e.data;
+            pendingMsg = null;          // 已有回复，无需再重发
+            clearTimeout(watchdog);     // 也就不用再等看门狗
+            if (d.type === 'analyze') {
+                if (d.id !== analyzeReqId) return; // 过期结果直接丢弃
+                // 引擎返回的是「当前行棋方」的胜率，统一换算成黑方视角
+                const blackWr = d.player === 1 ? d.winrate : 1 - d.winrate;
+                renderWinrate(blackWr, `搜索 ${d.depth} 层 · ${d.ms}ms`);
+            } else if (d.type === 'move') {
+                if (d.id !== moveReqId) return;
+                applyAIMove(d.row, d.col);
+            }
+        }
+
+        // 请求胜率：由当前行棋方视角评估
+        function requestWinrate() {
+            if (!showWinrate || isReplayMode || gameOver) return;
+            if (moveHistory.length === 0) { renderWinrate(0.5, '开局均势'); return; }
+
+            analyzeReqId = ++reqSeq;
+            setWinrateMeta('计算中…', true);
+            const ok = engineRequest({
+                type: 'analyze', id: analyzeReqId,
+                board: flatBoard(), player: currentPlayer
+            });
+            if (!ok) setWinrateMeta('引擎不可用', false);
+        }
+
+        function renderWinrate(blackWr, meta) {
+            const bPct = blackWr * 100;
+            const wPct = 100 - bPct;
+            document.getElementById('wrBlackNum').textContent = bPct.toFixed(1) + '%';
+            document.getElementById('wrWhiteNum').textContent = wPct.toFixed(1) + '%';
+            document.getElementById('wrFillBlack').style.width = bPct + '%';
+            document.getElementById('wrFillWhite').style.width = wPct + '%';
+            if (meta !== undefined) setWinrateMeta(meta, false);
+        }
+
+        function setWinrateMeta(text, thinking) {
+            const el = document.getElementById('wrMeta');
+            el.textContent = text;
+            el.className = 'winrate-meta' + (thinking ? ' thinking' : '');
+        }
+
+        // 同步胜率面板的显示状态与双方名字
+        function updateWinratePanel() {
+            const panel = document.getElementById('winratePanel');
+            // 回放时不显示胜率，避免和历史局面对不上
+            panel.classList.toggle('active', showWinrate && !isReplayMode);
+            const names = getPlayerNames();
+            document.getElementById('wrBlackName').textContent = names.blackName || '黑方';
+            document.getElementById('wrWhiteName').textContent = names.whiteName || '白方';
+        }
+
+        function resetWinrate() {
+            renderWinrate(0.5, moveHistory.length === 0 ? '开局均势' : '');
+        }
+
+        // ========== 设置弹窗 ==========
+        function loadSettings() {
+            try {
+                const raw = localStorage.getItem('gobang_settings');
+                if (raw) {
+                    const s = JSON.parse(raw);
+                    // 存过设置才覆盖默认值，没存过就保持默认开启
+                    if (typeof s.showWinrate === 'boolean') showWinrate = s.showWinrate;
+                    if (s.aiLevel && ['easy', 'medium', 'hard'].includes(s.aiLevel)) aiLevel = s.aiLevel;
+                }
+            } catch (e) { /* 用默认值 */ }
+        }
+
+        function saveSettings() {
+            localStorage.setItem('gobang_settings', JSON.stringify({
+                showWinrate: showWinrate, aiLevel: aiLevel
+            }));
+        }
+
+        function showSettings() {
+            syncSettingsForm();
+            document.getElementById('settingsModal').classList.add('show');
+        }
+
+        // 把当前状态写进设置表单。任何一项改动后都重新调一次，保证联动的文案同步
+        function syncSettingsForm() {
+            document.getElementById('setShowWinrate').checked = showWinrate;
+            document.querySelector(`input[name="setRole1"][value="${player1IsAI ? 'ai' : 'human'}"]`).checked = true;
+            document.querySelector(`input[name="setRole2"][value="${player2IsAI ? 'ai' : 'human'}"]`).checked = true;
+            document.querySelector(`input[name="setLevel"][value="${aiLevel}"]`).checked = true;
+            // 先手显示待生效值：对局中改了先手，表单要反映用户的选择而非当前局的实际值
+            document.querySelector(`input[name="setBlack"][value="${pendingBlackPlayer}"]`).checked = true;
+
+            // AI 一方的名字由程序给定，输入框置灰
+            const n1 = document.getElementById('setPlayer1Name');
+            const n2 = document.getElementById('setPlayer2Name');
+            n1.value = player1Name || '';
+            n2.value = player2Name || '';
+            n1.disabled = player1IsAI;
+            n2.disabled = player2IsAI;
+
+            // 提示当前执黑执白，避免搞混先后手
+            document.getElementById('setPlayer1Hint').textContent = blackPlayer === 1 ? '执黑先手' : '执白后手';
+            document.getElementById('setPlayer2Hint').textContent = blackPlayer === 2 ? '执黑先手' : '执白后手';
+
+            // 先手选项上显示真实姓名
+            document.getElementById('setBlackLabel1').textContent = player1Name || '玩家一';
+            document.getElementById('setBlackLabel2').textContent = player2Name || '玩家二';
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+
+        function onToggleWinrate() {
+            showWinrate = document.getElementById('setShowWinrate').checked;
+            saveSettings();
+            updateWinratePanel();
+            if (showWinrate) { resetWinrate(); requestWinrate(); }
+        }
+
+        function onChangeRole(playerNum, role) {
+            const isAI = role === 'ai';
+            if (playerNum === 1) player1IsAI = isAI; else player2IsAI = isAI;
+
+            // 名字为空会被 checkPlayerNames 挡住落子，这里把缺的补上：
+            // 转成 AI 的一方给机器人名，另一方若还没填也给个默认名，保证设置完就能直接下
+            const DEFAULT_HUMAN = ['玩家一', '玩家二'];
+            const ROBOT = ['机器人一', '机器人二'];
+            if (isAI) {
+                const cur = playerNum === 1 ? player1Name : player2Name;
+                if (!cur || DEFAULT_HUMAN.includes(cur)) {
+                    if (playerNum === 1) player1Name = ROBOT[0]; else player2Name = ROBOT[1];
+                }
+            } else {
+                // 从 AI 切回真人时，把机器人名清成默认真人名
+                const cur = playerNum === 1 ? player1Name : player2Name;
+                if (ROBOT.includes(cur)) {
+                    if (playerNum === 1) player1Name = DEFAULT_HUMAN[0]; else player2Name = DEFAULT_HUMAN[1];
+                }
+            }
+            if (!player1Name) player1Name = player1IsAI ? ROBOT[0] : DEFAULT_HUMAN[0];
+            if (!player2Name) player2Name = player2IsAI ? ROBOT[1] : DEFAULT_HUMAN[1];
+
+            savePlayerNames();
+            saveCurrentGame();
+            updatePlayerDisplay();
+            updateWinratePanel();
+            syncSettingsForm();
+
+            // 若切换后轮到 AI 行棋，立刻接手
+            makeAIMove();
+        }
+
+        // 改姓名：即时生效，空值不写入，等失焦或下次同步时再补默认名
+        function onChangeName(playerNum) {
+            const v = document.getElementById(`setPlayer${playerNum}Name`).value.trim();
+            if (playerNum === 1) player1Name = v; else player2Name = v;
+
+            savePlayerNames();
+            saveCurrentGame();
+            updatePlayerDisplay();
+            updateWinratePanel();
+
+            // 只刷新依赖姓名的文案，不整体重置表单，否则输入框光标会跳
+            document.getElementById('setBlackLabel1').textContent = player1Name || '玩家一';
+            document.getElementById('setBlackLabel2').textContent = player2Name || '玩家二';
+        }
+
+        // 改先手。中途改 blackPlayer 会让已落子的黑白归属翻转、名字对不上棋子，
+        // 所以对局进行中只记到 pendingBlackPlayer，等开新局时才应用；空盘则立即生效。
+        function onChangeBlack(n) {
+            pendingBlackPlayer = n;
+
+            if (moveHistory.length === 0) {
+                blackPlayer = n;
+                savePlayerNames();
+                saveCurrentGame();
+                updatePlayerDisplay();
+                updateWinratePanel();
+                syncSettingsForm();
+                makeAIMove();
+            } else {
+                savePlayerNames();
+                syncSettingsForm();
+                setWinrateMeta('先手改动将在下一局生效', false);
+            }
+        }
+
+        function onChangeLevel(level) {
+            aiLevel = level;
+            saveSettings();
+        }
+
+        // 把玩家名字与 AI 身份写回 localStorage，供下次开局复用
+        function savePlayerNames() {
+            localStorage.setItem('gobang_player_names', JSON.stringify({
+                player1Name: player1Name, player2Name: player2Name,
+                blackPlayer: blackPlayer,
+                player1IsAI: player1IsAI, player2IsAI: player2IsAI
+            }));
+        }
 
         // 生成唯一 ID
         function generateUniqueId() {
@@ -753,128 +1585,39 @@
             };
         }
 
-        // 检查姓名是否已输入
+        // 姓名缺失时引导去设置里补，落子前调用
         function checkPlayerNames() {
             if (!player1Name || !player2Name) {
-                showNewGameModal();
+                showSettings();
                 return false;
             }
             return true;
         }
 
-        // 更新单选框标签
-        function updateRadioLabels() {
-            const p1IsAI = document.getElementById('player1IsAI').checked;
-            const p2IsAI = document.getElementById('player2IsAI').checked;
-
-            const p1Name = p1IsAI ? 'AI' : (document.getElementById('newPlayer1Name').value.trim() || '玩家一');
-            const p2Name = p2IsAI ? 'AI' : (document.getElementById('newPlayer2Name').value.trim() || '玩家二');
-
-            document.getElementById('radioPlayer1Name').textContent = p1Name;
-            document.getElementById('radioPlayer2Name').textContent = p2Name;
-        }
-
-        // 处理 AI 复选框变化
-        function handleAICheckbox(playerNum) {
-            const checkbox = document.getElementById(`player${playerNum}IsAI`);
-            const nameInput = document.getElementById(`newPlayer${playerNum}Name`);
-
-            if (checkbox.checked) {
-                nameInput.value = 'AI';
-                nameInput.disabled = true;
-            } else {
-                if (nameInput.value === 'AI') {
-                    nameInput.value = '';
-                }
-                nameInput.disabled = false;
-            }
-
-            updateRadioLabels();
-        }
-
-        // 显示新开一局弹窗
-        function showNewGameModal() {
-            // 预填充现有姓名
-            document.getElementById('newPlayer1Name').value = player1Name === 'AI' ? '' : (player1Name || '');
-            document.getElementById('newPlayer2Name').value = player2Name === 'AI' ? '' : (player2Name || '');
-
-            // 恢复 AI 设置
-            document.getElementById('player1IsAI').checked = player1IsAI;
-            document.getElementById('player2IsAI').checked = player2IsAI;
-
-            // 根据 AI 设置禁用/启用输入框
-            document.getElementById('newPlayer1Name').disabled = player1IsAI;
-            document.getElementById('newPlayer2Name').disabled = player2IsAI;
-            if (player1IsAI) document.getElementById('newPlayer1Name').value = 'AI';
-            if (player2IsAI) document.getElementById('newPlayer2Name').value = 'AI';
-
-            // 更新单选框标签
-            updateRadioLabels();
-
-            // 设置默认选中
-            const radios = document.getElementsByName('newBlackPlayer');
-            radios.forEach(radio => {
-                radio.checked = radio.value == blackPlayer;
-            });
-
-            document.getElementById('newGameModal').classList.add('show');
-        }
-
-        // 关闭新开一局弹窗
-        function closeNewGameModal() {
-            document.getElementById('newGameModal').classList.remove('show');
-        }
-
-        // 开始新游戏
+        // 「新局」按钮：直接开一局，配置一律沿用设置里的值。
+        // 下过棋则先确认，避免手滑丢掉进行中的对局。
         function startNewGame() {
-            const newP1IsAI = document.getElementById('player1IsAI').checked;
-            const newP2IsAI = document.getElementById('player2IsAI').checked;
-
-            const newP1Name = newP1IsAI ? 'AI' : document.getElementById('newPlayer1Name').value.trim();
-            const newP2Name = newP2IsAI ? 'AI' : document.getElementById('newPlayer2Name').value.trim();
-
-            if (!newP1Name || !newP2Name) {
-                alert('请输入双方姓名！');
-                return;
+            if (moveHistory.length > 0 && !gameOver && !isReplayMode) {
+                if (!confirm('当前对局尚未结束，确定要重新开局吗？')) return;
             }
 
-            // 获取选中的黑方
-            const radios = document.getElementsByName('newBlackPlayer');
-            let selectedBlackPlayer = 1;
-            radios.forEach(radio => {
-                if (radio.checked) {
-                    selectedBlackPlayer = parseInt(radio.value);
-                }
-            });
+            // 姓名缺失就先补全，否则落子会被 checkPlayerNames 拦住
+            fillMissingNames();
 
-            // 更新玩家信息
-            player1Name = newP1Name;
-            player2Name = newP2Name;
-            blackPlayer = selectedBlackPlayer;
-            player1IsAI = newP1IsAI;
-            player2IsAI = newP2IsAI;
+            // 应用设置里选的先手
+            blackPlayer = pendingBlackPlayer;
+            savePlayerNames();
 
-            // 保存玩家姓名和 AI 设置到 localStorage
-            localStorage.setItem('gobang_player_names', JSON.stringify({
-                player1Name: player1Name,
-                player2Name: player2Name,
-                blackPlayer: blackPlayer,
-                player1IsAI: player1IsAI,
-                player2IsAI: player2IsAI
-            }));
-
-            // 关闭弹窗
-            closeNewGameModal();
-
-            // 执行重新开始游戏的逻辑
             restartGame();
 
-            // 如果黑方是 AI，自动开始下棋
-            const blackPlayerNum = blackPlayer;
-            const blackIsAI = blackPlayerNum === 1 ? player1IsAI : player2IsAI;
-            if (blackIsAI) {
-                setTimeout(makeAIMove, 500);
-            }
+            // 黑方是 AI 就让它先走
+            if (isCurrentPlayerAI()) setTimeout(makeAIMove, 400);
+        }
+
+        // 补齐空缺的姓名：AI 用机器人名，真人用默认名
+        function fillMissingNames() {
+            if (!player1Name) player1Name = player1IsAI ? '机器人一' : '玩家一';
+            if (!player2Name) player2Name = player2IsAI ? '机器人二' : '玩家二';
         }
 
         function calculateCellSize() {
@@ -1156,54 +1899,63 @@
             return {row: center, col: center};
         }
 
-        // AI 下棋
+        // 判断某一方（1/2 指玩家一/玩家二）此刻是否轮到 AI
+        function isCurrentPlayerAI() {
+            const currentPlayerNum = (currentPlayer === 1 && blackPlayer === 1) || (currentPlayer === 2 && blackPlayer === 2) ? 1 : 2;
+            return currentPlayerNum === 1 ? player1IsAI : player2IsAI;
+        }
+
+        // AI 下棋：优先用引擎搜索，Worker 不可用时回退到原有的单步启发式
         function makeAIMove() {
             if (gameOver || isReplayMode) return;
+            if (!isCurrentPlayerAI()) return;
 
-            // 检查当前玩家是否为 AI
-            const currentPlayerNum = (currentPlayer === 1 && blackPlayer === 1) || (currentPlayer === 2 && blackPlayer === 2) ? 1 : 2;
-            const isAI = currentPlayerNum === 1 ? player1IsAI : player2IsAI;
+            moveReqId = ++reqSeq;
+            if (showWinrate) setWinrateMeta('AI 思考中…', true);
+            const ok = engineRequest({
+                type: 'move', id: moveReqId,
+                board: flatBoard(), player: currentPlayer, level: aiLevel
+            });
+            if (ok) return;
 
-            if (!isAI) return;
-
-            // AI 思考延迟（模拟思考过程）
+            // 引擎彻底不可用时才用原来的单步启发式兜底
             aiThinkingTimer = setTimeout(() => {
                 const move = getAIMove(currentPlayer);
+                if (move && board[move.row][move.col] === 0) applyAIMove(move.row, move.col);
+            }, 500);
+        }
 
-                if (move && board[move.row][move.col] === 0) {
-                    // 记录移动历史
-                    moveHistory.push({row: move.row, col: move.col, player: currentPlayer});
-                    document.getElementById('undoBtn').disabled = false;
+        // 落下 AI 给出的一手，并推进对局状态
+        function applyAIMove(row, col) {
+            if (gameOver || isReplayMode) return;
+            if (!isCurrentPlayerAI()) return;
+            if (row == null || col == null || board[row][col] !== 0) return;
 
-                    // 放置棋子
-                    board[move.row][move.col] = currentPlayer;
-                    drawPiece(move.row, move.col, currentPlayer);
+            moveHistory.push({ row: row, col: col, player: currentPlayer });
+            document.getElementById('undoBtn').disabled = false;
 
-                    // 检查胜利
-                    if (checkWin(move.row, move.col, currentPlayer)) {
-                        gameOver = true;
-                        const names = getPlayerNames();
-                        const winnerName = currentPlayer === 1 ? names.blackName : names.whiteName;
+            board[row][col] = currentPlayer;
+            drawPiece(row, col, currentPlayer);
 
-                        // 保存到历史记录
-                        saveToHistory();
+            if (checkWin(row, col, currentPlayer)) {
+                gameOver = true;
+                const names = getPlayerNames();
+                const winnerName = currentPlayer === 1 ? names.blackName : names.whiteName;
+                if (showWinrate) renderWinrate(currentPlayer === 1 ? 1 : 0, '对局结束');
+                saveToHistory();
+                showWinModal(winnerName);
+                return;
+            }
 
-                        // 显示获胜弹窗
-                        showWinModal(winnerName);
-                        return;
-                    }
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            updatePlayerDisplay();
+            saveCurrentGame();
 
-                    // 切换玩家
-                    currentPlayer = currentPlayer === 1 ? 2 : 1;
-                    updatePlayerDisplay();
+            // 胜率一律由 analyze 档位算，不复用 AI 落子的搜索分：
+            // 两者档位不同、分数尺度不同，混用会让相邻两手的数字没法比较
+            requestWinrate();
 
-                    // 保存当前对局状态
-                    saveCurrentGame();
-
-                    // 如果下一个玩家也是 AI，继续下棋
-                    setTimeout(makeAIMove, 100);
-                }
-            }, 500); // 500ms 思考时间
+            if (isCurrentPlayerAI()) setTimeout(makeAIMove, 300);
         }
 
         // ========== AI 相关函数结束 ==========
@@ -1324,6 +2076,11 @@
 
             updatePlayerDisplay();
             saveCurrentGame();
+            updateWinratePanel();
+            requestWinrate();
+
+            // 从回放分支继续时，若当前该 AI 行棋则接手
+            makeAIMove();
         }
 
         function handleClick(e) {
@@ -1383,8 +2140,12 @@
             // 保存当前对局状态
             saveCurrentGame();
 
-            // 触发 AI 下棋
-            makeAIMove();
+            // 触发 AI 下棋；若对手是真人则由引擎算一次胜率
+            if (isCurrentPlayerAI()) {
+                makeAIMove();
+            } else {
+                requestWinrate();
+            }
         }
 
         function undoMove() {
@@ -1403,6 +2164,12 @@
 
             // 更新当前对局状态
             saveCurrentGame();
+
+            // 悔棋后作废在途的引擎请求，重新计算胜率
+            moveReqId = ++reqSeq;
+            analyzeReqId = moveReqId;
+            if (moveHistory.length === 0) resetWinrate();
+            requestWinrate();
         }
 
         function restartGame() {
@@ -1435,8 +2202,14 @@
             // 清空当前对局
             localStorage.removeItem('gobang_current');
 
+            // 作废在途的引擎请求，避免上一局的结果落到新棋盘上
+            moveReqId = ++reqSeq;
+            analyzeReqId = moveReqId;
+
             redrawBoard();
             updatePlayerDisplay();
+            updateWinratePanel();
+            resetWinrate();
         }
 
         // 保存当前正在进行的对局
@@ -1601,6 +2374,7 @@
             document.getElementById('winnerMessage').textContent = '';
             document.getElementById('winnerMessage').className = 'winner-message';
 
+            updateWinratePanel();
             closeHistory();
         }
 
@@ -1626,10 +2400,10 @@
             document.getElementById('winModal').classList.remove('show');
         }
 
-        // 下一局
+        // 下一局：沿用当前配置直接开局，要改设置走「设置」按钮
         function nextGame() {
             closeWinModal();
-            showNewGameModal();
+            startNewGame();
         }
 
         // 查看回放
@@ -1649,6 +2423,7 @@
             document.getElementById('replayControls').classList.add('show');
             document.getElementById('undoBtn').disabled = true;
             updateReplayButtons();
+            updateWinratePanel();
         }
 
         // 事件监听
@@ -1708,8 +2483,12 @@
 
         // 初始化
         function initGame() {
+            // 先读设置，面板的显示状态依赖它
+            loadSettings();
+
             // 尝试加载当前对局
             const loaded = loadCurrentGame();
+            let needSetup = false;
 
             if (!loaded) {
                 // 尝试加载上次的玩家姓名和 AI 设置
@@ -1738,10 +2517,25 @@
                 updatePlayerDisplay();
                 document.getElementById('undoBtn').disabled = true;
 
-                // 如果没有姓名，首次加载时显示设置弹窗
-                if (!player1Name || !player2Name) {
-                    showNewGameModal();
-                }
+                needSetup = !player1Name || !player2Name;
+            }
+
+            // 待生效的先手跟随当前局，避免开新局时把先手意外改掉。
+            // 必须在弹出设置之前赋值，否则弹窗里的先手项读到的是初始值。
+            pendingBlackPlayer = blackPlayer;
+
+            // 面板状态与胜率初值
+            updateWinratePanel();
+            resetWinrate();
+
+            // 首次访问没有姓名，引导去设置里填
+            if (needSetup) showSettings();
+
+            // 续上的对局若轮到 AI 行棋，接手；否则按需算一次胜率
+            if (isCurrentPlayerAI()) {
+                setTimeout(makeAIMove, 400);
+            } else {
+                requestWinrate();
             }
         }
 
