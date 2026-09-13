@@ -1062,6 +1062,7 @@
       </div>
     </nav>
 
+    <!-- Chat with Me 暂时停用，浮动气泡一并注释（API key 已删除）
     <div
       class="chat-bubble"
       id="chatBubble"
@@ -1072,6 +1073,7 @@
       <img src="assets/img/wechat avatar.jpg" alt="Avatar" class="avatar" />
       <div class="chat-bubble-content" id="chatBubbleContent"></div>
     </div>
+    -->
 
     <!-- About Section -->
     <section id="about">
@@ -1512,7 +1514,7 @@
       </div>
     </section>
 
-    <!-- Chat Section -->
+    <!-- Chat Section（暂时停用：API key 已删除，恢复时取消本段注释即可）
     <section id="chat">
       <div class="chat-container">
         <div class="chat-header">
@@ -1541,6 +1543,7 @@
         </div>
       </div>
     </section>
+    Chat Section 停用结束 -->
 
     <!-- Image lightbox -->
     <div class="img-lightbox" id="imgLightbox">
@@ -1603,7 +1606,10 @@
       });
 
       // Chat functionality
+      // 暂时停用（API key 已删除）。代码块内含正则的 "*/"，无法用 /* */ 块注释包裹，
+      // 恢复时删掉 "if (false)" 这行和末尾对应的 "}" 即可。
       (function () {
+        if (false) {
         const chatMessages = document.getElementById("chatMessages");
         const chatInput = document.getElementById("chatInput");
         const chatSend = document.getElementById("chatSend");
@@ -2114,6 +2120,7 @@
               chatInput.placeholder = placeholders[idx];
             }, 5000);
           });
+        } // end of "if (false)" Chat 暂时停用
       })();
 
       // 点击 Publications 图片放大预览
