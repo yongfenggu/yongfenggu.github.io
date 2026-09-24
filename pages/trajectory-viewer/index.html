@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trajectory / SFT Sample Viewer</title>
+<style>
+/* ===== 设计 Token ===== */
+:root{
+  --bg:#f6f7f9; --surface:#fff; --surface-2:#f0f1f3; --border:#dde0e4; --text:#1c1e22; --muted:#6b7079;
+  --user:#3b82f6; --user-bg:#dbeafe;
+  --asst:#10b981; --asst-bg:#d1fae5;
+  --dev:#d97706; --dev-bg:#fef3c7;
+  --tool:#8b5cf6; --tool-bg:#ede9fe;
+  --shell:#9ca3af; --shell-bg:#f3f4f6;
+  --accent:#6366f1; --accent-bg:#e0e7ff;
+  --highlight:#fbbf24; --highlight-bg:#fef9c3;
+  --dim:#d1d5db;
+  --code-bg:#1e1e2e; --code-text:#cdd6f4;
+  --good:#22c55e; --warn:#eab308; --bad:#ef4444;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131418; --surface:#1c1e24; --surface-2:#252830; --border:#363942; --text:#e3e5e8; --muted:#8b8f99;
+    --user:#60a5fa; --user-bg:#1e3a5f;
+    --asst:#34d399; --asst-bg:#14352a;
+    --dev:#f59e0b; --dev-bg:#3d3520;
+    --tool:#a78bfa; --tool-bg:#2d2640;
+    --shell:#6b7280; --shell-bg:#2a2d35;
+    --accent:#818cf8; --accent-bg:#2a2d4a;
+    --highlight:#fbbf24; --highlight-bg:#3d3520;
+    --dim:#4b5563;
+    --code-bg:#11111b; --code-text:#cdd6f4;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131418; --surface:#1c1e24; --surface-2:#252830; --border:#363942; --text:#e3e5e8; --muted:#8b8f99;
+  --user:#60a5fa; --user-bg:#1e3a5f;
+  --asst:#34d399; --asst-bg:#14352a;
+  --dev:#f59e0b; --dev-bg:#3d3520;
+  --tool:#a78bfa; --tool-bg:#2d2640;
+  --shell:#6b7280; --shell-bg:#2a2d35;
+  --accent:#818cf8; --accent-bg:#2a2d4a;
+  --highlight:#fbbf24; --highlight-bg:#3d3520;
+  --dim:#4b5563;
+  --code-bg:#11111b; --code-text:#cdd6f4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+  padding:16px;min-height:100vh}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+
+/* ===== 拖拽区 ===== */
+#drop-zone{
+  border:2px dashed var(--border);border-radius:14px;padding:48px 24px;text-align:center;
+  transition:border-color .2s,background .2s;cursor:pointer}
+#drop-zone.dragover{border-color:var(--accent);background:var(--accent-bg)}
+#drop-zone h2{font-size:1.1rem;margin-bottom:6px}
+#drop-zone p{color:var(--muted);font-size:.85rem}
+#drop-zone .formats{margin-top:10px;font-size:.78rem;color:var(--muted)}
+#file-input{display:none}
+
+/* ===== 顶栏 ===== */
+#topbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+#topbar .logo{font-weight:700;font-size:1.05rem;white-space:nowrap}
+#topbar select{padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.85rem;max-width:420px}
+#topbar .stats{display:flex;gap:6px;flex-wrap:wrap}
+#topbar .stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.78rem;color:var(--muted)}
+#topbar .stat b{color:var(--text)}
+#topbar .spacer{flex:1}
+#topbar button{padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;font-size:.82rem}
+#topbar button:hover{border-color:var(--accent)}
+
+/* ===== 主布局 ===== */
+#app{display:none}
+#main{display:grid;grid-template-columns:240px 1fr 400px;gap:16px;align-items:start}
+@media(max-width:1100px){#main{grid-template-columns:240px 1fr;gap:16px}#preview-panel{display:none}}
+
+/* ===== 侧边栏 session 列表 ===== */
+#sidebar{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:sticky;top:16px;max-height:calc(100vh - 32px);display:flex;flex-direction:column}
+#sidebar .sb-header{padding:10px 12px;border-bottom:1px solid var(--border);font-weight:600;font-size:.85rem;display:flex;justify-content:space-between;align-items:center}
+#sidebar .sb-count{font-weight:400;color:var(--muted);font-size:.78rem}
+#sidebar .sb-search{padding:8px 10px;border-bottom:1px solid var(--border)}
+#sidebar .sb-search input{width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface-2);color:var(--text);font-size:.8rem}
+#sidebar .sb-list{overflow-y:auto;flex:1}
+.sitem{padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;font-size:.78rem;transition:background .15s}
+.sitem:hover{background:var(--surface-2)}
+.sitem.active{background:var(--accent-bg);border-left:3px solid var(--accent)}
+.sitem .sitem-id{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--muted);word-break:break-all;line-height:1.3}
+.sitem .sitem-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.sitem .sitem-tag{font-size:.66rem;padding:1px 5px;border-radius:4px;background:var(--surface-2);color:var(--muted)}
+.sitem .sitem-note{display:block;margin-top:4px;font-size:.72rem;line-height:1.3;color:var(--text);padding:3px 6px;border-radius:4px;background:var(--accent-bg);border:1px solid var(--accent);font-weight:500}
+.sitem .sitem-note.note-empty{display:none}
+
+/* ===== 主面板 ===== */
+#detail{min-width:0}
+.session-info{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.session-info h3{font-size:1rem;margin-bottom:8px}
+.session-info .meta-grid{display:flex;flex-direction:column;gap:4px;font-size:.78rem}
+.session-info .meta-grid .mi{display:flex;align-items:baseline;gap:8px}
+.session-info .meta-grid .mi .mk{color:var(--muted);font-size:.72rem;min-width:120px;flex-shrink:0;font-weight:600}
+.session-info .meta-grid .mi .mv{font-family:ui-monospace,monospace;font-size:.78rem;word-break:break-all}
+.session-info .meta-grid .mi .mv.mv-json{white-space:pre-wrap;color:var(--muted);font-size:.72rem;line-height:1.35}
+.session-info .meta-grid .mi.mi-note{background:var(--accent-bg);border:1px solid var(--accent);border-radius:6px;padding:4px 6px;margin:2px 0 6px}
+.session-info .meta-grid .mi.mi-note .mk{color:var(--accent)}
+.session-info .meta-grid .mi.mi-note .mv{font-weight:600;color:var(--text)}
+
+/* ===== 可视化区 ===== */
+.viz-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.viz-section .vs-title{font-size:.82rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.viz-section .vs-title .hint{font-weight:400;color:var(--muted);font-size:.72rem}
+
+/* ===== 消息时间轴 ===== */
+#timeline-wrap{overflow-x:auto;padding-bottom:8px}
+#timeline{display:flex;align-items:flex-start;gap:4px;min-width:max-content;padding-top:10px}
+.trunc-notice{background:var(--warn-bg,rgba(255,165,0,.12));border:1px solid var(--warn);color:var(--warn);padding:10px 14px;border-radius:8px;font-size:.78rem;margin:8px 0;text-align:center}
+.trunc-notice b{font-weight:700}
+.msg-node{
+  display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
+  position:relative;flex-shrink:0;width:38px;transition:transform .15s}
+.msg-node:hover{transform:translateY(-2px)}
+.msg-square{
+  width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+  font-size:.62rem;font-weight:700;color:var(--text);font-family:ui-monospace,monospace;
+  border:2px solid var(--border);transition:all .15s;position:relative;background:var(--surface-2)}
+
+/* 选中 mask 时：input 统一填色，output 统一填色 */
+.msg-node.is-visible .msg-square{background:var(--highlight);border-color:var(--highlight);color:#fff}
+.msg-node.is-output .msg-square{background:var(--accent);border-color:var(--accent);color:#fff}
+.msg-node.is-skipped .msg-square{opacity:.3}
+.msg-node.is-skipped .msg-square::after{
+  content:'';position:absolute;inset:0;border-radius:5px;
+  background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(0,0,0,.15) 3px,rgba(0,0,0,.15) 6px)}
+
+/* role 填色（仅在 hover mask 时通过 JS 加 role-fill class 触发） */
+.msg-node .msg-icons{display:flex;gap:1px;height:5px}
+.msg-node .msg-icons .dot{width:6px;height:6px;border-radius:50%}
+/* block type 颜色 */
+.dot.t-text{background:#3b82f6}
+.dot.t-output_text{background:#3b82f6}
+.dot.t-input_text{background:#6366f1}
+.dot.t-thinking{background:#a78bfa}
+.dot.t-tool_use{background:#f59e0b}
+.dot.t-tool_result{background:#10b981}
+.dot.t-tool_addition{background:#10b981}
+.dot.t-image{background:#ec4899}
+.dot.t-input_image{background:#ec4899}
+.dot.t-document{background:#8b5cf6}
+.dot.t-str{background:#3b82f6}
+.dot.t-shell{background:#9ca3af}
+.dot.t-unknown{background:#d1d5db}
+
+.msg-node .msg-label{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;max-width:36px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ===== 右侧 JSON 预览栏 ===== */
+#preview-panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  position:sticky;top:16px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden}
+#preview-panel .pp-header{padding:10px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:.82rem;display:flex;align-items:center;gap:6px;flex-shrink:0}
+#preview-panel .pp-hint{font-weight:400;color:var(--muted);font-size:.7rem}
+#preview-panel .pp-body{overflow-y:auto;flex:1;padding:12px 14px;font-size:.74rem;line-height:1.55;font-family:ui-monospace,monospace;white-space:pre-wrap;word-break:break-word}
+#preview-panel .pp-empty{color:var(--muted);text-align:center;padding:40px 0;font-style:italic}
+#preview-panel .pp-role{font-weight:700;margin-bottom:8px;font-size:.82rem;font-family:system-ui,sans-serif}
+#preview-panel .pp-line{margin-bottom:2px}
+#preview-panel .pp-key{color:var(--accent);font-weight:600}
+#preview-panel .pp-val{color:var(--muted)}
+#preview-panel .pp-trunc{color:var(--warn);font-size:.68rem;font-style:italic}
+
+/* ===== 可折叠区域 ===== */
+.vs-title.collapsible{cursor:pointer;user-select:none}
+.vs-title.collapsible .collapse-icon{margin-left:auto;font-size:.8rem;transition:transform .2s;color:var(--muted)}
+.vs-title.collapsed .collapse-icon{transform:rotate(-90deg)}
+.collapsible-body.collapsed{display:none}
+
+/* ===== Mask 轨道 ===== */
+#masks-wrap{overflow-x:auto;padding-bottom:8px}
+.mask-lane{
+  display:flex;align-items:center;gap:6px;min-width:max-content;padding:6px 10px;
+  border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:background .15s}
+.mask-lane:hover{background:var(--surface-2)}
+.mask-lane.active{background:var(--accent-bg);border-color:var(--accent)}
+.mask-lane .ml-idx{font-family:ui-monospace,monospace;font-size:.72rem;font-weight:700;color:var(--accent);min-width:28px}
+.mask-lane .ml-badges{display:flex;gap:3px;flex-wrap:wrap}
+.mask-lane .ml-badge{font-size:.6rem;padding:1px 5px;border-radius:4px;font-weight:600}
+.mask-lane .ml-badge.ct{background:var(--bad);color:#fff}
+.mask-lane .ml-badge.effort{background:var(--surface-2);color:var(--muted)}
+.mask-lane .ml-badge.summary{background:var(--warn);color:#fff}
+.mask-lane .ml-vis{display:flex;align-items:center;gap:2px;min-width:max-content}
+.mask-lane .ml-vnode{
+  width:18px;height:18px;border-radius:4px;font-size:.55rem;display:flex;align-items:center;justify-content:center;
+  font-family:ui-monospace,monospace;font-weight:600;color:var(--muted);background:var(--surface-2);
+  border:1px solid var(--border);transition:all .15s;flex-shrink:0}
+.mask-lane .ml-vnode.vis-visible{background:var(--highlight);color:#fff;border-color:var(--highlight);font-weight:700}
+.mask-lane .ml-vnode.vis-output{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.mask-lane .ml-vnode.vis-skip{opacity:.25;text-decoration:line-through}
+.mask-lane .ml-arrow{color:var(--muted);font-size:.7rem;margin:0 2px}
+.mask-lane .ml-out{font-family:ui-monospace,monospace;font-size:.7rem;color:var(--accent);font-weight:700}
+.mask-lane .ml-tokens{font-size:.66rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+
+/* ===== 图例 ===== */
+.legend-group{display:flex;flex-direction:column;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+.legend-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:.72rem;color:var(--muted)}
+.legend-row .lg-title{font-weight:600;color:var(--text);font-size:.7rem;min-width:50px}
+.legend-row .lg-item{display:flex;align-items:center;gap:4px}
+.legend-row .lg-sq{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+.legend-row .lg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;display:inline-block}
+.legend-row .lg-dot.t-text{background:#3b82f6}
+.legend-row .lg-dot.t-thinking{background:#a78bfa}
+.legend-row .lg-dot.t-tool_use{background:#f59e0b}
+.legend-row .lg-dot.t-tool_result{background:#10b981}
+.legend-row .lg-dot.t-image{background:#ec4899}
+.legend-row .lg-dot.t-shell{background:#9ca3af}
+
+/* ===== 空状态 ===== */
+.empty{padding:40px;text-align:center;color:var(--muted)}
+
+/* ===== 历史记录 ===== */
+#history-section{max-width:640px;margin:20px auto}
+#history-section h3{font-size:.95rem;margin-bottom:12px}
+.history-item{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px}
+.history-item.recent{border-color:var(--accent);background:var(--accent-bg)}
+.history-item .hi-info{flex:1;min-width:0}
+.history-item .hi-name{font-family:ui-monospace,monospace;font-size:.82rem;word-break:break-all}
+.history-item .hi-meta{font-size:.72rem;color:var(--muted);display:flex;gap:8px;margin-top:3px;flex-wrap:wrap}
+.history-item .hi-recent-tag{font-size:.66rem;padding:1px 6px;border-radius:4px;background:var(--accent);color:#fff}
+.history-item .hi-btn{padding:4px 10px;border:1px solid var(--border);border-radius:6px;
+  background:var(--surface);cursor:pointer;font-size:.74rem;white-space:nowrap}
+.history-item .hi-btn:hover{border-color:var(--accent)}
+.history-item .hi-btn.del:hover{border-color:var(--bad);color:var(--bad)}
+#btn-clear-history{margin-top:10px;font-size:.78rem;color:var(--muted);
+  background:none;border:none;cursor:pointer;text-decoration:underline}
+#btn-clear-history:hover{color:var(--bad)}
+</style>
+</head>
+<body>
+
+<p style="margin-bottom:12px"><a href="../../apps.html">← Apps</a> · Trajectory / SFT Sample Viewer</p>
+<p id="storage-status" role="status" style="margin-bottom:12px;color:var(--muted)">文件仅在当前浏览器本地解析和保存；可随时删除缓存。清理浏览器数据会移除缓存。</p>
+<div id="drop-zone">
+  <h2>📂 拖拽 JSONL 文件到此处</h2>
+  <p>或点击选择文件 · 每行一个 session trajectory</p>
+  <div class="formats">支持格式：trajectory JSONL · SFT 样本 JSONL · 单个 JSON 文件（含 messages）</div>
+  <input type="file" id="file-input" accept=".jsonl,.json">
+</div>
+
+<div id="history-section" style="display:none">
+  <h3>📋 历史记录</h3>
+  <div id="history-list"></div>
+  <button id="btn-clear-history">清空全部历史</button>
+</div>
+
+<div id="app">
+  <div id="topbar">
+    <span class="logo">🧬 Trajectory Viewer</span>
+    <select id="session-select"></select>
+    <div class="stats" id="stats"></div>
+    <div class="spacer"></div>
+    <button id="btn-back">← 返回</button>
+    <button id="btn-reload">重新加载</button>
+  </div>
+
+  <div id="main">
+    <div id="sidebar">
+      <div class="sb-header">Session 列表 <span class="sb-count" id="sb-count"></span></div>
+      <div class="sb-search"><input id="sb-search-input" placeholder="搜索 session_id..."></div>
+      <div class="sb-list" id="sb-list"></div>
+    </div>
+
+    <div id="detail">
+      <div class="session-info" id="session-info"></div>
+
+      <div class="viz-section">
+        <div class="vs-title">messages</div>
+        <div id="timeline-wrap"><div id="timeline"></div></div>
+        <div class="legend-group">
+          <div class="legend-row">
+            <span class="lg-title">Block 类型</span>
+            <div class="lg-item"><span class="lg-dot t-text"></span>text 文本</div>
+            <div class="lg-item"><span class="lg-dot t-thinking"></span>thinking 推理</div>
+            <div class="lg-item"><span class="lg-dot t-tool_use"></span>tool_use 工具调用</div>
+            <div class="lg-item"><span class="lg-dot t-tool_result"></span>tool_result 工具返回</div>
+            <div class="lg-item"><span class="lg-dot t-image"></span>image 图片</div>
+            <div class="lg-item"><span class="lg-dot t-shell"></span>空壳（无内容）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz-section">
+        <div class="vs-title collapsible" id="mask-section-header">
+          masks
+          <span class="collapse-icon">▼</span>
+        </div>
+        <div id="masks-wrap" class="collapsible-body"><div id="masks"></div></div>
+      </div>
+    </div>
+
+    <div id="preview-panel">
+      <div class="pp-header">📋 JSON 预览 <span class="pp-hint">悬停查看 · 点击固定</span></div>
+      <div class="pp-body" id="preview-body">
+        <div class="pp-empty">悬停消息方块或 mask 查看 JSON · 点击固定</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== 全局状态 =====
+let sessions = [];      // 所有 session 数据
+let curIdx = -1;        // 当前选中 session 索引
+let hoverMask = -1;     // 当前 hover 的 mask 索引
+let currentFileId = '';
+let currentFileName = '';  // 当前加载的文件名（用于历史记录）
+let pendingSessionIdx = 0; // 从历史记录打开时，加载后跳转的 session 索引
+let pinnedIdx = -1;     // 点击固定的消息索引（在右侧预览面板展示 JSON），-1=无固定
+let pinnedMaskIdx = -1; // 点击固定的 mask 索引，-1=无固定
+
+// 返回完整角色名，和 CSS class .role-xxx 对应
+const ROLE_MAP = {
+  'user':'user','assistant':'assistant','system':'system','developer':'developer',
+  'tool':'tool','function':'tool'
+};
+const BLOCK_TYPE_LABELS = {
+  'text':'text','input_text':'text','output_text':'text',
+  'thinking':'thinking','reasoning':'thinking',
+  'tool_use':'tool_use','function_call':'tool_use',
+  'tool_result':'tool_result','function_call_output':'tool_result'
+};
+
+// ===== 文件加载 =====
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop',e=>{
+  e.preventDefault();dropZone.classList.remove('dragover');
+  if(e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change',e=>{
+  const files = e.target.files || fileInput.files;
+  if(files && files.length) loadFile(files[0]);
+  e.target.value = '';  // 允许重复选同一文件
+});
+
+document.getElementById('btn-reload').addEventListener('click',()=>fileInput.click());
+document.getElementById('btn-back').addEventListener('click',backToHome);
+
+async function loadFile(file){
+  try{
+    const text = await file.text();
+    const loaded = parseFile(text);
+    if(!loaded.length) throw new Error('未找到有效数据：请选择包含 messages 的 JSON / JSONL 文件');
+    const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+    const id = 'file-' + Array.from(new Uint8Array(digest), b=>b.toString(16).padStart(2,'0')).join('');
+    const previous = await dbAction('history','readonly',store=>store.get(id)).catch(()=>null);
+    currentFileId = id;
+    currentFileName = file.name;
+    sessions = loaded;
+    const idx = Math.min(previous?.lastSessionIdx || 0, sessions.length-1);
+    try{
+      await cacheFile({id,name:file.name,size:file.size,sessionCount:sessions.length,lastViewed:Date.now(),lastSessionIdx:idx},file);
+      document.getElementById('storage-status').textContent = '已缓存完整文件：' + file.name + '（' + formatSize(file.size) + '）。可从历史记录直接打开。';
+      if(navigator.storage?.persist) navigator.storage.persist().catch(()=>{});
+    }catch(error){
+      alert('文件已打开，但未能保存缓存。请删除不需要的缓存后重试。原因：' + error.message);
+    }
+    showApp(idx);
+  }catch(error){ alert(error.message); }
+}
+
+function backToHome(){
+  sessions = [];
+  curIdx = -1;
+  currentFileName = '';
+  currentFileId = '';
+  pendingSessionIdx = 0;
+  document.getElementById('app').style.display = 'none';
+  dropZone.style.display = 'block';
+  document.getElementById('history-section').style.display = 'block';
+  renderHistory();
+}
+
+function showApp(initIdx){
+  dropZone.style.display = 'none';
+  document.getElementById('history-section').style.display = 'none';
+  document.getElementById('app').style.display = 'grid';
+  // 顶部统计
+  const stats = document.getElementById('stats');
+  stats.innerHTML = `<div class="stat"><b>${sessions.length}</b> sessions</div>`;
+  // 下拉
+  const sel = document.getElementById('session-select');
+  sel.innerHTML = sessions.map((s,i)=>`<option value="${i}">#${i} ${escapeHtml(shortSid(s))}</option>`).join('');
+  sel.onchange = ()=>selectSession(parseInt(sel.value));
+  // 侧边栏
+  renderSidebar();
+  selectSession(initIdx || 0);
+  // Mask 区域折叠/展开
+  document.getElementById('mask-section-header').onclick = function(){
+    this.classList.toggle('collapsed');
+    document.getElementById('masks-wrap').classList.toggle('collapsed');
+  };
+}
+
+function shortSid(s){
+  const m = s.meta || {};
+  return m.session_id ? m.session_id.slice(0,18) : '?';
+}
+
+// ===== 侧边栏 =====
+function renderSidebar(filter=''){
+  const list = document.getElementById('sb-list');
+  document.getElementById('sb-count').textContent = `(${sessions.length})`;
+  const filtered = sessions.map((s,i)=>({s,i})).filter(({s})=>{
+    if(!filter) return true;
+    const sid = (s.meta?.session_id||'').toLowerCase();
+    return sid.includes(filter.toLowerCase());
+  });
+  list.innerHTML = filtered.map(({s,i})=>{
+    const m = s.meta||{};
+    const nmsg = (s.messages||[]).length;
+    const nmask = (s.masks||[]).length;
+    const note = m.note ? String(m.note) : '';
+    const noteHtml = note ? `<div class="sitem-note" title="${escapeHtml(note)}">${escapeHtml(note)}</div>` : '';
+    return `<div class="sitem ${i===curIdx?'active':''}" data-idx="${i}">
+      <div class="sitem-id">${escapeHtml(m.session_id||'?')}</div>
+      <div class="sitem-meta">
+        <span class="sitem-tag">${nmsg}msg</span>
+        <span class="sitem-tag">${nmask}req</span>
+        ${m.upstream_model?`<span class="sitem-tag">${escapeHtml(m.upstream_model.slice(0,12))}</span>`:''}
+      </div>
+      ${noteHtml}
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.sitem').forEach(el=>{
+    el.onclick = ()=>selectSession(parseInt(el.dataset.idx));
+  });
+}
+
+document.getElementById('sb-search-input').addEventListener('input',e=>{
+  renderSidebar(e.target.value);
+});
+
+// ===== 选择 session =====
+function selectSession(idx){
+  curIdx = idx;
+  const s = sessions[idx];
+  if(!s) return;
+  document.getElementById('session-select').value = idx;
+  renderSidebar(document.getElementById('sb-search-input').value);
+  renderSessionInfo(s);
+  renderTimeline(s);
+  renderMasks(s);
+  pinnedIdx = -1;  // 切换 session 时重置固定状态
+  pinnedMaskIdx = -1;
+  // 更新历史记录的 lastSessionIdx
+  if(currentFileId) updateHistorySessionIdx(currentFileId, idx);
+}
+
+// ===== Session 信息（meta 块）=====
+function formatMetaVal(v){
+  if(v === null || v === undefined) return '';
+  if(typeof v === 'object') return JSON.stringify(v, null, 2);
+  return String(v);
+}
+
+function renderSessionInfo(s){
+  const m = s.meta || {};
+  const keys = Object.keys(m);
+  // 把 note 排到最前面，其余按原顺序
+  const ordered = keys.includes('note') ? ['note', ...keys.filter(k=>k!=='note')] : keys;
+  const items = ordered
+    .filter(k=>m[k]!==undefined && m[k]!==null && m[k]!=='')
+    .map(k=>{
+      const val = formatMetaVal(m[k]);
+      const isJson = val.startsWith('{') || val.startsWith('[');
+      const isNote = k === 'note';
+      return `<div class="mi ${isNote?'mi-note':''}"><span class="mk">${escapeHtml(k)}</span><span class="mv ${isJson?'mv-json':''}">${escapeHtml(val)}</span></div>`;
+    })
+    .join('');
+  document.getElementById('session-info').innerHTML = `
+    <h3>metadata</h3>
+    <div class="meta-grid">${items}</div>
+  `;
+}
+
+// ===== 消息工具函数 =====
+function getRoleClass(msg){
+  const role = msg.role || '';
+  if(!role) return 'shell';
+  return ROLE_MAP[role] || 'unknown';
+}
+
+// 判断是否为 SFT/OpenAI 风格消息：
+// trajectory(Anthropic) 风格 content 是数组（含 type 块）；
+// SFT(OpenAI) 风格 content 是字符串，工具/思考通过 tool_calls/reasoning_content/tool_call_id 表达
+function isSFTStyle(msg){
+  const c = msg.content;
+  if(Array.isArray(c)) return false;  // content 数组 = trajectory 风格
+  // content 是字符串/null/undefined，且有 SFT 特有字段 → SFT 风格
+  if(c === undefined || typeof c === 'string'){
+    return !!(msg.tool_calls || msg.tool_call_id || msg.reasoning_content !== undefined);
+  }
+  return false;
+}
+
+function getContentTypes(msg){
+  const c = msg.content;
+  // SFT/OpenAI 风格：按顶层字段识别块类型
+  if(isSFTStyle(msg)){
+    const types = [];
+    if(msg.reasoning_content) types.push('thinking');
+    // content 非空才算 text 块（assistant 带工具调用时 content 常为空串）
+    // 但 tool 返回（有 tool_call_id）的 content 不算独立 text 块，归为 tool_result
+    if(typeof c === 'string' && c.length > 0 && msg.tool_call_id === undefined) types.push('text');
+    if(msg.tool_calls) types.push('tool_use');
+    if(msg.tool_call_id !== undefined) types.push('tool_result');
+    return types.length ? types : ['text'];
+  }
+  // trajectory/Anthropic 风格：按 content 数组的 type 字段
+  if(typeof c === 'string') return ['text'];
+  if(Array.isArray(c)) return c.map(b=>BLOCK_TYPE_LABELS[b.type] || b.type || '?');
+  return [];
+}
+
+function getRoleLabel(msg){
+  const role = msg.role || 'shell';
+  if(role === 'developer') return 'dev';
+  if(role === 'assistant') return 'asst';
+  return role.slice(0,5);
+}
+
+// ===== 渲染时间轴 =====
+const MAX_RENDER_MSGS = 2000;  // 安全阈值，超过此数截断渲染防止浏览器崩溃
+
+function renderTimeline(s){
+  const tl = document.getElementById('timeline');
+  const msgs = s.messages || [];
+  const masks = s.masks || [];
+
+  const total = msgs.length;
+  const limited = total > MAX_RENDER_MSGS;
+  const renderCount = limited ? MAX_RENDER_MSGS : total;
+
+  tl.innerHTML = msgs.slice(0, renderCount).map((msg,i)=>{
+    const rc = getRoleClass(msg);
+    const types = getContentTypes(msg);
+    const label = getRoleLabel(msg);
+
+    // 内容类型圆点（按 block type 着色）
+    const typeDots = types.map(t=>{
+      const tc = t.replace(/[^a-z_]/g,'') || 'unknown';
+      return `<div class="dot t-${tc}" title="${escapeHtml(t)}"></div>`;
+    }).join('');
+
+    return `<div class="msg-node role-${rc}" data-idx="${i}">
+      <div class="msg-square">${i}</div>
+      <div class="msg-icons">${typeDots}</div>
+      <div class="msg-label">${escapeHtml(label)}</div>
+    </div>`;
+  }).join('');
+
+  if(limited){
+    tl.innerHTML += `<div class="trunc-notice">⚠ 仅渲染前 ${MAX_RENDER_MSGS} 条消息（共 ${total} 条）· 渲染全部会导致浏览器崩溃</div>`;
+  }
+
+  tl.querySelectorAll('.msg-node').forEach(el=>{
+    el.onclick = ()=>pinPreview(s, parseInt(el.dataset.idx));
+    el.onmouseenter = ()=>showPreview(s, parseInt(el.dataset.idx));
+    el.onmouseleave = ()=>restorePinned(s);
+  });
+}
+
+// ===== 渲染 Mask 轨道 =====
+const MAX_RENDER_MASKS = 500;  // 安全阈值，超过此数截断渲染
+
+function renderMasks(s){
+  const mc = document.getElementById('masks');
+  const msgs = s.messages || [];
+  const masks = s.masks || [];
+
+  if(masks.length === 0){
+    mc.innerHTML = '<div class="empty">无 mask 数据</div>';
+    return;
+  }
+
+  const total = masks.length;
+  const limited = total > MAX_RENDER_MASKS;
+  const renderCount = limited ? MAX_RENDER_MASKS : total;
+
+  mc.innerHTML = masks.slice(0, renderCount).map((mk,mi)=>{
+    const vis = mk.visible || [];
+    const visSet = new Set(vis);
+    const outIdx = mk.output_idx;
+    const ct = mk.clear_thinking;
+    const declared = mk.declared || {};
+    const req = mk.request || {};
+    const effort = declared.reasoning_effort;
+
+    // 检测是否触发 summary（visible 跳过了之前的 message）
+    const hasSkip = vis.length > 0 && vis[vis.length-1] > vis.length - 1 + (outIdx - vis.length);
+    // 更准确：看 visible 是否不连续或跳过了 0..outIdx-1 中的某些
+    const allIdx = new Set([...Array(outIdx).keys()]);
+    const skipped = [...allIdx].filter(i=>!visSet.has(i));
+    const isFork = skipped.length > 0;
+
+    // 构建 visible 节点序列（只画输入侧：0..outIdx-1）
+    let visNodes = '';
+    for(let i=0; i<outIdx; i++){
+      if(visSet.has(i)){
+        visNodes += `<div class="ml-vnode vis-visible" title="visible #${i}">${i}</div>`;
+      } else {
+        visNodes += `<div class="ml-vnode vis-skip" title="skipped #${i}">${i}</div>`;
+      }
+    }
+
+    const badges = [];
+    if(ct) badges.push('<span class="ml-badge ct">clear_thinking</span>');
+    if(effort) badges.push(`<span class="ml-badge effort">${escapeHtml(effort)}</span>`);
+    if(isFork) badges.push('<span class="ml-badge summary">fork/skip</span>');
+
+    // token 信息
+    const tokens = [];
+    if(req.input_tokens && req.input_tokens !== '0') tokens.push(`in:${req.input_tokens}`);
+    if(req.output_tokens && req.output_tokens !== '0') tokens.push(`out:${req.output_tokens}`);
+
+    return `<div class="mask-lane" data-midx="${mi}">
+      <div class="ml-idx">#${mi}</div>
+      <div class="ml-badges">${badges.join('')}</div>
+      <div class="ml-vis">
+        ${visNodes}
+        <span class="ml-arrow">→</span>
+        <div class="ml-vnode vis-output" title="output #${outIdx}">${outIdx}</div>
+      </div>
+      <div class="ml-tokens">${tokens.join(' · ')}</div>
+    </div>`;
+  }).join('');
+
+  if(limited){
+    mc.innerHTML += `<div class="trunc-notice">⚠ 仅渲染前 ${MAX_RENDER_MASKS} 条 mask（共 ${total} 条）· 渲染全部会导致浏览器崩溃</div>`;
+  }
+
+  mc.querySelectorAll('.mask-lane').forEach(el=>{
+    el.onmouseenter = ()=>{
+      const mi = parseInt(el.dataset.midx);
+      hoverMaskLane(s, mi);
+      showMaskPreview(s, mi);
+    };
+    el.onmouseleave = ()=>{
+      clearHover();
+      restorePinned(s);
+    };
+    el.onclick = ()=>{
+      const mi = parseInt(el.dataset.midx);
+      pinMaskPreview(s, mi);
+    };
+  });
+}
+
+// ===== Hover 高亮 =====
+function hoverMaskLane(s, mIdx){
+  const mk = s.masks[mIdx];
+  if(!mk) return;
+  const vis = new Set(mk.visible || []);
+  const outIdx = mk.output_idx;
+  const msgs = s.messages || [];
+
+  // 高亮时间轴节点
+  const tl = document.getElementById('timeline');
+  tl.querySelectorAll('.msg-node').forEach(el=>{
+    const i = parseInt(el.dataset.idx);
+    el.classList.remove('is-visible','is-output','is-skipped');
+    if(i === outIdx) el.classList.add('is-output');
+    else if(vis.has(i)) el.classList.add('is-visible');
+    else if(i < outIdx) el.classList.add('is-skipped');
+  });
+
+  // 高亮当前 mask lane
+  document.querySelectorAll('.mask-lane').forEach(el=>{
+    el.classList.toggle('active', parseInt(el.dataset.midx) === mIdx);
+  });
+}
+
+function clearHover(){
+  document.querySelectorAll('.msg-node').forEach(el=>{
+    el.classList.remove('is-visible','is-output','is-skipped');
+  });
+  document.querySelectorAll('.mask-lane').forEach(el=>{
+    el.classList.remove('active');
+  });
+}
+
+// ===== 右侧固定预览栏（显示 JSON） =====
+const PP_MAX = 300;  // content 截断长度
+
+// 字段排序优先级：reasoning_content 在上、content 居中、tool_calls 在下，其余按原序
+const KEY_ORDER = ['role', 'reasoning_content', 'content', 'tool_calls'];
+
+function sortKeys(keys){
+  const ranked = [];
+  for(const k of KEY_ORDER) if(keys.includes(k)) ranked.push(k);
+  for(const k of keys) if(!ranked.includes(k)) ranked.push(k);
+  return ranked;
+}
+
+// 通用 JSON 预览：title 显示在顶部，obj 逐 key 渲染缩进 JSON
+function showPreviewJSON(title, obj){
+  const pb = document.getElementById('preview-body');
+  if(!pb) return;
+  let html = `<div class="pp-role">${escapeHtml(title)}</div>`;
+  for(const key of sortKeys(Object.keys(obj))){
+    const val = obj[key];
+    html += `<div class="pp-line"><span class="pp-key">${escapeHtml(key)}</span>: ` + prettyJson(val, 0) + '</div>';
+  }
+  pb.innerHTML = html;
+}
+
+function showPreview(s, idx){
+  const msg = s.messages[idx];
+  if(!msg) return;
+  const role = msg.role || '(shell 空壳)';
+  showPreviewJSON(`[${idx}] role: ${role}`, msg);
+  // 如果这个 message 是某个 mask 的 output，高亮其 visible input
+  highlightMaskForMessage(s, idx);
+}
+
+function showMaskPreview(s, mIdx){
+  const mk = s.masks[mIdx];
+  if(!mk) return;
+  showPreviewJSON(`mask #${mIdx}`, mk);
+}
+
+// 递归生成缩进 JSON，完整展示不截断
+function prettyJson(val, indent){
+  const pad = '  '.repeat(indent);
+  const padInner = '  '.repeat(indent + 1);
+  if(val === null) return '<span class="pp-val">null</span>';
+  if(typeof val === 'string'){
+    return `<span class="pp-val">"${escapeHtml(val)}"</span>`;
+  }
+  if(typeof val === 'number' || typeof val === 'boolean') return `<span class="pp-val">${val}</span>`;
+  if(Array.isArray(val)){
+    if(val.length === 0) return '<span class="pp-val">[]</span>';
+    const items = val.map(item => padInner + prettyJson(item, indent + 1));
+    const body = items.join(',\n');
+    return `<span class="pp-val">[\n${body}\n${pad}]</span>`;
+  }
+  if(typeof val === 'object'){
+    const keys = Object.keys(val);
+    if(keys.length === 0) return '<span class="pp-val">{}</span>';
+    const items = keys.map(k => `${padInner}<span class="pp-key">${escapeHtml(k)}</span>: ${prettyJson(val[k], indent + 1)}`);
+    const body = items.join(',\n');
+    return `<span class="pp-val">{\n${body}\n${pad}}</span>`;
+  }
+  return '<span class="pp-val">' + escapeHtml(String(val)) + '</span>';
+}
+
+// 悬停 message 时，如果它是某个 mask 的 output，高亮该 mask 的 visible input
+function highlightMaskForMessage(s, idx){
+  const masks = s.masks || [];
+  // 找到 output_idx === idx 的 mask
+  const mask = masks.find(mk => mk.output_idx === idx);
+  if(!mask) return;
+  const vis = new Set(mask.visible || []);
+  const outIdx = mask.output_idx;
+
+  const tl = document.getElementById('timeline');
+  tl.querySelectorAll('.msg-node').forEach(el=>{
+    const i = parseInt(el.dataset.idx);
+    if(i === outIdx) el.classList.add('is-output');
+    else if(vis.has(i)) el.classList.add('is-visible');
+    else if(i < outIdx) el.classList.add('is-skipped');
+  });
+}
+
+function clearPreview(){
+  const pb = document.getElementById('preview-body');
+  if(pb) pb.innerHTML = '<div class="pp-empty">将鼠标移到消息方块或 mask 上以查看 JSON</div>';
+  // 清除 mask 高亮
+  document.querySelectorAll('.msg-node').forEach(el=>{
+    el.classList.remove('is-visible','is-output','is-skipped');
+  });
+}
+
+// 点击消息 → 固定到右侧预览面板
+function pinPreview(s, idx){
+  pinnedIdx = idx;
+  pinnedMaskIdx = -1;
+  const msg = s.messages[idx];
+  if(!msg) return;
+  const role = msg.role || '(shell 空壳)';
+  showPreviewJSON(`📌 [${idx}] role: ${role}`, msg);
+  highlightMaskForMessage(s, idx);
+}
+
+// 点击 mask → 固定到右侧预览面板
+function pinMaskPreview(s, mIdx){
+  pinnedMaskIdx = mIdx;
+  pinnedIdx = -1;
+  const mk = s.masks[mIdx];
+  if(!mk) return;
+  hoverMaskLane(s, mIdx);
+  showPreviewJSON(`📌 mask #${mIdx}`, mk);
+}
+
+// 鼠标离开消息/mask → 恢复固定的内容（如果有）
+function restorePinned(s){
+  if(pinnedIdx >= 0 && s.messages[pinnedIdx]){
+    const msg = s.messages[pinnedIdx];
+    const role = msg.role || '(shell 空壳)';
+    showPreviewJSON(`📌 [${pinnedIdx}] role: ${role}`, msg);
+    highlightMaskForMessage(s, pinnedIdx);
+  } else if(pinnedMaskIdx >= 0 && s.masks[pinnedMaskIdx]){
+    hoverMaskLane(s, pinnedMaskIdx);
+    showPreviewJSON(`📌 mask #${pinnedMaskIdx}`, s.masks[pinnedMaskIdx]);
+  } else {
+    const pb = document.getElementById('preview-body');
+    if(pb) pb.innerHTML = '<div class="pp-empty">悬停消息方块或 mask 查看 JSON · 点击固定</div>';
+    clearHover();
+  }
+}
+
+// ===== 工具 =====
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function formatSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(1) + ' MB';
+}
+
+function formatTime(ts){
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = now - d;
+  if(diff < 60000) return '刚刚';
+  if(diff < 3600000) return Math.floor(diff/60000) + '分钟前';
+  if(diff < 86400000) return Math.floor(diff/3600000) + '小时前';
+  if(diff < 604800000) return Math.floor(diff/86400000) + '天前';
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+// ===== 历史记录管理 =====
+const dbReady = new Promise((resolve,reject)=>{
+  const request = indexedDB.open('trajectory-viewer-files',1);
+  request.onupgradeneeded = ()=>{
+    request.result.createObjectStore('history',{keyPath:'id'});
+    request.result.createObjectStore('files');
+  };
+  request.onsuccess = ()=>resolve(request.result);
+  request.onerror = ()=>reject(request.error);
+});
+async function dbAction(name,mode,operation){
+  const db = await dbReady;
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(name,mode);
+    const request = operation(tx.objectStore(name));
+    tx.oncomplete = ()=>resolve(request?.result);
+    tx.onerror = tx.onabort = ()=>reject(tx.error || new Error('缓存操作失败'));
+  });
+}
+async function cacheFile(meta,blob){
+  const db = await dbReady;
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(['history','files'],'readwrite');
+    tx.objectStore('history').put(meta);
+    tx.objectStore('files').put(blob,meta.id);
+    tx.oncomplete = resolve;
+    tx.onerror = tx.onabort = ()=>reject(tx.error || new Error('缓存空间不足'));
+  });
+}
+async function updateHistorySessionIdx(id,idx){
+  try{
+    const db = await dbReady;
+    const tx = db.transaction('history','readwrite');
+    const store = tx.objectStore('history');
+    const request = store.get(id);
+    request.onsuccess = ()=>{
+      if(request.result) store.put({...request.result,lastSessionIdx:idx,lastViewed:Date.now()});
+    };
+    tx.onerror = ()=>console.warn('阅读位置保存失败',tx.error);
+  }catch(error){console.warn(error);}
+}
+async function deleteCache(id){
+  const db = await dbReady;
+  await new Promise((resolve,reject)=>{
+    const tx = db.transaction(['history','files'],'readwrite');
+    for(const name of ['history','files']){
+      if(id === undefined) tx.objectStore(name).clear();
+      else tx.objectStore(name).delete(id);
+    }
+    tx.oncomplete = resolve;
+    tx.onerror = tx.onabort = ()=>reject(tx.error);
+  });
+  await renderHistory();
+}
+async function removeHistory(id){
+  try{await deleteCache(id);}catch(error){alert('删除失败：'+error.message);}
+}
+async function clearAllHistory(){
+  try{await deleteCache();}catch(error){alert('清空失败：'+error.message);}
+}
+
+// 解析文件文本成 sessions 数组：
+// 1) 先尝试整体 JSON.parse —— 支持单个 JSON 文件（pretty-print 多行 或 单行 JSON）
+// 2) 失败再退回 JSONL 逐行解析 —— 支持 trajectory JSONL 和 SFT 样本 JSONL
+// 接受条件：含 messages 字段（masks 可选，兼容 SFT 样本）
+function parseFile(text){
+  const trimmed = text.trim();
+  // 尝试整体解析（单 JSON 文件）
+  try{
+    const obj = JSON.parse(trimmed);
+    if(obj && typeof obj === 'object' && Array.isArray(obj.messages)) return [obj];
+  }catch{ /* 非单 JSON，继续 */ }
+  // 退回 JSONL 逐行解析
+  const lines = trimmed.split('\n');
+  const result = [];
+  for(const line of lines){
+    if(!line.trim()) continue;
+    try{
+      const obj = JSON.parse(line);
+      if(obj && typeof obj === 'object' && Array.isArray(obj.messages)) result.push(obj);
+    }catch{ /* skip */ }
+  }
+  return result;
+}
+
+// 兼容旧调用名
+function parseJsonl(text){ return parseFile(text); }
+
+async function openFromHistory(id){
+  try{
+    const h = await dbAction('history','readonly',store=>store.get(id));
+    const blob = await dbAction('files','readonly',store=>store.get(id));
+    if(!h || !blob) throw new Error('缓存文件不存在，请重新选择文件');
+    const loaded = parseFile(await blob.text());
+    if(!loaded.length) throw new Error('缓存文件中没有有效数据');
+    sessions = loaded;
+    currentFileId = id;
+    currentFileName = h.name;
+    showApp(Math.min(h.lastSessionIdx || 0,sessions.length-1));
+  }catch(error){alert('打开失败：'+error.message);}
+}
+async function renderHistory(){
+  try{
+    const hist = await dbAction('history','readonly',store=>store.getAll());
+    hist.sort((a,b)=>b.lastViewed-a.lastViewed);
+    document.getElementById('history-section').style.display = hist.length ? 'block' : 'none';
+    const list = document.getElementById('history-list');
+    list.innerHTML = hist.map((h,i)=>`<div class="history-item ${i===0?'recent':''}">
+      <div class="hi-info"><div class="hi-name">${escapeHtml(h.name)}</div>
+      <div class="hi-meta"><span>${formatSize(h.size)}</span><span>${h.sessionCount} sessions</span>
+      <span>上次看到 #${h.lastSessionIdx}</span><span>${formatTime(h.lastViewed)}</span><span>完整文件已缓存</span></div></div>
+      <button class="hi-btn" data-open="${escapeHtml(h.id)}">打开</button>
+      <button class="hi-btn del" data-delete="${escapeHtml(h.id)}">删除</button></div>`).join('');
+    list.querySelectorAll('[data-open]').forEach(button=>button.onclick=()=>openFromHistory(button.dataset.open));
+    list.querySelectorAll('[data-delete]').forEach(button=>button.onclick=()=>removeHistory(button.dataset.delete));
+  }catch(error){document.getElementById('storage-status').textContent='浏览器缓存不可用：'+error.message;}
+}
+document.getElementById('btn-clear-history').addEventListener('click',()=>{
+  if(confirm('确定删除全部缓存文件和历史记录？')) clearAllHistory();
+});
+(async function(){
+  await renderHistory();
+  const fileUrl = new URLSearchParams(location.search).get('file');
+  if(fileUrl){
+    try{
+      const response = await fetch(fileUrl);
+      if(!response.ok) throw new Error('HTTP '+response.status);
+      const blob = await response.blob();
+      await loadFile(new File([blob],new URL(fileUrl,location.href).pathname.split('/').pop() || 'remote.jsonl'));
+    }catch(error){alert('URL 加载失败：'+error.message);}
+  }
+})();
+</script>
+</body>
+</html>
