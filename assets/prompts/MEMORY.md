@@ -22,7 +22,7 @@
 3. 同时，也非常欢迎并希望有更多的实习机会
 
 **2026.09.07**
-实习｜我入职了 MindLab，担任算法研究员，主要研究 Agent 以及基模的 param-level Memory，和 RSI 相关。
+实习｜我入职了 MindLab，担任 Research Intern：每日从 Relay 中转站拉取数万条 Coding 数据，经长度过滤、内部 SFT 格式转换及 DeepSeek Flash 质量打分/难度分类后保留 2,000+ 条；通过 MinT SDK 调度内部 GPU 集群，使用 LoRA 对 Qwen3.5-35B-A3B 进行 SFT，MMLU、MBPP、HumanEval 等 benchmark 综合提升 2 分。将原本需约 1 天的分散流程自动化，支持失败重试、飞书群汇报与 checkpoint 自动回退。
 
 秋招｜最近的秋招机会取得了阶段性的进展。推进得比较好的有：
 • 华为的 AI infra 岗位
@@ -38,7 +38,9 @@
 
 ## 过往经历时间线
 
-### 2026.03 - 2028.08 · Research Intern @ DeepWisdom · 深圳
+### 2026.03 - 2026.08 · Research Intern @ DeepWisdom · 深圳
+
+- 总体工作覆盖 Agent System 的 long-horizon 执行、AutoResearch、Multi-Agent 协同及 Agent Data / Task 合成；设计从真实数据源生成 open-ended task 的自动化链路，结合 verifier 进行质量筛选与实验验证。
 Mentor：张佳钇。参与三个核心项目：
 
 **Harnessing Agentic Evolution (AEvo)** — 二作，投稿 NeurIPS 2026，arXiv https://arxiv.org/abs/2605.13821
@@ -68,13 +70,13 @@ Mentor：张佳钇。参与三个核心项目：
 ### 2025.07 - 2026.02 · Agent 算法实习生 @ Karis / invoko · 北京
 Mentor：向劲宇、白岳霖。两个核心方向：
 
-**Karis Harness**（SmolAgent、Harness Engineering、Agent Memory）
-- 基于 SmolAgent 搭建 KarisHarness，参与 Tooling、Lifecycle、Observability、Context 等核心模块，重点负责 Agent Memory 的设计与实现。
+**Karis Harness**（smolagents、Harness Engineering、Agent Memory）
+- 基于 smolagents 搭建面向 Marketing 领域的垂类 Agent Harness，参与 Tooling、Lifecycle、Observability 等核心模块，重点负责 Context Compiler 与多层级 Agent Memory 的设计与实现。
 - Agent Memory：设计并实现存储长期记忆的 Memory Space，以及 Dream 机制（周期性提炼有效经验、沉淀归档、淘汰冗余记忆）；针对不同模式下的运行时上下文设计 Context Compact 策略，显著提升长程任务的执行能力。
 - 成果：在真实业务场景推动产品 Agent 在"效果—成本"曲线上达到 Pareto frontier；在 WebArena、GAIA、ResearchQA 等 agent benchmark 上相对基线 harness 平均提升约 +5%。
 
 **Karis Evol**（Harbor、Vue、FastAPI、PGSQL）
-- 聚焦真实业务增长场景，构建内部测评 Benchmark 与全栈评测平台，持续测评并提升产品 Agent 能力；基于 Harbor 设计 task package；技术栈 Vue + FastAPI。
+- 聚焦真实 Marketing 场景，构建内部 Benchmark 与 Vue + FastAPI 全栈 Agent Eval 平台；基于 Harbor 组织 task package，形成“评测 - bad case 分析 - 策略迭代”闭环。
 
 ### 2024.12 - 2025.02 · 教培订单管理系统 · 汇学家教
 - 角色：全栈开发工程师
@@ -103,6 +105,8 @@ Mentor：向劲宇、白岳霖。两个核心方向：
 | Harnessing Agentic Evolution | 二作 | 2026 | NeurIPS 2026（投稿中） | arXiv：https://arxiv.org/abs/2605.13821 |
 | Foundation Protocol: A Coordination Layer for Agentic Society | 二作 | 2026 | Hugging Face Papers | https://huggingface.co/papers/2605.23218 |
 | Organic Neuromorphic Vision Devices with Multilevel Memory for Palmprint Identification | 二作 | 2026 | Chemical Science, Royal Society of Chemistry | https://pubs.rsc.org/en/content/articlelanding/2026/sc/d5sc07902k |
+
+- 掌纹识别工作：基于 CASIA Palmprint 数据库构建 5 类、850 张增强样本，经 240×240 ROI、CLAHE、二值化和分块统计后，映射器件光电流生成 36 维特征；训练 LDA、GBDT 与 XGBoost，GBDT 最高准确率 99.02%，XGBoost 在两类器件上分别达到 98.43% 和 98.63%。
 
 ## 技能
 - LLM Agent：ClaudeCode/Opencode/Cursor；熟悉 LangChain/Smolagents/pydantic-ai；AgentMemory 设计；Agent 评测框架
