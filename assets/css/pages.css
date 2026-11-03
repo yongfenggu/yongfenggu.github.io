@@ -9,6 +9,10 @@ body {
     line-height: 1.6;
     color: #333;
     background: #fff;
+    /* 内容较少时也让 footer 贴在页面底部 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
@@ -233,6 +237,7 @@ nav {
 
 /* Footer */
 footer {
+    margin-top: auto;
     padding: 30px 0;
     text-align: center;
     color: #666;

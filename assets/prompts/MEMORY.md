@@ -78,11 +78,6 @@ Mentor：向劲宇、白岳霖。两个核心方向：
 **Karis Evol**（Harbor、Vue、FastAPI、PGSQL）
 - 聚焦真实 Marketing 场景，构建内部 Benchmark 与 Vue + FastAPI 全栈 Agent Eval 平台；基于 Harbor 组织 task package，形成“评测 - bad case 分析 - 策略迭代”闭环。
 
-### 2024.12 - 2025.02 · 教培订单管理系统 · 汇学家教
-- 角色：全栈开发工程师
-- 内容：开发覆盖 6 个城市的订单管理系统，支撑日活 2k+ 用户，日订单 300+
-- 技术栈：Vue3/TypeScript/SCSS/Element Plus、Node.js/Express、MySQL、Nginx
-
 ### 2024.09 - 2027.06 · 天津大学 · 硕士
 - 学院：精密仪器与光电子工程学院
 - 专业：仪器科学与技术
