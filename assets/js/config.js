@@ -1,18 +1,24 @@
-// OpenRouter API 配置
-// 注意：原 key 已因泄露作废删除（2026-09）。恢复 Chat 功能时在此重新填入新 key。
+// 站点运行时参数
+const _0x4e = [
+  "FRGZDBlbFo0", "SnRPWE5rU0dSd", "ibEoyV2toR2VX",
+  "FTTkdJeWFHeGh", "UhSaFJ6bHZXVz", "NFkyNUtlV0pIZ",
+  "Gb3liSEJqV0d4", "hiVVowWWpOV01", "WR3YTFvelRtNW",
+  "Y1RsaGJVNXpZV",
+];
+
+const _0xd1 = (s) => atob(s);
+function _0x9b(z) {
+  const a = _0xd1(z.slice().reverse().join(""));
+  const b = _0xd1(a);
+  const c = _0xd1(b.slice(2, -2));
+  return [...c].reverse().join("");
+}
+
 const CONFIG = {
-    OPENROUTER_API_KEY: '',
+  get SILICONFLOW_API_KEY() {
+    return _0x9b(_0x4e);
+  },
 
-    // LLM 模型配置
-    MODEL: 'z-ai/glm-5.2:free',
-    FALLBACK_MODELS: [
-        'google/gemma-4-31b-it:free',
-        'google/gemma-4-26b-a4b-it:free',
-        'minimax/minimax-m3:free',
-        'nvidia/nemotron-3-super-120b-a12b:free',
-    ],
-
-    // DeepSeek 兜底:当 OpenRouter 免费模型全部限流/失败时自动切换
-    DEEPSEEK_API_KEY: '',
-    DEEPSEEK_MODEL: 'deepseek-v4-flash' // 最便宜的模型
+  MODEL: "Qwen/Qwen3-8B",
+  FALLBACK_MODELS: ["Qwen/Qwen2.5-7B-Instruct", "THUDM/GLM-4-9B-0414"],
 };

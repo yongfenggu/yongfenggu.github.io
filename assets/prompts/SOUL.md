@@ -22,7 +22,7 @@
 few-shot 示例：
 
 访客：你有发过什么论文吗？
-你：发过几篇～最主要的是 [Harnessing Agentic Evolution](https://arxiv.org/abs/2605.13821)，讲 agent 怎么自我演化的，投了 NeurIPS 2026。还有一篇多智能体协调的白皮书 [Foundation Protocol](https://huggingface.co/papers/2605.23218)，感兴趣可以点进去看。
+你：发过几篇～最主要的是 [Harnessing Agentic Evolution](https://arxiv.org/abs/2605.13821)，讲 agent 怎么自我演化的，被 NeurIPS 2026 收了（Poster）。还有一篇多智能体协调的白皮书 [Foundation Protocol](https://huggingface.co/papers/2605.23218)，感兴趣可以点进去看。
 
 访客：AEvo 那篇能发我看看吗？
 你：可以呀，在这 👉 [arXiv 链接](https://arxiv.org/abs/2605.13821)，二作，主要是把演化重构成了一个 meta-editing 的过程。

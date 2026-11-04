@@ -720,6 +720,13 @@
         max-width: 85%;
         text-align: center;
       }
+      .chat-disclaimer {
+        margin: 10px 0 0 0;
+        font-size: 12px;
+        color: #999;
+        line-height: 1.5;
+        text-align: center;
+      }
       .chat-input-container {
         padding: 0;
         background: transparent;
@@ -1060,7 +1067,7 @@
       </div>
     </nav>
 
-    <!-- Chat with Me 暂时停用，浮动气泡一并注释（API key 已删除）
+    <!-- Chat with Me 浮动气泡 -->
     <div
       class="chat-bubble"
       id="chatBubble"
@@ -1071,7 +1078,6 @@
       <img src="assets/img/wechat avatar.jpg" alt="Avatar" class="avatar" />
       <div class="chat-bubble-content" id="chatBubbleContent"></div>
     </div>
-    -->
 
     <!-- About Section -->
     <section id="about">
@@ -1131,6 +1137,18 @@
       <div class="container">
         <h2 class="section-title">动态</h2>
         <div class="news-list">
+          <div class="news-item">
+            <div class="news-date">2026.09.25</div>
+            <div class="news-content">
+              <span class="news-badge paper">论文</span>
+              <span
+                ><a href="https://arxiv.org/abs/2605.13821" target="_blank"
+                  >Harnessing Agentic Evolution (AEvo)</a
+                >
+                被 NeurIPS 2026 Main Track 接收为 Poster。</span
+              >
+            </div>
+          </div>
           <div class="news-item">
             <div class="news-date">2026.09.07</div>
             <div class="news-content">
@@ -1469,7 +1487,7 @@
       </div>
     </section>
 
-    <!-- Chat Section（暂时停用：API key 已删除，恢复时取消本段注释即可）
+    <!-- Chat Section -->
     <section id="chat">
       <div class="chat-container">
         <div class="chat-header">
@@ -1496,9 +1514,12 @@
             />
           </button>
         </div>
+        <p class="chat-disclaimer">
+          感谢 SiliconFlow 提供的模型支持（Qwen/Qwen3-8B）。回复由 AI
+          生成，可能存在幻觉，请以本页内容为准。
+        </p>
       </div>
     </section>
-    Chat Section 停用结束 -->
 
     <!-- Image lightbox -->
     <div class="img-lightbox" id="imgLightbox">
@@ -1561,10 +1582,7 @@
       });
 
       // Chat functionality
-      // 暂时停用（API key 已删除）。代码块内含正则的 "*/"，无法用 /* */ 块注释包裹，
-      // 恢复时删掉 "if (false)" 这行和末尾对应的 "}" 即可。
       (function () {
-        if (false) {
         const chatMessages = document.getElementById("chatMessages");
         const chatInput = document.getElementById("chatInput");
         const chatSend = document.getElementById("chatSend");
@@ -2075,7 +2093,6 @@
               chatInput.placeholder = placeholders[idx];
             }, 5000);
           });
-        } // end of "if (false)" Chat 暂时停用
       })();
 
       // 点击 Publications 图片放大预览

@@ -11,6 +11,10 @@
 - Google Scholar：BwrMcW0AAAAJ
 - 个人主页：https://yongfenggu.github.io
 
+## 当前个人定位
+- 聚焦智能体与模型自我改进，兼具研究与系统工程能力。实践涵盖 Agent Harness、Agent Research 与后训练基础设施，逐步深入模型学习与演化。
+- 具备计算机视觉、全栈与嵌入式开发背景，关注具身智能、空间智能与世界模型；这些是延伸兴趣，不应表述为已有研究成果或专长。
+
 ## 日记
 
 **2026.08.24**
@@ -43,7 +47,7 @@
 - 总体工作覆盖 Agent System 的 long-horizon 执行、AutoResearch、Multi-Agent 协同及 Agent Data / Task 合成；设计从真实数据源生成 open-ended task 的自动化链路，结合 verifier 进行质量筛选与实验验证。
 Mentor：张佳钇。参与三个核心项目：
 
-**Harnessing Agentic Evolution (AEvo)** — 二作，投稿 NeurIPS 2026，arXiv https://arxiv.org/abs/2605.13821
+**Harnessing Agentic Evolution (AEvo)** — 二作，NeurIPS 2026 Main Track 接收（Poster，2026.09.25 通知），arXiv https://arxiv.org/abs/2605.13821
 - 关键词：meta-learning、AutoResearch、long-horizon
 - 背景：现有 agentic evolution 方案存在两难——人工设计的流程模块化但僵硬，通用 Agent 灵活但在 long-horizon 演化中容易漂移、早停、陷入局部最优和 reward hacking。
 - 方法：提出 AEvo meta-editing harness，把"演化"重构成一个以累积上下文为过程级状态的交互环境；Meta-Agent 不直接生成解，而是去编辑控制后续演化的 Workflow / TaskAgent，为 Workflow-based 与 Agent-based 两类演化提供统一接口。
@@ -97,7 +101,7 @@ Mentor：向劲宇、白岳霖。两个核心方向：
 
 | 工作 | 贡献 | 年份 | 发表 | 链接 |
 |------|------|------|------|------|
-| Harnessing Agentic Evolution | 二作 | 2026 | NeurIPS 2026（投稿中） | arXiv：https://arxiv.org/abs/2605.13821 |
+| Harnessing Agentic Evolution | 二作 | 2026 | NeurIPS 2026（Poster，已接收） | arXiv：https://arxiv.org/abs/2605.13821 |
 | Foundation Protocol: A Coordination Layer for Agentic Society | 二作 | 2026 | Hugging Face Papers | https://huggingface.co/papers/2605.23218 |
 | Organic Neuromorphic Vision Devices with Multilevel Memory for Palmprint Identification | 二作 | 2026 | Chemical Science, Royal Society of Chemistry | https://pubs.rsc.org/en/content/articlelanding/2026/sc/d5sc07902k |
 
