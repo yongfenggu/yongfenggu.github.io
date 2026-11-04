@@ -11,6 +11,11 @@ class LLMClient {
         this.fallbackModels = config.fallbackModels || (hasConfig ? CONFIG.FALLBACK_MODELS || [] : []);
         this.baseURL = 'https://api.siliconflow.cn/v1/chat/completions';
         this.systemPrompt = config.systemPrompt || '';
+
+        // OpenRouter 兜底：SiliconFlow 全部失败时启用（均为免费模型）
+        this.orApiKey = config.orApiKey || (hasConfig ? CONFIG.OPENROUTER_API_KEY : null);
+        this.orModels = config.orModels || (hasConfig ? CONFIG.OPENROUTER_MODELS || [] : []);
+        this.orURL = 'https://openrouter.ai/api/v1/chat/completions';
     }
 
     /**
@@ -113,27 +118,78 @@ class LLMClient {
     }
 
     /**
+     * 调用 OpenRouter 接口（兜底）。
+     * @param {Object} requestBody - 请求体
+     * @param {boolean} stream - 是否流式
+     * @returns {Promise<Object|ReadableStreamDefaultReader>}
+     */
+    async postOpenRouter(requestBody, stream = false) {
+        const response = await fetch(this.orURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.orApiKey}`,
+                'HTTP-Referer': typeof window !== 'undefined' ? window.location.href : '',
+                'X-Title': 'Yongfeng Gu Personal Homepage'
+            },
+            body: JSON.stringify({ ...requestBody, stream })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const detail = errorData.error?.message || errorData.message || '';
+            const error = new Error(
+                `OpenRouter 请求失败: ${response.status} ${response.statusText}` +
+                (detail ? ` - ${detail}` : '')
+            );
+            error.status = response.status;
+            error.errorData = errorData;
+            throw error;
+        }
+
+        return stream ? response.body.getReader() : response.json();
+    }
+
+    /**
      * 依次尝试候选模型，返回第一个成功的结果。
+     * 先走 SiliconFlow，全部失败后切 OpenRouter 免费模型兜底。
      * @param {Array} messagesWithSystem - 含系统提示的消息
      * @param {Object} options - 额外请求参数
      * @param {boolean} stream - 是否流式
      * @returns {Promise<Object|ReadableStreamDefaultReader>}
      */
     async requestWithFallback(messagesWithSystem, options, stream) {
-        if (!this.apiKey) {
-            throw new Error('SiliconFlow API Key 未设置');
+        if (!this.apiKey && !this.orApiKey) {
+            throw new Error('API Key 未设置');
         }
 
         let lastError = null;
-        for (const model of this.getModelCandidates()) {
-            try {
-                return await this.post({ model, messages: messagesWithSystem, ...options }, stream);
-            } catch (error) {
-                lastError = error;
-                if (!this.shouldFallback(error.status)) break;
-                console.warn(`模型 ${model} 暂不可用，尝试下一个模型。`, error.message);
+
+        if (this.apiKey) {
+            for (const model of this.getModelCandidates()) {
+                try {
+                    return await this.post({ model, messages: messagesWithSystem, ...options }, stream);
+                } catch (error) {
+                    lastError = error;
+                    if (!this.shouldFallback(error.status)) break;
+                    console.warn(`模型 ${model} 暂不可用，尝试下一个模型。`, error.message);
+                }
             }
         }
+
+        // SiliconFlow 全部失败，切 OpenRouter 免费模型
+        if (this.orApiKey && this.orModels.length) {
+            console.warn('SiliconFlow 不可用，切换到 OpenRouter 兜底。');
+            for (const model of this.orModels) {
+                try {
+                    return await this.postOpenRouter({ model, messages: messagesWithSystem, ...options }, stream);
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`OpenRouter 模型 ${model} 暂不可用。`, error.message);
+                }
+            }
+        }
+
         throw lastError;
     }
 
